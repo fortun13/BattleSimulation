@@ -85,11 +85,7 @@ public class ServerAgent extends Agent {
         private void setupUI() {
             m_frame = new MainFrame(this);
 
-
-            m_frame.setSize( 800, 600 );
-            m_frame.setLocation( 400, 400 );
-            m_frame.setVisible( true );
-            m_frame.validate();
+            
         }
 
 }
