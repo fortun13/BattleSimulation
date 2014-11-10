@@ -13,8 +13,8 @@ import java.awt.image.BufferedImage;
  */
 public class BoardPanel extends JPanel {
 	
-	private final int COLS = 100;
-	private final int ROWS = 100;
+	private final int COLS = 10;
+	private final int ROWS = 10;
 	
 	private final int SQUARESIZE = 10;
     
@@ -112,6 +112,43 @@ public class BoardPanel extends JPanel {
             }
         }
 
-
     }
-}
+    
+    public void generateBoard(int height, int width) {
+    	//setPreferredSize(new Dimension(WIDTH,HEIGHT));
+
+        innerBoard = new JPanel(new GridLayout(height, width));
+        
+        innerBoard.setBackground(Color.black);
+        add(innerBoard);
+        
+        squares = new JButton[height][width];
+
+        // create the chess board squares
+        Insets buttonMargin = new Insets(0, 0, 0, 0);
+        for (int row = 0; row < squares.length; row++) {
+            for (int col = 0; col < squares[row].length; col++) {
+                JButton b = new JButton();
+                b.setMargin(buttonMargin);
+                ImageIcon icon = new ImageIcon(new BufferedImage(SQUARESIZE, SQUARESIZE, BufferedImage.TYPE_INT_ARGB));
+                b.setIcon(icon);
+                /*if ((jj % 2 == 1 && ii % 2 == 1) || (jj % 2 == 0 && ii % 2 == 0)) {
+                    b.setBackground(Color.WHITE);
+                } else {
+                    b.setBackground(Color.BLACK);
+                }*/
+                b.setBackground(Color.WHITE);
+                squares[row][col] = b;
+            }
+        }
+
+        // fill the black non-pawn piece row
+        for (int row = 0; row < squares.length; row++) {
+            for (int col = 0; col < squares[row].length; col++) {
+            	innerBoard.add(squares[row][col]);
+            }
+        }
+        
+        this.repaint();
+    }
+} 

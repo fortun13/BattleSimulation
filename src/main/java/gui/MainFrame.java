@@ -1,5 +1,6 @@
 package main.java.gui;
 
+import main.java.adapters.Controller;
 import main.java.agents.ServerAgent;
 
 import javax.swing.*;
@@ -16,8 +17,11 @@ public class MainFrame extends JFrame {
 	private final int FRAMEWIDTH = 800;
 
 	private BoardPanel boardPanel;
+	private OptionsPanel optionsPanel;
 
     private ServerAgent server;
+    
+    private Controller controller;
 
     public MainFrame(ServerAgent s) {
 
@@ -32,7 +36,8 @@ public class MainFrame extends JFrame {
         splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
         getContentPane().add(splitPane);
         
-        JScrollPane scrollPane = new JScrollPane(new BoardPanel());
+        boardPanel = new BoardPanel();
+        JScrollPane scrollPane = new JScrollPane(boardPanel);
         
         /*JScrollPane scrollPane = new JScrollPane();
         JPanel tmp = new JPanel();
@@ -42,12 +47,15 @@ public class MainFrame extends JFrame {
         
         splitPane.setLeftComponent(scrollPane);
         
-        JPanel optionsPanel = new JPanel();
+        optionsPanel = new OptionsPanel();
         splitPane.setRightComponent(optionsPanel);
         
         setVisible( true );
         validate();
 
         server = s;
+        
+        controller = new Controller(this, boardPanel, optionsPanel);
+        
     }
 }
