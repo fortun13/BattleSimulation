@@ -25,7 +25,7 @@ public class Controller {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				Pair<Integer,Integer> size = options.getBoardSize();
-				System.out.println(size);
+				//System.out.println(size);
 				board.generateBoard(size.getKey(), size.getValue());
 				
 			}
