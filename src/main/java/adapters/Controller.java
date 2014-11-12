@@ -1,8 +1,5 @@
 package main.java.adapters;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javafx.util.Pair;
 import main.java.gui.BoardPanel;
 import main.java.gui.MainFrame;
@@ -18,18 +15,13 @@ public class Controller {
 		frame = f;
 		board = b;
 		options = o;
-		
-		options.generateButtonAddActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				Pair<Integer,Integer> size = options.getBoardSize();
-				//System.out.println(size);
-				board.generateBoard(size.getKey(), size.getValue());
-				
-			}
-		});
+
+        options.generateButtonAddActionListener((e)->{
+            // TODO Auto-generated method stub
+            Pair<Integer,Integer> size = options.getBoardSize();
+            //System.out.println(size);
+            board.generateBoard(size.getKey(), size.getValue());
+        });
 	}
 
 }

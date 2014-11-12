@@ -1,22 +1,10 @@
 package main.java.gui;
 
-import java.awt.Dimension;
-
 import javafx.util.Pair;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.BoxLayout;
-
-import java.awt.GridLayout;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
-
-import javax.swing.JSlider;
-import javax.swing.JLabel;
-import javax.swing.border.TitledBorder;
-import javax.swing.JSpinner;
-import javax.swing.JButton;
 
 public class OptionsPanel extends JPanel {
 	
@@ -45,7 +33,7 @@ public class OptionsPanel extends JPanel {
 		
 		JSlider blueAgentsSlider = new JSlider();
 		blueAgentsSlider.setValue(20);
-		bluesAgentsSpinner.setValue(new Integer(20));
+		bluesAgentsSpinner.setValue(20);
 		blueAgentsSliderPanel.add(blueAgentsSlider);
 		
 		JPanel redPanel = new JPanel();
@@ -69,7 +57,7 @@ public class OptionsPanel extends JPanel {
 		boardWidthPanel.add(lblWidth);
 		
 		boardWidth = new JSpinner();
-		boardWidth.setValue(new Integer(20));
+		boardWidth.setValue(20);
 		boardWidthPanel.add(boardWidth);
 		
 		JPanel boardHeightPanel = new JPanel();
@@ -79,7 +67,7 @@ public class OptionsPanel extends JPanel {
 		boardHeightPanel.add(lblHeight);
 		
 		boardHeight = new JSpinner();
-		boardHeight.setValue(new Integer(20));
+		boardHeight.setValue(20);
 		boardHeightPanel.add(boardHeight);
 		
 		generateBoard = new JButton("Generate Board");
@@ -93,7 +81,7 @@ public class OptionsPanel extends JPanel {
 	}
 	
 	public Pair<Integer, Integer> getBoardSize() {
-		return new Pair<Integer,Integer>(new Integer((int)boardHeight.getValue()),new Integer((int)boardWidth.getValue()));
+		return new Pair<>((Integer)boardHeight.getValue(),(Integer)boardWidth.getValue());
 	}
 
 }

@@ -1,12 +1,7 @@
 package main.java.gui;
 
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 /**
  * Created by Jakub Fortunka on 08.11.14.
@@ -16,9 +11,27 @@ public class BoardPanel extends JPanel {
 	
 	private final int SQUARESIZE = 10;
     
-    private JButton[][] squares;
+    private Square[][] squares;
     
 	private JPanel innerBoard;
+
+    public class A extends JPanel {
+        @Override
+        public void paint(Graphics g) {
+
+            super.paint(g);
+
+            for (int row = 0; row < squares.length; row++) {
+                for (int col = 0; col < squares[row].length; col++) {
+//            	innerBoard.add(squares[row][col]);
+//                squares[row][col].paint(g);
+                    g.drawLine(row * SQUARESIZE, 0, row * SQUARESIZE, 500);
+                    g.drawLine(0, col * SQUARESIZE, 500, col * SQUARESIZE);
+                }
+//                System.out.println(row);
+            }
+        }
+    }
 
     //public final int WIDTH = COLS*(SQUARESIZE+7);
     //public final int HEIGHT = ROWS*SQUARESIZE;
@@ -75,40 +88,48 @@ public class BoardPanel extends JPanel {
     	
     	this.removeAll();
     	
-    	setPreferredSize(new Dimension(width*(SQUARESIZE+7), height*(SQUARESIZE+7)));
+    	setPreferredSize(new Dimension(width*(SQUARESIZE), height*(SQUARESIZE)));
 
-        innerBoard = new JPanel(new GridLayout(height, width));
-        
-        innerBoard.setBackground(Color.black);
+        innerBoard = new A();
+
+        innerBoard.setPreferredSize(new Dimension(width*SQUARESIZE, height*SQUARESIZE));
+
+//        innerBoard.setBackground(Color.black);
         add(innerBoard);
         
-        squares = new JButton[height][width];
+        squares = new Square[height][width];
 
         // create the chess board squares
-        Insets buttonMargin = new Insets(0, 0, 0, 0);
-        for (int row = 0; row < squares.length; row++) {
-            for (int col = 0; col < squares[row].length; col++) {
-                JButton b = new JButton();
-                b.setMargin(buttonMargin);
-                ImageIcon icon = new ImageIcon(new BufferedImage(SQUARESIZE, SQUARESIZE, BufferedImage.TYPE_INT_ARGB));
-                b.setIcon(icon);
-                /*if ((jj % 2 == 1 && ii % 2 == 1) || (jj % 2 == 0 && ii % 2 == 0)) {
-                    b.setBackground(Color.WHITE);
-                } else {
-                    b.setBackground(Color.BLACK);
-                }*/
-                b.setBackground(Color.WHITE);
-                squares[row][col] = b;
-            }
-        }
+//        Insets buttonMargin = new Insets(0, 0, 0, 0);
+//        for (int row = 0; row < squares.length; row++) {
+//            for (int col = 0; col < squares[row].length; col++) {
+////                JButton b = new JButton();
+////                b.setMargin(buttonMargin);
+////                ImageIcon icon = new ImageIcon(new BufferedImage(SQUARESIZE, SQUARESIZE, BufferedImage.TYPE_INT_ARGB));
+////                b.setIcon(icon);
+////                /*if ((jj % 2 == 1 && ii % 2 == 1) || (jj % 2 == 0 && ii % 2 == 0)) {
+////                    b.setBackground(Color.WHITE);
+////                } else {
+////                    b.setBackground(Color.BLACK);
+////                }*/
+////                b.setBackground(Color.WHITE);
+//                squares[row][col] = new Square(new Point(col*SQUARESIZE, row*SQUARESIZE), SQUARESIZE);
+//            }
+//            System.out.println(row);
+//        }
+//
+//        // fill the black non-pawn piece row
+//        Graphics2D g = (Graphics2D) innerBoard.getGraphics();
+//        for (int row = 0; row < squares.length; row++) {
+//            for (int col = 0; col < squares[row].length; col++) {
+////            	innerBoard.add(squares[row][col]);
+////                squares[row][col].paint(g);
+////                g.drawLine(row * SQUARESIZE, row * SQUARESIZE, 0, 500);
+////                g.drawLine(0, 500, col * SQUARESIZE, col * SQUARESIZE);
+//            }
+//            System.out.println(row);
+//        }
 
-        // fill the black non-pawn piece row
-        for (int row = 0; row < squares.length; row++) {
-            for (int col = 0; col < squares[row].length; col++) {
-            	innerBoard.add(squares[row][col]);
-            }
-        }
-        
         this.revalidate();
     }
 } 
