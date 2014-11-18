@@ -19,13 +19,21 @@ public class BerserkerBehaviour extends Behaviour {
         ACLMessage msg = myAgent.receive();
         if (msg != null) {
             // probably can do it with msg.getPrformative and some ACL static fields, but for now let it be string
-            String message = msg.getContent();
-            if (message.equals("over")) {
-                System.out.println("WE WON!!");
-                state = 2;
-                return;
+            switch(msg.getContent()) {
+                case "new-step":
+                    doAction();
+                    break;
+                case "battle-ended":
+                    System.out.println("WE WON!!");
+                    state = 2;
+                    return;
             }
+        } else {
+            block();
         }
+    }
+
+    private void doAction() {
         switch(state) {
             case 0:
                 //findEnemy, if enemyFound goto state 2

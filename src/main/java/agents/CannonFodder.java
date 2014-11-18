@@ -42,11 +42,6 @@ public class CannonFodder extends Agent {
             e.printStackTrace();
         }
 
-
-        condition = 40;
-        strength = 10;
-        speed = 3;
-        accuracy = 90;
         addBehaviour(b);
     }
 
@@ -95,12 +90,21 @@ public class CannonFodder extends Agent {
 
         //Nevermind - assuming i have method - i leave negotation commented in case it would be needed
 
-        Pair<Point2D,Point2D> destination;
+        //Pair<Point2D,Point2D> destination;
+        Point2D destination;
 
         do {
             destination = computeDestination(enemy.getCurrentPosition());
+            // I assume that method moveAgent is returning boolean - if agent can be move to that position, do it and return true
         } while (!world.moveAgent(this,destination));
 
+    }
+
+    private void computeDestination(Point2D enemyPosition) {
+        // I don't really know...
+        // I mean - here should be computed some kind of "vector" in which we will be travelling
+        // If agent is in range of other agent - then set destination to closest free point
+        // If not - then approach other agent as fast as possible (using computed vector)
     }
 
     protected void attack(Agent enemy) {
@@ -110,5 +114,33 @@ public class CannonFodder extends Agent {
 
     public int getCondition() {
         return condition;
+    }
+
+    public int setCondition(int condition) {
+        this.condition = condition;
+    }
+
+    public int getStrength() {
+        return strength;
+    }
+
+    public void setStrength(int strength) {
+        this.strength = strength;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public int getAccuracy() {
+        return accuracy;
+    }
+
+    public void setAccuracy(int accuracy) {
+        this.accuracy = accuracy;
     }
 }
