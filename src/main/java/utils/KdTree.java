@@ -101,6 +101,7 @@ public class KdTree<T, A> {
 
     private ArrayList<T> points = new ArrayList<>(); // awful workaround
     private ArrayList<Boolean> ascending = new ArrayList<>();
+
     private class Node implements Tree<T, A> {
         private final Tree<T, A> left, right;
         private final T val;

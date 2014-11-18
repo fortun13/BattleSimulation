@@ -21,7 +21,7 @@ public class MainFrame extends JFrame {
 	private BoardPanel boardPanel;
 	private OptionsPanel optionsPanel;
 
-    private ServerAgent server;
+    public ServerAgent server;
     
     private Controller controller;
 
@@ -56,13 +56,13 @@ public class MainFrame extends JFrame {
         validate();
 
         server = s;
-        
+
         controller = new Controller(this, boardPanel, optionsPanel);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                server.doDelete();
-            }
-        });
+//        addWindowListener(new WindowAdapter() {
+//            @Override
+//            public void windowClosing(WindowEvent e) {
+//                server.doDelete();
+//            }
+//        });
     }
 }

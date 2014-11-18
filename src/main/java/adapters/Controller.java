@@ -5,6 +5,9 @@ import main.java.gui.BoardPanel;
 import main.java.gui.MainFrame;
 import main.java.gui.OptionsPanel;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 public class Controller {
 	
 	private final MainFrame frame;
@@ -21,6 +24,14 @@ public class Controller {
             Pair<Integer,Integer> size = options.getBoardSize();
             //System.out.println(size);
             board.generateBoard(size.getKey(), size.getValue());
+        });
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                frame.server.doDelete();
+                super.windowClosing(e);
+            }
         });
 	}
 

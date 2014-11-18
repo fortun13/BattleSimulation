@@ -26,11 +26,12 @@ public class BoardPanel extends JPanel {
                 for (int col = 0; col < squares[row].length+1; col++) {
 //            	innerBoard.add(squares[row][col]);
 //                squares[row][col].paint(g);
-                    g.drawLine(row * SQUARESIZE, 0, row * SQUARESIZE, height*SQUARESIZE);
-                    g.drawLine(0, col * SQUARESIZE, squares[row].length*SQUARESIZE, col * SQUARESIZE);
+                    g.drawLine(col * SQUARESIZE, 0, col * SQUARESIZE, height*SQUARESIZE);
+                    g.drawLine(0, row * SQUARESIZE, squares[row].length*SQUARESIZE, row * SQUARESIZE);
                 }
                 g.drawLine(squares.length*SQUARESIZE,0,squares.length*SQUARESIZE,height*SQUARESIZE);
             }
+            g.drawLine(0,height*SQUARESIZE,squares[0].length*SQUARESIZE,height*SQUARESIZE);
         }
     }
 
