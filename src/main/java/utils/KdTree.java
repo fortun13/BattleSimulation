@@ -1,202 +1,249 @@
 package main.java.utils;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import javafx.geometry.Point2D;
+import javafx.scene.shape.Circle;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Created by Marek on 2014-11-15.
  *
- * That container gives possibility to fetch elements from given area
+ * That container gives possibility to fetch elements from given area in O(sqrt(n) + k),
+ * where n is an count of elements and k is a count of results
  */
 public class KdTree<T, A> {
-    private Tree tree;
-    Comparator<T> vComp, hComp;
-    ArrayList<Comparator<T>> comp;
+    private final Contains<T, A> contains;
+    private Tree<T, A> tree;
+    ArrayList<Comparator<T>> c;
 
-    public KdTree(List<T> content, ArrayList<Comparator<T>> comp, Contains<Object, Object> con) throws KdTreeException {
-        this.comp = comp;
+    public KdTree(List<T> content, ArrayList<Comparator<T>> comp, Contains<T, A> contains) throws KdTreeException {
+        c = comp;
+        this.contains = contains;
 
         if (content.size() > 0 && comp.size() > 0) {
-            ArrayList<T>[] sorted = new ArrayList[comp.size()];
-            for (int i = 0; i < sorted.length; ++i) {
-                sorted[i] = new ArrayList<>(content);
-                sorted[i].sort(comp.get(i));
+            ArrayList<List<T>> sorted = new ArrayList<>();
+            for (Comparator<T> aComp : comp) {
+                ArrayList<T> s = new ArrayList<>(content);
+                s.sort(aComp);
+                sorted.add(s);
             }
 
             tree = buildTree(sorted, 0);
         }
     }
 
-//    public KdTree(List<T> content, Comparator<T> vComp, Comparator<T> hComp) throws KdTreeException {
-//        this.vComp = vComp; this.hComp = hComp;
-//
-//        ArrayList<T> vSorted = new ArrayList<>(content), hSorted = new ArrayList<>(content);
-//
-//        if (content.size() > 0) {
-//            vSorted.sort(vComp);
-//            hSorted.sort(hComp);
-//
-//            tree = buildTree(vSorted, hSorted, 0);
-//        }
-//    }
-
     public List<T> fetchElements(A area) {
         List<T> ret = new ArrayList<>();
-
+        points = new ArrayList<>();
+        ascending = new ArrayList<>();
         tree.getIntersection(area, ret);
         return ret;
     }
 
-    private Tree buildTree(ArrayList<T>[] sorted, int deph) throws KdTreeException {
-        if (sorted[0].size() == 1) {
-            return new Leaf(sorted[0].get(0));
+    private Tree<T, A> buildTree(ArrayList<List<T>> sorted, int depth) throws KdTreeException {
+        int dimension = depth % sorted.size();
+
+        if (sorted.get(0).size() == 1) {
+            return new Leaf(sorted.get(0).get(0));
         }
 
-        ArrayList<T> a = sorted[deph % sorted.length];
-        T median = a.get((int) Math.floor((a.size() - .5)/2));
+        List<T> a = sorted.get(dimension);
+        int index = (int) Math.floor((a.size() - .5) / 2);
+        T median = a.get(index);
 
-        Map<Boolean, List<T>>[] parts = new Map[sorted.length];
-        for (int i = 0; i < sorted.length; i++) {
-            final int j = i;
-            parts[i] = sorted[i].parallelStream().collect(
-                    Collectors.partitioningBy((T t) -> comp.get(j).compare(t, median) <= 0)
-            );
-            if (parts[i].get(true).size() == sorted.length) {
+        ArrayList<Map<Boolean, List<T>>> parts = new ArrayList<>();
+        for (int i = 0; i < sorted.size(); i++) {
+            final int j = dimension;
+            parts.add(sorted.get(i).parallelStream().collect(
+                    Collectors.partitioningBy((T t) -> c.get(j).compare(t, median) <= 0)
+            ));
+            if (parts.get(i).get(true).size() == sorted.get(i).size()) {
                 throw new KdTreeException();
             }
         }
 
-        Tree<T, A>[] children = new Tree[sorted.length];
-        for (Tree<T, A> child : children) {
-            child = buildTree(sorted, deph + 1);
+        ArrayList<List<T>> l = new ArrayList<>();
+        ArrayList<List<T>> r = new ArrayList<>();
+
+        for (Map<Boolean, List<T>> part : parts) {
+            l.add(part.get(true));
+            r.add(part.get(false));
         }
 
-        return new Node(children, median);
+        return new Node(buildTree(l, depth + 1), buildTree(r, depth + 1), median, depth);
     }
-
-//    private Tree buildTree(List<T> vSorted, List<T> hSorted, int depth) throws KdTreeException {
-//        if (vSorted.size() == 1) {
-//            return new Leaf(vSorted.get(0));
-//        }
-//
-//        T median;
-//        Comparator<T> c;
-//        if (depth % 2 == 0) {
-//            median = vSorted.get((int) Math.floor((vSorted.size() - 0.5)/2));
-//            c = vComp;
-//        } else {
-//            median = hSorted.get((int) Math.floor((hSorted.size() - 0.5)/2));
-//            c = hComp;
-//        }
-//
-//
-//        Map<Boolean, List<T>> vParts = vSorted.parallelStream().collect(
-//                Collectors.partitioningBy((T t) -> c.compare(t, median) <= 0)
-//        );
-//        Map<Boolean, List<T>> hParts = hSorted.parallelStream().collect(
-//                Collectors.partitioningBy((T t) -> c.compare(t, median) <= 0)
-//        );
-//
-//        if (vSorted.size() == vParts.get(true).size() || vSorted.size() == vParts.get(false).size())
-//            throw new KdTreeException();
-//
-//        return new Node(
-//                buildTree(vParts.get(true), hParts.get(true), depth + 1),
-//                buildTree(vParts.get(false), hParts.get(false), depth + 1),
-//                median
-//        );
-//    }
 
     private interface Tree<T, A> {
-        boolean leaf();
-
-        void getIntersection(A area, List ret);
+        public void getIntersection(A area, List<T> ret);
+        void pullValues(List<T> ret);
     }
 
-    private class Leaf<T, A> implements Tree<T, A> {
+    private class Leaf implements Tree<T, A> {
         private final T content;
-
         public Leaf(T t) {
             content = t;
         }
 
         @Override
-        public boolean leaf() {
-            return true;
+        public void getIntersection(A area, List<T> ret) {
+            if (contains.contains(area, content)) {
+                ret.add(content);
+            }
         }
 
         @Override
-        public void getIntersection(A area, List ret) {
-//            if (area.contains(content)) {
-//                ret.add(content);
-//            }
+        public void pullValues(List<T> ret) {
+            ret.add(content);
         }
+
     }
 
-    private class Node<T, A> implements Tree<T, A> {
-        private final Tree<T, A>[] children;
-//        private final Tree<T, A> left, right;
-//        private final T val;
-//
-//        public Node(Tree<T, A> left, Tree<T, A> right, T val) {
-//            this.left = left;
-//            this.right = right;
-//            this.val = val;
-//        }
+    private ArrayList<T> points = new ArrayList<>(); // awful workaround
+    private ArrayList<Boolean> ascending = new ArrayList<>();
+    private class Node implements Tree<T, A> {
+        private final Tree<T, A> left, right;
+        private final T val;
+        private int depth;
 
-        public Node(Tree<T, A>[] children, T median) {
-
-            this.children = children;
+        public Node(Tree<T, A> left, Tree<T, A> right, T median, int depth) {
+            this.left = left;
+            this.right = right;
+            val = median;
+            this.depth = depth;
         }
 
         @Override
-        public boolean leaf() {
-            return false;
+        public void getIntersection(A area, List<T> ret) {
+            doThat(area, ret);
         }
 
         @Override
-        public void getIntersection(A area, List ret) {
+        public void pullValues(List<T> ret) {
+            left.pullValues(ret);
+            right.pullValues(ret);
+        }
 
+        private void doThat(A area, List<T> ret) {
+            int part = depth % (c.size() * 2);
+            if (points.size() <= part) {
+                points.add(val);
+                ascending.add(false);
+            } else {
+                points.set(part, val);
+                ascending.set(part, false);
+            }
+
+            if (points.size() == c.size()*2 && contain(area, points, ascending)) {
+                left.pullValues(ret);
+            } else if (contains.intersects(area, points, ascending)) {
+                left.getIntersection(area, ret);
+            }
+
+            ascending.set(part, true);
+            if (points.size() == c.size()*2 && contain(area, points, ascending)) {
+                right.pullValues(ret);
+            } else if (contains.intersects(area, points, ascending)) {
+                right.getIntersection(area, ret);
+            }
+        }
+
+        private boolean contain(A area, ArrayList<T> points, ArrayList<Boolean> dirs) {
+            int half = dirs.size() / 2;
+            for (int i = 0; i < half; i++) {
+                if (dirs.get(i) == dirs.get(i + half)) {
+                    return false;
+                }
+            }
+
+            return  contains.contains(area, points);
         }
     }
 
     public static void main(String[] args) {
-        for (int i = 20; i < Integer.parseInt(args[0]); i++) {
-            List<Point> l = new ArrayList<>();
+        for (int i = 10; i < Integer.parseInt(args[0]); i++) {
+            List<Point2D> l = new ArrayList<>();
 
             System.out.println("Dla i=" + i);
 
             for (int j = 0; j < i; j++) {
-                l.add(new Point((int) (Math.random() * 10), (int) (Math.random() * 10)));
+                l.add(new Point2D((int) (Math.random() * 100), (int) (Math.random() * 100)));
             }
-//            l.add(new Point(1,1));
-//            l.add(new Point(1,1));
+//            l.add(new Point2D(1,1));
+//            l.add(new Point2D(1,2));
 
-            ArrayList<Comparator<Point>> a = new ArrayList<>();
-            a.add((Point o1, Point o2) -> {
-                int diff = o1.x - o2.x;
-                return diff != 0 ? diff : o1.y - o2.y;
+            ArrayList<Comparator<Point2D>> a = new ArrayList<>();
+            a.add((Point2D o1, Point2D o2) -> {
+                int diff = (int) (o1.getX() - o2.getX());
+                return diff != 0 ? diff : (int)(o1.getY() - o2.getY());
             });
-            a.add((Point o1, Point o2) -> {
-                int diff = o1.y - o2.y;
-                return diff != 0 ? diff : o1.x - o2.x;
+            a.add((Point2D o1, Point2D o2) -> {
+                int diff = (int) (o1.getY() - o2.getY());
+                return diff != 0 ? diff : (int)(o1.getX() - o2.getX());
             });
-//                    (Point o1, Point o2) -> {
-//                int diff = o1.x - o2.x;
-//                return diff != 0 ? diff : o1.y - o2.y;
-//            },
-//                    (Point o1, Point o2) -> {
-//                        int diff = o1.y - o2.y;
-//                        return diff != 0 ? diff : o1.x - o2.x;
-//                    });
-//            Comparator<Point>[] a = {(Point as, Point b) -> -1};
 
             try {
-                new KdTree<>(l, a, (area,point) -> true);
+                KdTree<Point2D, Circle> u = new KdTree<>(l, a, new Contains<Point2D, Circle>() {
+
+                    @Override
+                    public boolean contains(Circle area, Point2D point) {
+                        return area.contains(point);
+                    }
+
+                    @Override
+                    public boolean contains(Circle area, ArrayList<Point2D> points) {
+                        Point2D A = points.get(0), B = points.get(1), C = points.get(2), D = points.get(3);
+                        Point2D[] corners = {new Point2D(A.getX(), B.getY()), new Point2D(B.getX(), C.getY()), new Point2D(C.getX(), D.getY()), new Point2D(D.getX(), A.getY())};
+                        for (Point2D corner : corners) {
+                            if (!area.contains(corner)) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+
+                    @Override
+                    public boolean intersects(Circle area, ArrayList<Point2D> points, ArrayList<Boolean> ascending) {
+                        ArrayList<Point2D> candidates = new ArrayList<>();
+                        ArrayList<Point2D> bad = new ArrayList<>();
+
+                        for (int j = 0; j < points.size(); j++) {
+                            for (Point2D candidate : candidates) {
+                                if (!(j % 2 == 0 &&
+                                        (ascending.get(j) &&
+                                                candidate.getX() > points.get(j).getX() ||
+                                                candidate.getX() < points.get(j).getX()
+                                        ) ||
+                                        (ascending.get(j) &&
+                                                candidate.getY() > points.get(j).getY() ||
+                                                candidate.getY() < points.get(j).getY()
+                                        )))
+                                    bad.add(candidate);
+                            }
+
+                            double x = points.get(j).getX(), ox = area.getCenterX(), r = area.getRadius();
+                            double y = points.get(j).getY(), oy = area.getCenterY();
+                            if (j % 2 == 0) {
+                                double dx = Math.abs(ox - x);
+                                if (dx<=r) {
+                                    double dy = Math.sqrt(r * r - dx * dx);
+                                    candidates.add(new Point2D(x, area.getCenterY() + dy));
+                                    candidates.add(new Point2D(x, area.getCenterY() - dy));
+                                } else if (ascending.get(j) && ox > x || ox < x) candidates.add(new Point2D(ox, oy));
+                            } else {
+                                double dy = Math.abs(oy - y);
+                                if (dy<=r) {
+                                    double dx = Math.sqrt(r * r - dy * dy);
+                                    candidates.add(new Point2D(area.getCenterX() + dx, y));
+                                    candidates.add(new Point2D(area.getCenterX() - dx, y));
+                                } else if (ascending.get(j) && oy > y || oy < y) candidates.add(new Point2D(ox, oy));
+                            }
+                        }
+
+                        return candidates.size() > bad.size();
+                    }
+                });
+                System.out.println(u.fetchElements(new Circle(1,1,35)));
             } catch (KdTreeException e) {
                 e.printStackTrace();
             }
@@ -211,5 +258,7 @@ public class KdTree<T, A> {
 
     private interface Contains<T, A> {
         boolean contains(A area, T point);
+        boolean contains(A area, ArrayList<T> points);
+        boolean intersects(A area, ArrayList<T> points, ArrayList<Boolean> ascending);
     }
 }
