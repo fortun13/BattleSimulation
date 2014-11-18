@@ -9,7 +9,7 @@ import java.awt.*;
 public class BoardPanel extends JPanel {
 	
 	
-	private final int SQUARESIZE = 10;
+	private final int SQUARESIZE = 20;
     
     private Square[][] squares;
     
@@ -21,14 +21,15 @@ public class BoardPanel extends JPanel {
 
             super.paint(g);
 
+            int height = squares.length;
             for (int row = 0; row < squares.length; row++) {
-                for (int col = 0; col < squares[row].length; col++) {
+                for (int col = 0; col < squares[row].length+1; col++) {
 //            	innerBoard.add(squares[row][col]);
 //                squares[row][col].paint(g);
-                    g.drawLine(row * SQUARESIZE, 0, row * SQUARESIZE, 500);
-                    g.drawLine(0, col * SQUARESIZE, 500, col * SQUARESIZE);
+                    g.drawLine(row * SQUARESIZE, 0, row * SQUARESIZE, height*SQUARESIZE);
+                    g.drawLine(0, col * SQUARESIZE, squares[row].length*SQUARESIZE, col * SQUARESIZE);
                 }
-//                System.out.println(row);
+                g.drawLine(squares.length*SQUARESIZE,0,squares.length*SQUARESIZE,height*SQUARESIZE);
             }
         }
     }
@@ -88,11 +89,11 @@ public class BoardPanel extends JPanel {
     	
     	this.removeAll();
     	
-    	setPreferredSize(new Dimension(width*(SQUARESIZE), height*(SQUARESIZE)));
+    	setPreferredSize(new Dimension(width*(SQUARESIZE)+10, height*(SQUARESIZE)+10));
 
         innerBoard = new A();
 
-        innerBoard.setPreferredSize(new Dimension(width*SQUARESIZE, height*SQUARESIZE));
+        innerBoard.setPreferredSize(new Dimension(width*(SQUARESIZE)+1, height*(SQUARESIZE)+1));
 
 //        innerBoard.setBackground(Color.black);
         add(innerBoard);

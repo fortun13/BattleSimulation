@@ -1,5 +1,6 @@
 package main.java.gui;
 
+import javafx.geometry.Side;
 import javafx.util.Pair;
 
 import javax.swing.*;
@@ -14,11 +15,20 @@ public class OptionsPanel extends JPanel {
 	private JButton generateBoard;
 	private JSpinner boardWidth;
 	private JSpinner boardHeight;
+
+    private SideOptionPanel bluePanel;
+    private SideOptionPanel redPanel;
 	
 	public OptionsPanel() {
 		setLayout(new GridLayout(1, 0, 0, 0));
+
+        bluePanel = new SideOptionPanel("Blues");
+        redPanel = new SideOptionPanel("Reds");
+
+        add(bluePanel);
+        add(redPanel);
 		
-		JPanel bluePanel = new JPanel();
+		/*JPanel bluePanel = new JPanel();
 		bluePanel.setBorder(BorderFactory.createTitledBorder("Blues"));
 		add(bluePanel);
 		bluePanel.setLayout(new GridLayout(1, 0, 0, 0));
@@ -38,7 +48,7 @@ public class OptionsPanel extends JPanel {
 		
 		JPanel redPanel = new JPanel();
 		redPanel.setBorder(BorderFactory.createTitledBorder("Reds"));
-		add(redPanel);
+		add(redPanel);*/
 		
 		JPanel generalPanel = new JPanel();
 		generalPanel.setBorder(BorderFactory.createTitledBorder("General"));
