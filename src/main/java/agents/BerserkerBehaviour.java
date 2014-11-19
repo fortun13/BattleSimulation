@@ -55,7 +55,7 @@ public class BerserkerBehaviour extends Behaviour {
                         break;
                     }
                 }
-                agent.attack(enemy);
+//                agent.attack(enemy);
                 break;
         }
     }

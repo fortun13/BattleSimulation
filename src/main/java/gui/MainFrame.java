@@ -63,6 +63,7 @@ public class MainFrame extends JFrame {
 //            public void windowClosing(WindowEvent e) {
 //                server.doDelete();
 //            }
+//            }
 //        });
     }
 }
