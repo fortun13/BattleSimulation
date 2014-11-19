@@ -6,7 +6,7 @@ import main.java.agents.Warrior;
 /**
  * Created by Jakub Fortunka on 19.11.14.
  */
-abstract class CannonFodderFactory {
+public abstract class CannonFodderFactory {
 
     public enum SimpleAgentType { Warrior, Archer }
 

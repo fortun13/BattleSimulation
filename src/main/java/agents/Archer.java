@@ -12,7 +12,7 @@ public class Archer extends CannonFodder {
 
     protected void setup(Behaviour b) {
 
-//        super.setup(b);
+        //super.setup(b);
 
     }
 
@@ -20,6 +20,8 @@ public class Archer extends CannonFodder {
     protected void takeDown() {
 
     }
+
+
 
     public int getAttackRange() {
         return attackRange;

@@ -1,12 +1,6 @@
 package main.java.agents;
 
-import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
-import jade.domain.DFService;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.FIPAException;
 import javafx.geometry.Point2D;
 
 /**
@@ -108,6 +102,17 @@ public class CannonFodder extends Agent {
         // If not - then approach other agent as fast as possible (using computed vector)
     }
 
+    protected boolean enemyInRangeOfAttack(CannonFodder enemy) {
+        //for now - assuming that speed also means how far agent can go in one turn
+        // i guess 1 is one square - so it will return true if agent is standing right beside enemy
+        // have to be overridden for all agents that can attack from distance
+        // TODO
+        if (position.distance(enemy.getPosition()) <= 1)
+            return true;
+        else
+            return false;
+    }
+
     protected void attack(CannonFodder enemy) {
         world.attack(this,enemy);
     }
@@ -152,5 +157,13 @@ public class CannonFodder extends Agent {
 
     public void setAgentSide(World.AgentsSides agentSide) {
         this.agentSide = agentSide;
+    }
+
+    public Point2D getPosition() {
+        return position;
+    }
+
+    public void setPosition(Point2D position) {
+        this.position = position;
     }
 }

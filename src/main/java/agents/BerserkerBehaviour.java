@@ -1,6 +1,5 @@
 package main.java.agents;
 
-import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 
@@ -56,6 +55,10 @@ public class BerserkerBehaviour extends Behaviour {
                         break;
                     }
                 }
+                if (agent.enemyInRangeOfAttack(enemy))
+                    agent.attack(enemy);
+                else
+                    agent.gotoEnemy(enemy);
 //                agent.attack(enemy);
                 break;
         }
