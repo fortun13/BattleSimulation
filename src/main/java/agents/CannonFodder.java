@@ -7,8 +7,7 @@ import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
-
-import java.awt.geom.Point2D;
+import javafx.geometry.Point2D;
 
 /**
  * Created by Jakub Fortunka on 18.11.14.
@@ -18,15 +17,17 @@ public class CannonFodder extends Agent {
 
     private int condition, strength, speed, accuracy;
 
-    private int x,y;
+    private Point2D position;
 
-    private AID world;
+    private World world;
+
+    private World.AgentsSides agentSide;
 
     //private MessageTemplate mt;
 
-    protected void setup(Behaviour b) {
+    protected void setup() {
 
-        DFAgentDescription template = new DFAgentDescription();
+        /*DFAgentDescription template = new DFAgentDescription();
         ServiceDescription service = new ServiceDescription();
         service.setType("world");
         template.addServices(service);
@@ -38,9 +39,11 @@ public class CannonFodder extends Agent {
             //TODO
             //handle exception
             e.printStackTrace();
-        }
+        }*/
 
-        addBehaviour(b);
+        Object[] parameters = getArguments();
+
+        addBehaviour((BerserkerBehaviour) parameters[0]);
     }
 
 
@@ -48,13 +51,13 @@ public class CannonFodder extends Agent {
 
     }
 
-    protected Agent getNearestEnemy() {
+    protected CannonFodder getNearestEnemy() {
         // TODO
         // have to have representation of environment to do something with it
-        return null;
+        return world.getNearestEnemy(this);
     }
 
-    protected void gotoEnemy(Agent enemy) {
+    protected void gotoEnemy(CannonFodder enemy) {
         //Can be changed - it's just for visualization so don't care about Pair or something
         //Pair<Point2D,Point2D> localization = enemy.getCurrentPosition();
 
@@ -89,7 +92,7 @@ public class CannonFodder extends Agent {
         //Nevermind - assuming i have method - i leave negotation commented in case it would be needed
 
         //Pair<Point2D,Point2D> destination;
-        Point2D destination;
+        //Point2D destination;
 
 //        do {
 //            destination = computeDestination(enemy.getCurrentPosition());
@@ -98,15 +101,15 @@ public class CannonFodder extends Agent {
 
     }
 
-    private void computeDestination(Point2D enemyPosition) {
+    private void computeDestination(CannonFodder enemy) {
         // I don't really know...
         // I mean - here should be computed some kind of "vector" in which we will be travelling
         // If agent is in range of other agent - then set destination to closest free point
         // If not - then approach other agent as fast as possible (using computed vector)
     }
 
-    protected void attack(Agent enemy) {
-//        world.attack(this,enemy);
+    protected void attack(CannonFodder enemy) {
+        world.attack(this,enemy);
     }
 
 
@@ -141,5 +144,13 @@ public class CannonFodder extends Agent {
 
     public void setAccuracy(int accuracy) {
         this.accuracy = accuracy;
+    }
+
+    public World.AgentsSides getAgentSide() {
+        return agentSide;
+    }
+
+    public void setAgentSide(World.AgentsSides agentSide) {
+        this.agentSide = agentSide;
     }
 }

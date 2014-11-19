@@ -13,7 +13,7 @@ public class BerserkerBehaviour extends Behaviour {
     // It's bad, I know it, but for now - have to cast so i can use methods from CannonFodder
     CannonFodder agent = (CannonFodder) this.myAgent;
     int state = 0;
-    Agent enemy;
+    CannonFodder enemy;
     @Override
     public void action() {
         ACLMessage msg = myAgent.receive();
@@ -44,6 +44,7 @@ public class BerserkerBehaviour extends Behaviour {
                 }
                 else {
                     //moveSomewhere
+                    agent.moveSomewhere();
                 }
                 break;
             case 1:
