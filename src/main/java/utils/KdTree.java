@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 public class KdTree<T, A> {
     private final Contains<T, A> contains;
     private Tree<T, A> tree;
-    ArrayList<Comparator<T>> c;
+    List<Comparator<T>> c;
 
-    public KdTree(List<T> content, ArrayList<Comparator<T>> comp, Contains<T, A> contains) throws KdTreeException {
+    public KdTree(List<T> content, List<Comparator<T>> comp, Contains<T, A> contains) throws KdTreeException {
         c = comp;
         this.contains = contains;
 
@@ -52,21 +52,23 @@ public class KdTree<T, A> {
             super("Two points with same coordinates occurred");
         }
     }
+    public interface Placed {
+        Point2D pos();
+    }
     public interface Contains<T, A> {
-
         boolean contains(A area, T point);
         boolean contains(A area, ArrayList<T> points);
         boolean intersects(A area, ArrayList<T> points, ArrayList<Boolean> ascending);
     }
-    public static class CircleComparator implements Contains<Point2D, Circle> {
+    public static class CircleComparator implements Contains<Placed, Circle> {
 
         @Override
-        public boolean contains(Circle area, Point2D point) {
-            return area.contains(point);
+        public boolean contains(Circle area, Placed point) {
+            return area.contains(point.pos());
         }
         @Override
-        public boolean contains(Circle area, ArrayList<Point2D> points) {
-            Point2D A = points.get(0), B = points.get(1), C = points.get(2), D = points.get(3);
+        public boolean contains(Circle area, ArrayList<Placed> points) {
+            Point2D A = points.get(0).pos(), B = points.get(1).pos(), C = points.get(2).pos(), D = points.get(3).pos();
             Point2D[] corners = {new Point2D(A.getX(), B.getY()), new Point2D(B.getX(), C.getY()), new Point2D(C.getX(), D.getY()), new Point2D(D.getX(), A.getY())};
             for (Point2D corner : corners) {
                 if (!area.contains(corner)) {
@@ -77,7 +79,7 @@ public class KdTree<T, A> {
         }
 
         @Override
-        public boolean intersects(Circle area, ArrayList<Point2D> points, ArrayList<Boolean> ascending) {
+        public boolean intersects(Circle area, ArrayList<Placed> points, ArrayList<Boolean> ascending) {
             ArrayList<Point2D> candidates = new ArrayList<>();
             ArrayList<Point2D> bad = new ArrayList<>();
 
@@ -85,18 +87,18 @@ public class KdTree<T, A> {
                 for (Point2D candidate : candidates) {
                     if (!(j % 2 == 0 &&
                             (ascending.get(j) &&
-                                    candidate.getX() > points.get(j).getX() ||
-                                    candidate.getX() < points.get(j).getX()
+                                    candidate.getX() > points.get(j).pos().getX() ||
+                                    candidate.getX() < points.get(j).pos().getX()
                             ) ||
                             (ascending.get(j) &&
-                                    candidate.getY() > points.get(j).getY() ||
-                                    candidate.getY() < points.get(j).getY()
+                                    candidate.getY() > points.get(j).pos().getY() ||
+                                    candidate.getY() < points.get(j).pos().getY()
                             )))
                         bad.add(candidate);
                 }
 
-                double x = points.get(j).getX(), ox = area.getCenterX(), r = area.getRadius();
-                double y = points.get(j).getY(), oy = area.getCenterY();
+                double x = points.get(j).pos().getX(), ox = area.getCenterX(), r = area.getRadius();
+                double y = points.get(j).pos().getY(), oy = area.getCenterY();
                 if (j % 2 == 0) {
                     double dx = Math.abs(ox - x);
                     if (dx<=r) {
@@ -117,35 +119,40 @@ public class KdTree<T, A> {
             return candidates.size() > bad.size();
         }
     }
-    public static class StdKd extends KdTree<Point2D, Circle> {
-        StdKd(List<Point2D> l) throws KdTreeException {
+    public static class StdKd extends KdTree<Placed, Circle> {
+        StdKd(List<Placed> l) throws KdTreeException {
             super(l, new ArrayList<>(planeComparator), new CircleComparator());
         }
 
-        private static final List<Comparator<Point2D>> planeComparator = Arrays.asList(
-                (Point2D o1, Point2D o2) -> {
-                    int diff = (int) (o1.getX() - o2.getX());
-                    return diff != 0 ? diff : (int)(o1.getY() - o2.getY());
+        private static final List<Comparator<Placed>> planeComparator = Arrays.asList(
+                (Placed o1, Placed o2) -> {
+                    int diff = (int) (o1.pos().getX() - o2.pos().getX());
+                    return diff != 0 ? diff : (int)(o1.pos().getY() - o2.pos().getY());
                 },
 
-                (Point2D o1, Point2D o2) -> {
-                    int diff = (int) (o1.getY() - o2.getY());
-                    return diff != 0 ? diff : (int)(o1.getX() - o2.getX());
+                (Placed o1, Placed o2) -> {
+                    int diff = (int) (o1.pos().getY() - o2.pos().getY());
+                    return diff != 0 ? diff : (int)(o1.pos().getX() - o2.pos().getX());
                 }
         );
     }
 
+    static class Dupa implements Placed { Point2D p; Dupa(float a, float b) { p = new Point2D(a, b);} @Override public Point2D pos() { return p; } static final Dupa ZERO = new Dupa(0,0); }
     public static void main(String[] args) {
         try {
-            StdKd t = new StdKd(Arrays.asList(new Point2D(10,10), new Point2D(-10, -10)));
+            StdKd t = new StdKd(Arrays.asList(new Dupa(10,10), new Dupa(-10, -10)));
             System.out.println(t.fetchElements(new Circle(14,14,30)));
-            t.addPoint(Point2D.ZERO);
+            t.addPoint(Dupa.ZERO);
             System.out.println(t.fetchElements(new Circle(14, 14, 30)));
-            t.addPoint(Point2D.ZERO);
+            t.addPoint(Dupa.ZERO);
             System.out.println(t.fetchElements(new Circle(14, 14, 30)));
-            List<Point2D> res = t.fetchElements(new Circle(14, 14, 30));
+            List<Placed> res = t.fetchElements(new Circle(14, 14, 30));
             t.rmPoint(res.get(1));
-            System.out.println(t.fetchElements(new Circle(14, 14, 30)));
+            System.out.print("[");
+            for (Placed a : t.fetchElements(new Circle(13, 13, 40))) {
+                System.out.print(a.pos() + ",");
+            }
+            System.out.println("]");
 
         } catch (KdTreeException e) {
             e.printStackTrace();

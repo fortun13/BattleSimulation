@@ -1,11 +1,6 @@
 package main.java.agents;
 
-import jade.core.AID;
 import jade.core.behaviours.Behaviour;
-import jade.domain.DFService;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.FIPAException;
 
 /**
  * Created by Jakub Fortunka on 19.11.14.
@@ -17,7 +12,7 @@ public class Archer extends CannonFodder {
 
     protected void setup(Behaviour b) {
 
-        super.setup(b);
+//        super.setup(b);
 
     }
 
