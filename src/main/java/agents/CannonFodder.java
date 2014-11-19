@@ -7,14 +7,12 @@ import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
-import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
-import javafx.util.Pair;
 
 import java.awt.geom.Point2D;
 
 /**
  * Created by Jakub Fortunka on 18.11.14.
+ *
  */
 public class CannonFodder extends Agent {
 
@@ -93,10 +91,10 @@ public class CannonFodder extends Agent {
         //Pair<Point2D,Point2D> destination;
         Point2D destination;
 
-        do {
-            destination = computeDestination(enemy.getCurrentPosition());
-            // I assume that method moveAgent is returning boolean - if agent can be move to that position, do it and return true
-        } while (!world.moveAgent(this,destination));
+//        do {
+//            destination = computeDestination(enemy.getCurrentPosition());
+//            // I assume that method moveAgent is returning boolean - if agent can be move to that position, do it and return true
+//        } while (!world.moveAgent(this,destination));
 
     }
 
@@ -108,7 +106,7 @@ public class CannonFodder extends Agent {
     }
 
     protected void attack(Agent enemy) {
-        world.attack(this,enemy);
+//        world.attack(this,enemy);
     }
 
 
@@ -118,6 +116,7 @@ public class CannonFodder extends Agent {
 
     public int setCondition(int condition) {
         this.condition = condition;
+        return 1;
     }
 
     public int getStrength() {

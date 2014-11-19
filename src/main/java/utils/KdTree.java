@@ -34,9 +34,10 @@ public class KdTree<T, A> {
         }
     }
 
-    public boolean addPoint(T point) {
-        return tree.addPoint(point) != null;
+    public void addPoint(T point) {
+        tree.addPoint(point);
     }
+    public void rmPoint(T point) { tree.rmPoint(point); }
     public List<T> fetchElements(A area) {
         List<T> ret = new ArrayList<>();
         points = new ArrayList<>();
@@ -142,6 +143,10 @@ public class KdTree<T, A> {
             System.out.println(t.fetchElements(new Circle(14, 14, 30)));
             t.addPoint(Point2D.ZERO);
             System.out.println(t.fetchElements(new Circle(14, 14, 30)));
+            List<Point2D> res = t.fetchElements(new Circle(14, 14, 30));
+            t.rmPoint(res.get(1));
+            System.out.println(t.fetchElements(new Circle(14, 14, 30)));
+
         } catch (KdTreeException e) {
             e.printStackTrace();
         }
@@ -184,6 +189,8 @@ public class KdTree<T, A> {
         public void getIntersection(A area, List<T> ret);
         void pullValues(List<T> ret);
         Tree<T, A> addPoint(T point);
+        Tree<T, A> rmPoint(T point);
+        void decDepth();
     }
 
     private class Leaf implements Tree<T, A> {
@@ -221,6 +228,19 @@ public class KdTree<T, A> {
                 r = this;
             }
             return new Node(l, r, l.content, depth - 1);
+        }
+
+        @Override
+        public Tree<T, A> rmPoint(T point) {
+            int comparison = c.get(depth % c.size()).compare(point, content);
+
+            if (comparison == 0) return null;
+            else return this;
+        }
+
+        @Override
+        public void decDepth() {
+            depth--;
         }
 
     }
@@ -261,6 +281,31 @@ public class KdTree<T, A> {
                 right = right.addPoint(point);
             }
             return this;
+        }
+
+        @Override
+        public Tree<T, A> rmPoint(T point) {
+            int comparison = c.get(depth % c.size()).compare(point, val);
+
+            Tree<T, A> next = comparison <= 0 ? left : right, ret;
+            ret = next.rmPoint(point);
+            if (ret == null) {
+                next = comparison <= 0 ? right : left;
+                next.decDepth();
+                return next;
+            } else {
+                if (comparison <= 0) {
+                    left = ret;
+                } else {
+                    right = ret;
+                }
+            }
+            return this;
+        }
+
+        @Override
+        public void decDepth() {
+            --depth;
         }
 
         private void doThat(A area, List<T> ret) {
