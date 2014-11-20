@@ -33,9 +33,24 @@ public class CannonFodder extends AgentWithPosition {
             e.printStackTrace();
         }*/
 
+        //TODO is it going to work?
+
+        // 0 - behaviour
+        // 1 - condition
+        // 2 - strength
+        // 3 - speed
+        // 4 - accuracy
+        // 5 - world
+
         Object[] parameters = getArguments();
 
-        addBehaviour((BerserkerBehaviour) parameters[0]);
+        addBehaviour((ReactiveBehaviour) parameters[0]);
+        this.condition = (int) parameters[1];
+        this.strength = (int) parameters[2];
+        this.speed = (int) parameters[3];
+        this.accuracy  = (int) parameters[4];
+        this.agentSide = (World.AgentsSides) parameters[5];
+        this.world = (World) parameters[6];
     }
 
 
@@ -43,13 +58,13 @@ public class CannonFodder extends AgentWithPosition {
 
     }
 
-//    protected CannonFodder getNearestEnemy() {
-        // TODO
-        // have to have representation of environment to do something with it
-//        return world.getNearestEnemy(this);
-//    }
+    protected CannonFodder getNearestEnemy() {
+        //TODO
+        //have to have representation of environment to do something with it
+        return world.getNearestEnemy(this);
+    }
 
-    protected void gotoEnemy(CannonFodder enemy) {
+    //protected void gotoEnemy(CannonFodder enemy) {
         //Can be changed - it's just for visualization so don't care about Pair or something
         //Pair<Point2D,Point2D> localization = enemy.getCurrentPosition();
 
@@ -91,9 +106,9 @@ public class CannonFodder extends AgentWithPosition {
 //            // I assume that method moveAgent is returning boolean - if agent can be move to that position, do it and return true
 //        } while (!world.moveAgent(this,destination));
 
-    }
+    //}
 
-    private void computeDestination(CannonFodder enemy) {
+    protected void gotoEnemy(AgentWithPosition enemy) {
         // I don't really know...
         // I mean - here should be computed some kind of "vector" in which we will be travelling
         // If agent is in range of other agent - then set destination to closest free point

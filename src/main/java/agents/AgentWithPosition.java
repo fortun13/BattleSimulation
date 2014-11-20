@@ -10,6 +10,12 @@ import main.java.utils.KdTree;
 public abstract class AgentWithPosition extends Agent implements KdTree.Placed {
     protected Point2D position;
 
+    protected int fieldOfView = 20;
+
+    public int getFieldOfView() { return fieldOfView; }
+
+    public void setFieldOfView(int fov) { fieldOfView = fov; }
+
     public Point2D getPosition() {
         return position;
     }
