@@ -42,7 +42,7 @@ public class World {
     public World(ServerAgent server, int bluesAgentsNumber, int redsAgentsNumber) {
         //initialize tree
         //start agents
-        ucho
+        agents = null;
     }
 
     public World(ServerAgent server) {
@@ -177,7 +177,7 @@ public class World {
     }
 
     private void killAgent(CannonFodder agent) {
-        agents.rmPoint(new AgentInTree(agent.getName(),agent.getAgentSide(),agent.getPosition()));
+        agents.rmPoint(agent);
         PlatformController container = server.getContainerController();
         try {
             container.getAgent(agent.getName()).kill();

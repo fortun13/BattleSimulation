@@ -26,4 +26,5 @@ public abstract class AgentWithPosition extends Agent implements KdTree.Placed {
 
     public abstract boolean enemyInRangeOfAttack(AgentWithPosition enemy);
 
+    public abstract World.AgentsSides getAgentSide();
 }

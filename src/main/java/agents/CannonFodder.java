@@ -58,7 +58,7 @@ public class CannonFodder extends AgentWithPosition {
 
     }
 
-    protected CannonFodder getNearestEnemy() {
+    protected AgentWithPosition getNearestEnemy() {
         //TODO
         //have to have representation of environment to do something with it
         return world.getNearestEnemy(this);
