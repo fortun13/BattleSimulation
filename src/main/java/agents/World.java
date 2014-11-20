@@ -187,16 +187,21 @@ public class World {
         return new Object[] { b,cond,str,sp,acc,s,w };
     }
 
-    public AgentWithPosition getNearestEnemy(CannonFodder agent) {
+    public CannonFodder getNearestEnemy(CannonFodder agent) {
         // same reasoning as down below
         try {
-            return (AgentWithPosition) agents.kNearestNeighbours(2, agent).get(1);
+            return (CannonFodder) agents.kNearestNeighbours(2, agent).get(1);
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
     }
 
-    public AgentWithPosition getNearestNeighbor(AgentWithPosition agent) {
+    public boolean moveAgent(CannonFodder agent, Point2D destination) {
+        //TODO
+
+    }
+
+    public CannonFodder getNearestNeighbor(CannonFodder agent) {
         //in this case, i think it's better to implement it in the tree - then we won't need to return list
         // when we find neighbor - boom, return it
         HashSet<AgentsSides> set = new HashSet<>();
