@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * where n is an count of elements and k is a count of results
  *
  * @param <T> type of tree elements
- * @param <A> type of figure witch determines inclusion of elements in given area
+ * @param <A> type of figure which determines inclusion of elements in given area
  */
 public class KdTree<T, A> {
     private final Contains<T, A> contains;
@@ -25,7 +25,7 @@ public class KdTree<T, A> {
     /**
      * Constructor fo KdTree
      *
-     * @param content  list of points witch should be placed in tree
+     * @param content  list of points which should be placed in tree
      * @param comp     list of comparators for each dimension
      * @param contains if determine inclusion of points and areas
      * @throws KdTreeException thrown, when content contains non unique
@@ -105,7 +105,7 @@ public class KdTree<T, A> {
     }
 
     /**
-     * Classes witch that interface describes, rules of points and areas intersection in given hyperspace
+     * Classes which that interface describes, rules of points and areas intersection in given hyperspace
      *
      * @param <T> type f point in given space
      * @param <A> type of areas in given space
