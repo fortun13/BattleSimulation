@@ -1,38 +1,12 @@
 package main.java.agents;
 
-import jade.core.behaviours.Behaviour;
-import jade.lang.acl.ACLMessage;
-
-
 /**
  * Created by Jakub Fortunka on 18.11.14.
  */
-public class BerserkerBehaviour extends Behaviour {
+public class BerserkerBehaviour extends ReactiveBehaviour {
 
-    // It's bad, I know it, but for now - have to cast so i can use methods from CannonFodder
-    CannonFodder agent = (CannonFodder) this.myAgent;
-    int state = 0;
-    CannonFodder enemy;
     @Override
-    public void action() {
-        ACLMessage msg = myAgent.receive();
-        if (msg != null) {
-            // probably can do it with msg.getPrformative and some ACL static fields, but for now let it be string
-            switch(msg.getContent()) {
-                case "new-step":
-                    doAction();
-                    break;
-                case "battle-ended":
-                    System.out.println("WE WON!!");
-                    state = 2;
-                    return;
-            }
-        } else {
-            block();
-        }
-    }
-
-    private void doAction() {
+    public void decideOnNextStep() {
         switch(state) {
             case 0:
                 //findEnemy, if enemyFound goto state 2
@@ -64,8 +38,4 @@ public class BerserkerBehaviour extends Behaviour {
         }
     }
 
-    @Override
-    public boolean done() {
-        return state == 2;
-    }
 }

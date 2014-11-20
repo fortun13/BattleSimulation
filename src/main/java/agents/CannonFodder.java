@@ -1,17 +1,12 @@
 package main.java.agents;
 
-import jade.core.Agent;
-import javafx.geometry.Point2D;
-
 /**
  * Created by Jakub Fortunka on 18.11.14.
  *
  */
-public class CannonFodder extends Agent {
+public class CannonFodder extends AgentWithPosition {
 
     private int condition, strength, speed, accuracy;
-
-    private Point2D position;
 
     private World world;
 
@@ -102,12 +97,12 @@ public class CannonFodder extends Agent {
         // If not - then approach other agent as fast as possible (using computed vector)
     }
 
-    protected boolean enemyInRangeOfAttack(CannonFodder enemy) {
+    public boolean enemyInRangeOfAttack(AgentWithPosition enemy) {
         //for now - assuming that speed also means how far agent can go in one turn
         // i guess 1 is one square - so it will return true if agent is standing right beside enemy
         // have to be overridden for all agents that can attack from distance
         // TODO
-        if (position.distance(enemy.getPosition()) <= 1)
+        if (position.distance(enemy.getPosition()) < 2)
             return true;
         else
             return false;
@@ -159,11 +154,4 @@ public class CannonFodder extends Agent {
         this.agentSide = agentSide;
     }
 
-    public Point2D getPosition() {
-        return position;
-    }
-
-    public void setPosition(Point2D position) {
-        this.position = position;
-    }
 }
