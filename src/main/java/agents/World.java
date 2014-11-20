@@ -4,6 +4,7 @@ import jade.core.behaviours.Behaviour;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
+import javafx.geometry.Point2D;
 import javafx.scene.shape.Circle;
 import main.java.utils.KdTree;
 
@@ -18,6 +19,28 @@ public class World {
     private final KdTree.StdKd<AgentComparator.AgentSpace> agents;
 
     public enum AgentsSides {Blues, Reds}
+
+    public class AgentInTree implements KdTree.Placed {
+
+        Point2D p;
+        AgentsSides side;
+        String agentName;
+
+        public AgentInTree(String agentName,AgentsSides side, Point2D position) {
+            this.agentName = agentName;
+            this.side = side;
+            p = position;
+        }
+
+        public String getAgentName() {
+            return agentName;
+        }
+
+        @Override
+        public Point2D pos() {
+            return p;
+        }
+    }
 
     private ServerAgent server;
 
@@ -52,7 +75,7 @@ public class World {
                 String agentName = "agentBlue_" + i;
                 AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", bluesArguments);
 
-                l.add(new Warrior(agent));
+                l.add(new AgentInTree(agentName,AgentsSides.Blues,new Point2D(1,i+1)));
 
                 agent.start();
             }
@@ -60,7 +83,8 @@ public class World {
             for (int i=0;i<redsAgentsNumber;i++) {
                 String agentName = "agentRed_"+i;
                 AgentController agent = container.createNewAgent(agentName,"main.java.agents.Warrior", redsArguments);
-                l.add(new Warrior(agent));
+                l.add(new AgentInTree(agentName,AgentsSides.Reds,new Point2D(10,i+1)));
+
 
                 agent.start();
             }
@@ -182,6 +206,11 @@ public class World {
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
+    }
+
+    public Point2D getPosition(AgentWithPosition agent) {
+        //TODO how to do it ?
+        return null;
     }
     
     private AgentWithPosition[] getNeighbors(AgentWithPosition agent) {
