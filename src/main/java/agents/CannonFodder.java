@@ -1,5 +1,8 @@
 package main.java.agents;
 
+import javafx.geometry.Point2D;
+import java.lang.Math.*;
+
 /**
  * Created by Jakub Fortunka on 18.11.14.
  *
@@ -95,6 +98,29 @@ public class CannonFodder extends AgentWithPosition {
         // I mean - here should be computed some kind of "vector" in which we will be travelling
         // If agent is in range of other agent - then set destination to closest free point
         // If not - then approach other agent as fast as possible (using computed vector)
+
+        // Vector between agent and spotted enemy
+        int vec[] = new int[] {(int)this.getPosition ().getX() - (int)enemy.getPosition().getX(),
+                                (int)this.getPosition ().getY() - (int)enemy.getPosition().getY()};
+        /* Compute movement vector, for example: [4, -7] => [4/|4|, -7/|-7|] => [1, -1] */
+        vec[0] = vec[0]/Math.abs(vec[0]);
+        vec[1] = vec[1]/Math.abs(vec[1]);
+        Point2D destination = new Point2D(this.getPosition().getX() + vec[0], this.getPosition().getX() + vec[1]);
+        // Check if agent can move in skew vector (Po ukośnym wektorze :D)
+        if(world.moveAgent(this,destination) == true)
+            this.setPosition(destination);
+        else {
+            // Check if agent can move horizontally
+            destination = new Point2D(this.getPosition().getX() + vec[0], this.getPosition().getX());
+            if (world.moveAgent(this,destination) == true)
+                this.setPosition(destination);
+            else {
+                // Check if agent can move vertically
+                destination = new Point2D(this.getPosition().getX(), this.getPosition().getX() + vec[1]);
+                if(world.moveAgent(this,destination) == true)
+                    this.setPosition(destination);
+            }
+        }
     }
 
     public boolean enemyInRangeOfAttack(AgentWithPosition enemy) {
