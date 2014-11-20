@@ -1,7 +1,6 @@
 package main.java.agents;
 
 import javafx.geometry.Point2D;
-import java.lang.Math.*;
 
 /**
  * Created by Jakub Fortunka on 18.11.14.
@@ -122,17 +121,17 @@ public class CannonFodder extends AgentWithPosition {
         vec[1] = vec[1]/Math.abs(vec[1]);
         Point2D destination = new Point2D(this.getPosition().getX() + vec[0], this.getPosition().getX() + vec[1]);
         // Check if agent can move in skew vector (Po ukośnym wektorze :D)
-        if(world.moveAgent(this,destination) == true)
+        if(world.moveAgent(this, destination))
             this.setPosition(destination);
         else {
             // Check if agent can move horizontally
             destination = new Point2D(this.getPosition().getX() + vec[0], this.getPosition().getX());
-            if (world.moveAgent(this,destination) == true)
+            if (world.moveAgent(this, destination))
                 this.setPosition(destination);
             else {
                 // Check if agent can move vertically
                 destination = new Point2D(this.getPosition().getX(), this.getPosition().getX() + vec[1]);
-                if(world.moveAgent(this,destination) == true)
+                if(world.moveAgent(this, destination))
                     this.setPosition(destination);
             }
         }
@@ -143,10 +142,7 @@ public class CannonFodder extends AgentWithPosition {
         // i guess 1 is one square - so it will return true if agent is standing right beside enemy
         // have to be overridden for all agents that can attack from distance
         // TODO
-        if (position.distance(enemy.getPosition()) < 2)
-            return true;
-        else
-            return false;
+        return position.distance(enemy.getPosition()) < 2;
     }
 
     protected void attack(CannonFodder enemy) {

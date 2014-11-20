@@ -81,11 +81,11 @@ public class KdTree<T, A> {
     /**
      * Returns at most k elements nearest to queryPoint from the set
      *
-     * @param k          upper bound of found elements count
      * @param queryPoint referred point
+     * @param k          upper bound of found elements count
      * @return list of found points
      */
-    public List<T> kNearestNeighbours(int k, T queryPoint) {
+    public List<T> kNearestNeighbours(T queryPoint, A area, int k) {
         List<T> res = new ArrayList<T>() {
             @Override
             public boolean add(T o) {
@@ -94,7 +94,7 @@ public class KdTree<T, A> {
                 return true;
             }
         };
-        tree.kNearestNeighbours(queryPoint, k, res);
+        tree.kNearestNeighbours(queryPoint, area, k, res);
         return res.subList(0, k);
     }
 
@@ -333,7 +333,7 @@ public class KdTree<T, A> {
                 System.out.print(a.pos() + ",");
             }
             System.out.println("]");
-            set = t.kNearestNeighbours(6, () -> new Point2D(4, 4));
+            set = t.kNearestNeighbours(() -> new Point2D(4, 4), new Circle(Double.MAX_VALUE), 6);
             System.out.print("[" + set.size() + ":");
             for (Placed a : set) {
                 System.out.print(a.pos() + ",");
@@ -390,7 +390,7 @@ public class KdTree<T, A> {
 
         void decDepth();
 
-        double kNearestNeighbours(T queryPoint, int k, List<T> res);
+        double kNearestNeighbours(T queryPoint, A area, int k, List<T> res);
     }
 
     private class Leaf implements Tree<T, A> {
@@ -444,8 +444,12 @@ public class KdTree<T, A> {
         }
 
         @Override
-        public double kNearestNeighbours(T queryPoint, int k, List<T> res) {
-            res.add(content);
+        public double kNearestNeighbours(T queryPoint, A area, int k, List<T> res) {
+            if (contains.contains(area, content)) {
+                if (!(res.size() >= k) || (contains.distance(queryPoint, content) < contains.distance(queryPoint, res.get(k - 1)))) {
+                    res.add(content);
+                }
+            }
             return res.size() >= k ? contains.distance(res.get(k - 1), queryPoint) : Double.MAX_VALUE;
         }
 
@@ -515,13 +519,13 @@ public class KdTree<T, A> {
         }
 
         @Override
-        public double kNearestNeighbours(T queryPoint, int k, List<T> res) {
+        public double kNearestNeighbours(T queryPoint, A area, int k, List<T> res) {
             boolean lower = contains.lower(queryPoint, val, depth % c.size());
             Tree<T, A> considered = lower ? left : right;
-            double dist = considered.kNearestNeighbours(queryPoint, k, res);
+            double dist = considered.kNearestNeighbours(queryPoint, area, k, res);
             if (contains.distance(queryPoint, val, depth % c.size()) < dist) {
                 considered = !lower ? left : right;
-                dist = considered.kNearestNeighbours(queryPoint, k, res);
+                dist = considered.kNearestNeighbours(queryPoint, area, k, res);
             }
             return dist;
         }

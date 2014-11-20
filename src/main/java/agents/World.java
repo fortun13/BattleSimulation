@@ -3,6 +3,7 @@ package main.java.agents;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
+import javafx.geometry.Point2D;
 import javafx.scene.shape.Circle;
 import main.java.utils.KdTree;
 
@@ -15,6 +16,10 @@ import java.util.*;
 public class World {
 
     private final KdTree.StdKd<AgentComparator.AgentSpace> agents;
+
+    public boolean moveAgent(CannonFodder cannonFodder, Point2D destination) {
+        return false;
+    }
 
     public enum AgentsSides {Blues, Reds}
 
@@ -127,7 +132,13 @@ public class World {
     public AgentWithPosition getNearestEnemy(CannonFodder agent) {
         // same reasoning as down below
         try {
-            return (AgentWithPosition) agents.kNearestNeighbours(2, agent).get(1);
+            HashSet<AgentsSides> set = new HashSet<>();
+            for (AgentsSides side : AgentsSides.values()) {
+                if (side != agent.getAgentSide()) {
+                    set.add(side);
+                }
+            }
+            return (AgentWithPosition) agents.kNearestNeighbours(agent, new AgentComparator.AgentSpace(set), 2).get(1);
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
@@ -139,7 +150,7 @@ public class World {
         HashSet<AgentsSides> set = new HashSet<>();
         set.add(agent.getAgentSide());
         try {
-            return (CannonFodder) agents.fetchElements(new AgentComparator.AgentSpace(set)).get(1);
+            return (CannonFodder) agents.kNearestNeighbours(agent, new AgentComparator.AgentSpace(set), 2).get(1);
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
@@ -235,6 +246,11 @@ public class World {
             private HashSet<AgentsSides> agentSides;
 
             public AgentSpace(HashSet<AgentsSides> agentSides) {
+                this(agentSides, 0, 0, Double.MAX_VALUE);
+            }
+
+            public AgentSpace(HashSet<AgentsSides> agentSides, double x, double y, double r) {
+                super(x, y, r);
                 this.agentSides = agentSides;
             }
 
