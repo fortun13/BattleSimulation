@@ -185,15 +185,15 @@ public class KdTree<T, A> {
     /**
      * Comparator for simplified tree
      */
-    public static class CircleComparator implements Contains<Placed, Circle> {
+    public static class CircleComparator<T extends Circle> implements Contains<Placed, T> {
 
         @Override
-        public boolean contains(Circle area, Placed point) {
+        public boolean contains(T area, Placed point) {
             return area.contains(point.pos());
         }
 
         @Override
-        public boolean contains(Circle area, ArrayList<Placed> points) {
+        public boolean contains(T area, ArrayList<Placed> points) {
             Point2D A = points.get(0).pos(), B = points.get(1).pos(), C = points.get(2).pos(), D = points.get(3).pos();
             Point2D[] corners = {new Point2D(A.getX(), B.getY()), new Point2D(B.getX(), C.getY()), new Point2D(C.getX(), D.getY()), new Point2D(D.getX(), A.getY())};
             for (Point2D corner : corners) {
@@ -205,7 +205,7 @@ public class KdTree<T, A> {
         }
 
         @Override
-        public boolean intersects(Circle area, ArrayList<Placed> points, ArrayList<Boolean> ascending) {
+        public boolean intersects(T area, ArrayList<Placed> points, ArrayList<Boolean> ascending) {
             ArrayList<Point2D> candidates = new ArrayList<>();
             ArrayList<Point2D> bad = new ArrayList<>();
 
@@ -279,9 +279,9 @@ public class KdTree<T, A> {
     /**
      * simplified tree
      */
-    public static class StdKd extends KdTree<Placed, Circle> {
-        StdKd(List<Placed> l) throws KdTreeException {
-            super(l, new ArrayList<>(planeComparator), new CircleComparator());
+    public static class StdKd<T extends Circle> extends KdTree<Placed, T> {
+        public StdKd(List<Placed> l, CircleComparator<T> cc) throws KdTreeException {
+            super(l, new ArrayList<>(planeComparator), cc);
         }
 
         private static final List<Comparator<Placed>> planeComparator = Arrays.asList(
@@ -314,8 +314,9 @@ public class KdTree<T, A> {
 
     public static void main(String[] args) {
         try {
-            StdKd t = new StdKd(Arrays.asList(new Dupa(10, 10), new Dupa(-10, -10)));
+            StdKd<Circle> t = new StdKd<>(Arrays.asList(new Dupa(10, 10), new Dupa(-10, -10)), new CircleComparator<>());
             System.out.println(t.fetchElements(new Circle(14, 14, 30)));
+            List<Placed> set = t.fetchElements(new Circle(4, 4, 10));
 
             for (int i = 0; i < 100; ++i) {
                 t.addPoint(new Dupa(Math.random() * 100, Math.random() * 100));
@@ -327,7 +328,6 @@ public class KdTree<T, A> {
             System.out.println(t.fetchElements(new Circle(14, 14, 30)));
             List<Placed> res = t.fetchElements(new Circle(14, 14, 30));
             t.rmPoint(res.get(1));
-            List<Placed> set = t.fetchElements(new Circle(4, 4, 10));
             System.out.print("[" + set.size() + ":");
             for (Placed a : set) {
                 System.out.print(a.pos() + ",");

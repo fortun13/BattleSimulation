@@ -180,4 +180,8 @@ public class CannonFodder extends AgentWithPosition {
         this.agentSide = agentSide;
     }
 
+    @Override
+    public Point2D pos() {
+        return position;
+    }
 }
