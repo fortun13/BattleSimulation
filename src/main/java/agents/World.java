@@ -1,5 +1,6 @@
 package main.java.agents;
 
+import jade.core.behaviours.Behaviour;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
@@ -20,14 +21,7 @@ public class World {
 
     private ServerAgent server;
 
-    //Maybe it should be used differently - but, to add new agents, we have to have some agent object running
-    //private ServerAgent server;
-
-    // some kind of world representation
-
-    //Tree agents;
-
-    public World() {
+    /*public World() {
         //initialize empty tree
         KdTree.StdKd<AgentComparator.AgentSpace> tmp;
         try {
@@ -37,16 +31,57 @@ public class World {
             e.printStackTrace();
         }
         agents = tmp;
-    }
+    }*/
 
     public World(ServerAgent server, int bluesAgentsNumber, int redsAgentsNumber) {
         //initialize tree
         //start agents
-        agents = null;
+        //agents = null;
+
+        PlatformController container = server.getContainerController();
+
+        KdTree.StdKd<AgentComparator.AgentSpace> tmp;
+        try {
+            //TODO factory or smth...
+            List<KdTree.Placed> l = new ArrayList<>(bluesAgentsNumber+redsAgentsNumber);
+
+            Object[] bluesArguments = getAgentArguments(new BerserkerBehaviour(),40,5,3,90,AgentsSides.Blues,this);
+            Object[] redsArguments = getAgentArguments(new BerserkerBehaviour(),40,5,3,90,AgentsSides.Reds,this);
+
+            for (int i = 0; i < bluesAgentsNumber; i++) {
+                String agentName = "agentBlue_" + i;
+                AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", bluesArguments);
+
+                l.add(new Warrior(agent));
+
+                agent.start();
+            }
+
+            for (int i=0;i<redsAgentsNumber;i++) {
+                String agentName = "agentRed_"+i;
+                AgentController agent = container.createNewAgent(agentName,"main.java.agents.Warrior", redsArguments);
+                l.add(new Warrior(agent));
+
+                agent.start();
+            }
+
+            tmp = new KdTree.StdKd<>(l, new AgentComparator());
+        } catch (ControllerException | KdTree.KdTreeException e) { // finally i have found exceptions useful :D:D
+            try {
+                tmp = new KdTree.StdKd<>(new ArrayList<>(), new AgentComparator());
+            } catch (KdTree.KdTreeException e1) {
+                tmp = null;
+                e1.printStackTrace();
+            }
+        }
+
+        agents = tmp;
     }
 
     public World(ServerAgent server) {
-        int agentsNumber = 10;
+
+        this(server,10,10);
+        /*int agentsNumber = 10;
         PlatformController container = server.getContainerController();
 
         KdTree.StdKd<AgentComparator.AgentSpace> tmp;
@@ -55,7 +90,7 @@ public class World {
 
             for (int i = 0; i < agentsNumber; i++) {
                 String agentName = "agentType_" + i;
-                AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", null/*, arguments*/);
+                AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", null);
 
                 l.add(new Warrior(agent));
             }
@@ -70,7 +105,7 @@ public class World {
             }
         }
 
-        agents = tmp;
+        agents = tmp;*/
     }
 
 //    public World(ServerAgent server) {
@@ -123,6 +158,10 @@ public class World {
 //            e.printStackTrace();
 //        }
 //    }
+
+    private Object[] getAgentArguments(Behaviour b, int cond, int str, int sp, int acc, AgentsSides s, World w) {
+        return new Object[] { b,cond,str,sp,acc,s,w };
+    }
 
     public AgentWithPosition getNearestEnemy(CannonFodder agent) {
         // same reasoning as down below
