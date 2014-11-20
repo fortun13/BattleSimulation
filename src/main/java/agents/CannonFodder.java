@@ -43,11 +43,11 @@ public class CannonFodder extends AgentWithPosition {
 
     }
 
-    protected CannonFodder getNearestEnemy() {
+//    protected CannonFodder getNearestEnemy() {
         // TODO
         // have to have representation of environment to do something with it
-        return world.getNearestEnemy(this);
-    }
+//        return world.getNearestEnemy(this);
+//    }
 
     protected void gotoEnemy(CannonFodder enemy) {
         //Can be changed - it's just for visualization so don't care about Pair or something

@@ -4,7 +4,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.shape.Circle;
 
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -46,6 +45,19 @@ public class KdTree<T, A> {
         return ret;
     }
 
+    public List<T> kNearestNeighbours(int k, T queryPoint) {
+        List<T> res = new ArrayList<T>() {
+            @Override
+            public boolean add(T o) {
+                int pos = Collections.binarySearch(this, o, (o1, o2) -> (int) (contains.distance(o1, o) - contains.distance(o2, o)));
+                super.add(pos + 1, o);
+                return true;
+            }
+        };
+        tree.kNearestNeighbours(queryPoint, k, res);
+        return res.subList(0, k);
+    }
+
     public static class KdTreeException extends Throwable {
 
         public KdTreeException() {
@@ -59,6 +71,9 @@ public class KdTree<T, A> {
         boolean contains(A area, T point);
         boolean contains(A area, ArrayList<T> points);
         boolean intersects(A area, ArrayList<T> points, ArrayList<Boolean> ascending);
+        double distance(T a, T b);
+        double distance(T a, T b, int dimension);
+        boolean lower(T a, T b, int dimension);
     }
     public static class CircleComparator implements Contains<Placed, Circle> {
 
@@ -118,6 +133,32 @@ public class KdTree<T, A> {
 
             return candidates.size() > bad.size();
         }
+
+        @Override
+        public double distance(Placed a, Placed b) {
+            Point2D p1 = a.pos(), p2 = b.pos();
+            return p1.distance(p2);
+        }
+
+        @Override
+        public double distance(Placed a, Placed b, int dimension) {
+            Point2D p1 = a.pos(), p2 = b.pos();
+            switch (dimension) {
+                case 0: return Math.abs(p1.getX() - p2.getX());
+                case 1: return Math.abs(p1.getY() - p2.getY());
+            }
+            return -1;
+        }
+
+        @Override
+        public boolean lower(Placed a, Placed b, int dimension) {
+            Point2D p1 = a.pos(), p2 = b.pos();
+            switch (dimension) {
+                case 0: return p1.getX() < p2.getX();
+                case 1: return p1.getY() < p2.getY();
+            }
+            return false;
+        }
     }
     public static class StdKd extends KdTree<Placed, Circle> {
         StdKd(List<Placed> l) throws KdTreeException {
@@ -137,19 +178,31 @@ public class KdTree<T, A> {
         );
     }
 
-    static class Dupa implements Placed { Point2D p; Dupa(float a, float b) { p = new Point2D(a, b);} @Override public Point2D pos() { return p; } static final Dupa ZERO = new Dupa(0,0); }
+    static class Dupa implements Placed { Point2D p; Dupa(double a, double b) { p = new Point2D(a, b);} @Override public Point2D pos() { return p; } static final Dupa ZERO = new Dupa(0,0); }
     public static void main(String[] args) {
         try {
             StdKd t = new StdKd(Arrays.asList(new Dupa(10,10), new Dupa(-10, -10)));
-            System.out.println(t.fetchElements(new Circle(14,14,30)));
+            System.out.println(t.fetchElements(new Circle(14, 14, 30)));
+
+            for (int i = 0; i < 100; ++i) {
+                t.addPoint(new Dupa(Math.random() * 100, Math.random() * 100));
+            }
+
             t.addPoint(Dupa.ZERO);
             System.out.println(t.fetchElements(new Circle(14, 14, 30)));
             t.addPoint(Dupa.ZERO);
             System.out.println(t.fetchElements(new Circle(14, 14, 30)));
             List<Placed> res = t.fetchElements(new Circle(14, 14, 30));
             t.rmPoint(res.get(1));
-            System.out.print("[");
-            for (Placed a : t.fetchElements(new Circle(13, 13, 40))) {
+            List<Placed> set = t.fetchElements(new Circle(4,4, 10));
+            System.out.print("[" + set.size() + ":");
+            for (Placed a : set) {
+                System.out.print(a.pos() + ",");
+            }
+            System.out.println("]");
+            set = t.kNearestNeighbours(6, () -> new Point2D(4,4));
+            System.out.print("[" + set.size() + ":");
+            for (Placed a : set) {
                 System.out.print(a.pos() + ",");
             }
             System.out.println("]");
@@ -198,6 +251,7 @@ public class KdTree<T, A> {
         Tree<T, A> addPoint(T point);
         Tree<T, A> rmPoint(T point);
         void decDepth();
+        double kNearestNeighbours(T queryPoint, int k, List<T> res);
     }
 
     private class Leaf implements Tree<T, A> {
@@ -248,6 +302,12 @@ public class KdTree<T, A> {
         @Override
         public void decDepth() {
             depth--;
+        }
+
+        @Override
+        public double kNearestNeighbours(T queryPoint, int k, List<T> res) {
+            res.add(content);
+            return res.size() >= k ? contains.distance(res.get(k-1), queryPoint) : Double.MAX_VALUE;
         }
 
     }
@@ -313,6 +373,18 @@ public class KdTree<T, A> {
         @Override
         public void decDepth() {
             --depth;
+        }
+
+        @Override
+        public double kNearestNeighbours(T queryPoint, int k, List<T> res) {
+            boolean lower = contains.lower(queryPoint, val, depth%c.size());
+            Tree<T, A> considered = lower ? left : right;
+            double dist = considered.kNearestNeighbours(queryPoint, k, res);
+            if (contains.distance(queryPoint, val, depth % c.size()) < dist) {
+                considered = !lower ? left : right;
+                dist = considered.kNearestNeighbours(queryPoint, k, res);
+            }
+            return dist;
         }
 
         private void doThat(A area, List<T> ret) {
