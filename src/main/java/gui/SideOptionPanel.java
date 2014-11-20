@@ -1,14 +1,19 @@
 package main.java.gui;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import java.awt.*;
 
 /**
  * Created by Jakub Fortunka on 12.11.14.
  */
+
 public class SideOptionPanel extends JPanel {
 
     private JSpinner agentsNumber;
+    private JSlider agentsSlider;
 
     public SideOptionPanel(String identifier) {
         setBorder(BorderFactory.createTitledBorder(identifier));
@@ -23,14 +28,37 @@ public class SideOptionPanel extends JPanel {
 
         agentsSliderPanel.add(agentsNumber);
 
-        JSlider agentsSlider = new JSlider();
+        agentsSlider = new JSlider();
         agentsSlider.setValue(20);
+        
+        /*agentsSlider.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				sliderMoved();
+				
+			}
+		});*/
+        
         agentsNumber.setValue(20);
         agentsSliderPanel.add(agentsSlider);
 
+    }
+    
+    public void sliderMoved() {
+    	agentsNumber.setValue((int) agentsSlider.getValue() );
+    }
+
+    public void setSliderChangeListener(ChangeListener listener) {
+        agentsSlider.addChangeListener(listener);
+    }
+
+    public JSpinner getAgentsNumberSpinner() {
+        return agentsNumber;
     }
 
     public int getAgentsNumber() {
         return (int) agentsNumber.getValue();
     }
+    
 }

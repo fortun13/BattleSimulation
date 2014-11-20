@@ -280,7 +280,7 @@ public class KdTree<T, A> {
      * simplified tree
      */
     public static class StdKd extends KdTree<Placed, Circle> {
-        StdKd(List<Placed> l) throws KdTreeException {
+        public StdKd(List<Placed> l) throws KdTreeException {
             super(l, new ArrayList<>(planeComparator), new CircleComparator());
         }
 

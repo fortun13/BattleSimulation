@@ -1,9 +1,9 @@
 package main.java.gui;
 
-import javafx.geometry.Side;
 import javafx.util.Pair;
 
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
@@ -13,6 +13,7 @@ public class OptionsPanel extends JPanel {
 	//private final int HEIGTH = 300;
 	
 	private JButton generateBoard;
+	private JButton btnStartSimulation;
 	private JSpinner boardWidth;
 	private JSpinner boardHeight;
 
@@ -80,6 +81,9 @@ public class OptionsPanel extends JPanel {
 		boardHeight.setValue(20);
 		boardHeightPanel.add(boardHeight);
 		
+		btnStartSimulation = new JButton("Start simulation");
+		generalPanel.add(btnStartSimulation);
+		
 		generateBoard = new JButton("Generate Board");
 		generalPanel.add(generateBoard);
 		
@@ -90,8 +94,25 @@ public class OptionsPanel extends JPanel {
 		generateBoard.addActionListener(listener);
 	}
 	
+	public void startSimulationButtonAddActionListener(ActionListener listener) {
+		btnStartSimulation.addActionListener(listener);
+	}
+	
 	public Pair<Integer, Integer> getBoardSize() {
 		return new Pair<>((Integer)boardHeight.getValue(),(Integer)boardWidth.getValue());
 	}
+	
+	public int getBluesAgentsNumber() {
+		return bluePanel.getAgentsNumber();
+	}
+	
+	public int getRedsAgentsNumber() {
+		return redPanel.getAgentsNumber();
+	}
+
+    public void setSidePanelsSliderListener(ChangeListener listener) {
+        redPanel.setSliderChangeListener(listener);
+        bluePanel.setSliderChangeListener(listener);
+    }
 
 }

@@ -41,7 +41,7 @@ public class BoardPanel extends JPanel {
     //public final int HEIGHT = ROWS*(SQUARESIZE+7);
 	
 	private final int WIDTH = 800;
-	private final int HEIGHT = 500;
+	private final int HEIGHT = 400;
     
     public BoardPanel() {
         super();

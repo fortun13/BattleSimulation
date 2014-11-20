@@ -2,6 +2,7 @@ package main.java.gui;
 
 import main.java.adapters.Controller;
 import main.java.agents.ServerAgent;
+import main.java.agents.World;
 
 import javax.swing.*;
 
@@ -18,10 +19,12 @@ public class MainFrame extends JFrame {
 
 	private final int FRAMEWIDTH = 800;
 
-	private BoardPanel boardPanel;
+    private BoardPanel boardPanel;
 	private OptionsPanel optionsPanel;
 
     public ServerAgent server;
+
+    private World world;
     
     private Controller controller;
 
@@ -57,7 +60,7 @@ public class MainFrame extends JFrame {
 
         server = s;
 
-        controller = new Controller(this, boardPanel, optionsPanel);
+        controller = new Controller(this);
 //        addWindowListener(new WindowAdapter() {
 //            @Override
 //            public void windowClosing(WindowEvent e) {
@@ -66,4 +69,13 @@ public class MainFrame extends JFrame {
 //            }
 //        });
     }
+
+    public BoardPanel getBoardPanel() {
+        return boardPanel;
+    }
+
+    public OptionsPanel getOptionsPanel() {
+        return optionsPanel;
+    }
+    
 }

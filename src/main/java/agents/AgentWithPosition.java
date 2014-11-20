@@ -9,6 +9,12 @@ import javafx.geometry.Point2D;
 public abstract class AgentWithPosition extends Agent {
     protected Point2D position;
 
+    protected int fieldOfView = 20;
+
+    public int getFieldOfView() { return fieldOfView; }
+
+    public void setFieldOfView(int fov) { fieldOfView = fov; }
+
     public Point2D getPosition() {
         return position;
     }

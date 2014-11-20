@@ -10,32 +10,35 @@ import main.java.gui.MainFrame;
  */
 public class ServerAgent extends Agent {
 
-        // Instance variables
-        //////////////////////////////////
-        protected MainFrame m_frame = null;
+    // Instance variables
+    //////////////////////////////////
+    protected MainFrame m_frame = null;
 
-        public ServerAgent() {
-            super();
-        }
-
-        /**
-         * Setup the agent.  Registers with the DF, and adds a behaviour to
-         * process incoming messages.
-         */
-        protected void setup() {
-            try {
-                System.out.println( getLocalName() + " setting up");
+    private World world;
 
 
-                // create the agent descrption of itself
-                DFAgentDescription dfd = new DFAgentDescription();
-                dfd.setName( getAID() );
-                DFService.register(this, dfd);
+    public ServerAgent() {
+        super();
+    }
 
-                // add the GUI
-                setupUI();
+    /**
+     * Setup the agent.  Registers with the DF, and adds a behaviour to
+     * process incoming messages.
+     */
+    protected void setup() {
+        try {
+            System.out.println( getLocalName() + " setting up");
 
-                // add a Behaviour to handle messages from guests
+
+            // create the agent descrption of itself
+            DFAgentDescription dfd = new DFAgentDescription();
+            dfd.setName( getAID() );
+            DFService.register(this, dfd);
+
+            // add the GUI
+            setupUI();
+
+            // add a Behaviour to handle messages from guests
                 /*addBehaviour( new CyclicBehaviour( this ) {
                     public void action() {
                         ACLMessage msg = receive();
@@ -67,25 +70,31 @@ public class ServerAgent extends Agent {
                         }
                     }
                 } );*/
-            }
-            catch (Exception e) {
-                System.out.println( "Saw exception in ServerAgent: " + e );
-                e.printStackTrace();
-            }
-
+        }
+        catch (Exception e) {
+            System.out.println( "Saw exception in ServerAgent: " + e );
+            e.printStackTrace();
         }
 
+    }
 
-        // Internal implementation methods
-        //////////////////////////////////
 
-        /**
-         * Setup the UI, which means creating and showing the main frame.
-         */
-        private void setupUI() {
-            m_frame = new MainFrame(this);
+    // Internal implementation methods
+    //////////////////////////////////
 
-            
-        }
+    /**
+     * Setup the UI, which means creating and showing the main frame.
+     */
+    private void setupUI() {
+        m_frame = new MainFrame(this);
+
+
+    }
+    
+    public void startSimulation(int bluesAgentsNumber, int redsAgentsNumber) {
+    	System.out.println("Simulation started");
+
+        world = new World(this,bluesAgentsNumber,redsAgentsNumber);
+    }
 
 }
