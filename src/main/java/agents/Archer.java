@@ -1,5 +1,6 @@
 package main.java.agents;
 
+import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 
 /**
@@ -10,9 +11,9 @@ public class Archer extends CannonFodder {
     private int attackRange;
 
 
-    protected void setup(Behaviour b) {
+    protected void setup() {
 
-        //super.setup(b);
+        super.setup();
 
     }
 
@@ -21,6 +22,10 @@ public class Archer extends CannonFodder {
 
     }
 
+    @Override
+    protected void attack(AID enemy) {
+
+    }
 
 
     public int getAttackRange() {
@@ -29,5 +34,15 @@ public class Archer extends CannonFodder {
 
     public void setAttackRange(int attackRange) {
         this.attackRange = attackRange;
+    }
+
+    @Override
+    public boolean enemyInRangeOfAttack(World.AgentInTree enemy) {
+        return getPosition().pos().distance(enemy.pos()) < (2+getAttackRange());
+    }
+
+    @Override
+    public void reactToAttack(String content) {
+
     }
 }

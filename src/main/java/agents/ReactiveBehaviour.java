@@ -9,27 +9,25 @@ import jade.lang.acl.ACLMessage;
  */
 public abstract class ReactiveBehaviour extends Behaviour {
 
-    protected CannonFodder agent = (CannonFodder) this.myAgent;
     protected int state = 0;
-    protected World.AgentInTree enemy;
-
+    protected World.AgentInTree enemyPosition;
+    protected AID enemy;
     @Override
     public void action() {
         ACLMessage msg = myAgent.receive();
         if (msg != null) {
-            switch (msg.getConversationId()) {
-                case CannonFodder.Actions.ATTACK:
-
-            }
             // probably can do it with msg.getPrformative and some ACL static fields, but for now let it be string
-            switch(msg.getContent()) {
-                case "new-step":
+            switch(msg.getConversationId()) {
+                case "new-turn":
                     decideOnNextStep();
                     break;
                 case "battle-ended":
                     System.out.println("WE WON!!");
                     state = 2;
                     return;
+                case "attack":
+                    ((CannonFodder)myAgent).reactToAttack(msg.getContent());
+                    break;
             }
         } else {
             block();

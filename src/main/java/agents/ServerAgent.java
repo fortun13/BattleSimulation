@@ -1,9 +1,14 @@
 package main.java.agents;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.lang.acl.ACLMessage;
 import main.java.gui.MainFrame;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by Jakub Fortunka on 08.11.14.
@@ -95,6 +100,26 @@ public class ServerAgent extends Agent {
     	System.out.println("Simulation started");
 
         world = new World(this,bluesAgentsNumber,redsAgentsNumber);
+
+        ArrayList<AID> allAgents = new ArrayList<AID>();
+        allAgents.addAll(world.bluesAgents);
+        allAgents.addAll(world.redsAgents);
+
+        Collections.shuffle(allAgents);
+
+        while (!world.bluesAgents.isEmpty() || !world.redsAgents.isEmpty()) {
+            for(AID agent : allAgents) {
+                ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+                msg.setConversationId("new-turn");
+                msg.addReceiver(agent);
+                send(msg);
+            }
+            /*try {
+                wait(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }*/
+        }
     }
 
 }

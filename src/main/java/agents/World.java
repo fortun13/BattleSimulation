@@ -20,6 +20,17 @@ public class World {
 
     private final KdTree.StdKd<AgentComparator.AgentSpace> agents;
 
+    public ArrayList<AID> bluesAgents = new ArrayList<AID>();
+    public ArrayList<AID> redsAgents = new ArrayList<AID>();
+
+    /*public ArrayList<AID> getBluesAgents() {
+        return bluesAgents;
+    }
+
+    public ArrayList<AID> getRedsAgents() {
+        return redsAgents;
+    }*/
+
     public AID getAID() {
         return server.getAID();
     }
@@ -82,8 +93,8 @@ public class World {
             //TODO factory or smth...
             List<KdTree.Placed> l = new ArrayList<>(bluesAgentsNumber+redsAgentsNumber);
 
-            ArrayList<Object> bluesArguments = getAgentArguments(new BerserkerBehaviour(),40,5,3,90,AgentsSides.Blues,this);
-            ArrayList<Object> redsArguments = getAgentArguments(new BerserkerBehaviour(),40,5,3,90,AgentsSides.Reds,this);
+            ArrayList<Object> bluesArguments = getAgentArguments(new BerserkBehaviour(),40,5,3,90,AgentsSides.Blues,this);
+            ArrayList<Object> redsArguments = getAgentArguments(new BerserkBehaviour(),40,5,3,90,AgentsSides.Reds,this);
 
             for (int i = 0; i < bluesAgentsNumber; i++) {
                 String agentName = "agentBlue_" + i;
@@ -95,6 +106,8 @@ public class World {
                 l.add(ait);
 
                 agent.start();
+
+                bluesAgents.add(new AID(agent.getName(),true));
             }
 
             for (int i=0;i<redsAgentsNumber;i++) {
@@ -107,6 +120,8 @@ public class World {
 
 
                 agent.start();
+
+                redsAgents.add(new AID(agent.getName(),true));
             }
 
             tmp = new KdTree.StdKd<>(l, new AgentComparator());
@@ -255,12 +270,6 @@ public class World {
         return vec;
     }
 
-
-    public Point2D getPosition(AgentInTree agent) {
-        //TODO how to do it ?
-        return null;
-    }
-    
     private AgentWithPosition[] getNeighbors(AgentWithPosition agent) {
         // I assume that list will be sorted from closest to farthest
 

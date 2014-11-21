@@ -1,5 +1,6 @@
 package main.java.agents;
 
+import jade.core.AID;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
@@ -24,22 +25,6 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     protected void setup() {
 
-        /*DFAgentDescription template = new DFAgentDescription();
-        ServiceDescription service = new ServiceDescription();
-        service.setType("world");
-        template.addServices(service);
-        try {
-            DFAgentDescription[] result = DFService.search(this, template);
-
-
-            //world = result[0].getName();
-
-        } catch (FIPAException e) {
-            //TODO
-            //handle exception
-            e.printStackTrace();
-        }*/
-
         //TODO is it going to work?
 
         // 0 - behaviour
@@ -47,7 +32,8 @@ public abstract class CannonFodder extends AgentWithPosition {
         // 2 - strength
         // 3 - speed
         // 4 - accuracy
-        // 5 - world
+        // 5 - agentSide
+        // 6 - world
 
         Object[] parameters = getArguments();
 
@@ -65,6 +51,7 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     }
 
+    @Override
     protected World.AgentInTree getNearestEnemy() {
         //TODO
         //have to have representation of environment to do something with it
@@ -115,6 +102,7 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     //}
 
+    @Override
     protected void gotoEnemy(World.AgentInTree enemy) {
         // I don't really know...
         // I mean - here should be computed some kind of "vector" in which we will be travelling
@@ -145,15 +133,8 @@ public abstract class CannonFodder extends AgentWithPosition {
         }
     }
 
-    public boolean enemyInRangeOfAttack(World.AgentInTree enemy) {
-        //for now - assuming that speed also means how far agent can go in one turn
-        // i guess 1 is one square - so it will return true if agent is standing right beside enemy
-        // have to be overridden for all agents that can attack from distance
-        // TODO
-        return world.getPosition(getPosition()).distance(world.getPosition(enemy)) < 2;
-    }
 
-    protected abstract jade.lang.acl.ACLMessage attack(World.AgentInTree enemy);
+    protected abstract void attack(AID enemy);
 
 
     public int getCondition() {
