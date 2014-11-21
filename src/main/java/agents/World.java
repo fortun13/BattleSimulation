@@ -44,6 +44,10 @@ public class World {
         public Point2D pos() {
             return p;
         }
+
+        public void setPosition(Point2D p) {
+            this.p = p;
+        }
     }
 
     private ServerAgent server;
@@ -209,7 +213,7 @@ public class World {
                     set.add(side);
                 }
             }
-            return (AgentWithPosition) agents.kNearestNeighbours(agent, new AgentComparator.AgentSpace(set), 2).get(1);
+            return (AgentInTree) agents.kNearestNeighbours(agent.getPosition(), new AgentComparator.AgentSpace(set), 2).get(1);
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
@@ -217,7 +221,13 @@ public class World {
 
     public boolean moveAgent(CannonFodder agent, Point2D destination) {
         //TODO
-        return false; //żeby się nie czepiał :D
+        if (agents.isOccupied(agent.getPosition()))
+            return false;
+        else {
+            agent.getPosition().setPosition(destination);
+            return true;
+        }
+        //return false; //żeby się nie czepiał :D
     }
 
     public CannonFodder getNearestNeighbor(CannonFodder agent) {
@@ -226,7 +236,7 @@ public class World {
         HashSet<AgentsSides> set = new HashSet<>();
         set.add(agent.getAgentSide());
         try {
-            return (CannonFodder) agents.kNearestNeighbours(agent, new AgentComparator.AgentSpace(set), 2).get(1);
+            return (CannonFodder) agents.kNearestNeighbours(agent.getPosition(), new AgentComparator.AgentSpace(set), 2).get(1);
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
@@ -286,7 +296,7 @@ public class World {
     }
 
     private void killAgent(CannonFodder agent) {
-        agents.rmPoint(agent);
+        agents.rmPoint(agent.getPosition());
         PlatformController container = server.getContainerController();
         try {
             container.getAgent(agent.getName()).kill();

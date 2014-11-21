@@ -1,5 +1,6 @@
 package main.java.agents;
 
+import jade.core.AID;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
@@ -64,7 +65,7 @@ public class CannonFodder extends AgentWithPosition {
 
     }
 
-    protected AgentWithPosition getNearestEnemy() {
+    protected World.AgentInTree getNearestEnemy() {
         //TODO
         //have to have representation of environment to do something with it
         return world.getNearestEnemy(this);
@@ -114,7 +115,7 @@ public class CannonFodder extends AgentWithPosition {
 
     //}
 
-    protected void gotoEnemy(AgentWithPosition enemy) {
+    protected void gotoEnemy(World.AgentInTree enemy) {
         // I don't really know...
         // I mean - here should be computed some kind of "vector" in which we will be travelling
         // If agent is in range of other agent - then set destination to closest free point
@@ -123,7 +124,7 @@ public class CannonFodder extends AgentWithPosition {
         // Vector between agent and spotted enemy
 
         Point2D thisPosition = position.pos();
-        Point2D enemyPosition = enemy.getPosition().pos();
+        Point2D enemyPosition = enemy.pos();
         int vec[] = new int[] {(int)thisPosition.getX() - (int)enemyPosition.getX(),
                                 (int)thisPosition.getY() - (int)enemyPosition.getY()};
         /* Compute movement vector, for example: [4, -7] => [4/|4|, -7/|-7|] => [1, -1] */
@@ -144,18 +145,18 @@ public class CannonFodder extends AgentWithPosition {
         }
     }
 
-    public boolean enemyInRangeOfAttack(AgentWithPosition enemy) {
+    public boolean enemyInRangeOfAttack(World.AgentInTree enemy) {
         //for now - assuming that speed also means how far agent can go in one turn
         // i guess 1 is one square - so it will return true if agent is standing right beside enemy
         // have to be overridden for all agents that can attack from distance
         // TODO
-        if (world.getPosition(this).distance(world.getPosition(enemy)) < 2)
+        if (position.pos().distance(enemy.pos()) < 2)
             return true;
         else
             return false;
     }
 
-    protected void attack(CannonFodder enemy) {
+    protected void attack(AID enemy) {
         world.attack(this,enemy);
     }
 
