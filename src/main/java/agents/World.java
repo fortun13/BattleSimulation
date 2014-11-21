@@ -7,7 +7,10 @@ import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Circle;
+import main.java.utils.AgentBuilder;
+import main.java.utils.Director;
 import main.java.utils.KdTree;
+import main.java.utils.WarriorBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -97,14 +100,25 @@ public class World {
             //TODO factory or smth...
             List<KdTree.Placed> l = new ArrayList<>(bluesAgentsNumber + redsAgentsNumber);
 
-            ArrayList<Object> bluesArguments = getAgentArguments(new BerserkBehaviour(), 40, 5, 3, 90, AgentsSides.Blues, this);
-            ArrayList<Object> redsArguments = getAgentArguments(new BerserkBehaviour(), 40, 5, 3, 90, AgentsSides.Reds, this);
+            //ArrayList<Object> bluesArguments = getAgentArguments(new BerserkBehaviour(), 40, 5, 3, 90, AgentsSides.Blues, this);
+            //ArrayList<Object> redsArguments = getAgentArguments(new BerserkBehaviour(), 40, 5, 3, 90, AgentsSides.Reds, this);
+
+            AgentBuilder warrior = new WarriorBuilder(new BerserkBehaviour(),AgentsSides.Blues,this);
+            Director generator = new Director();
+            generator.setAgentBuilder(warrior);
+            generator.setPlatform(container);
 
             for (int i = 0; i < bluesAgentsNumber; i++) {
                 String agentName = "agentBlue_" + i;
                 AgentInTree ait = new AgentInTree("", AgentsSides.Blues, new Point2D(2, i + 1));
-                bluesArguments.add(ait);
-                AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", bluesArguments.toArray());
+
+                warrior.setAgentName(agentName);
+                warrior.setPosition(ait);
+                generator.constructAgent();
+                //bluesArguments.add(ait);
+                //AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", bluesArguments.toArray());
+
+                AgentController agent = generator.getAgent();
                 ait.setAgentName(agent.getName());
 
                 l.add(ait);
@@ -114,11 +128,20 @@ public class World {
                 bluesAgents.add(new AID(agent.getName(), true));
             }
 
+            warrior.setSide(AgentsSides.Reds);
+
             for (int i = 0; i < redsAgentsNumber; i++) {
                 String agentName = "agentRed_" + i;
-                AgentInTree ait = new AgentInTree("", AgentsSides.Reds, new Point2D(1, i + 1));
-                redsArguments.add(ait);
-                AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", redsArguments.toArray());
+                AgentInTree ait = new AgentInTree("", AgentsSides.Reds, new Point2D(10, i + 1));
+
+                warrior.setAgentName(agentName);
+                warrior.setPosition(ait);
+                generator.constructAgent();
+                //redsArguments.add(ait);
+                //AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", redsArguments.toArray());
+
+                AgentController agent = generator.getAgent();
+
                 ait.setAgentName(agent.getName());
                 l.add(ait);
 
@@ -147,12 +170,12 @@ public class World {
         this(server,10,10);
     }*/
 
-    private ArrayList<Object> getAgentArguments(Behaviour b, int cond, int str, int sp, int acc, AgentsSides s, World w) {
+    /*private ArrayList<Object> getAgentArguments(Behaviour b, int cond, int str, int sp, int acc, AgentsSides s, World w) {
         //return new ArrayList<Object>().addAll({b,cond,str,sp,acc,s,w});
         ArrayList<Object> tmp = new ArrayList<>();
         Collections.addAll(tmp,b,cond,str,sp,acc,s,w);
         return tmp;
-    }
+    }*/
 
     public AgentInTree getNearestEnemy(AgentWithPosition agent) {
         HashSet<AgentsSides> set = new HashSet<>();

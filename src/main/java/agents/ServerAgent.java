@@ -105,7 +105,8 @@ public class ServerAgent extends Agent {
 
         Collections.shuffle(allAgents);
 
-        while (!world.bluesAgents.isEmpty() || !world.redsAgents.isEmpty()) {
+        //while (!world.bluesAgents.isEmpty() || !world.redsAgents.isEmpty()) {
+        for (int i=0;i<50;i++) {
             for(AID agent : allAgents) {
                 ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
                 msg.setConversationId("new-turn");
@@ -118,6 +119,7 @@ public class ServerAgent extends Agent {
                 e.printStackTrace();
             }*/
         }
+
     }
 
 }

@@ -12,7 +12,17 @@ public class Archer extends CannonFodder {
 
     public void setup() {
 
-        super.setup();
+        Object[] parameters = getArguments();
+
+        addBehaviour((ReactiveBehaviour) parameters[0]);
+        this.condition = (int) parameters[1];
+        this.strength = (int) parameters[2];
+        this.speed = (int) parameters[3];
+        this.accuracy  = (int) parameters[4];
+        this.side = (World.AgentsSides) parameters[5];
+        this.world = (World) parameters[6];
+        this.position = (World.AgentInTree) parameters[7];
+        this.attackRange = (int) parameters[8];
 
     }
 

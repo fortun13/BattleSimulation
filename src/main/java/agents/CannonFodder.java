@@ -9,7 +9,7 @@ import javafx.geometry.Point2D;
  */
 public abstract class CannonFodder extends AgentWithPosition {
 
-    private int condition, strength, speed, accuracy;
+    protected int condition, strength, speed, accuracy;
 
     protected World world;
 
