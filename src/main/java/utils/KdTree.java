@@ -47,7 +47,7 @@ public class KdTree<T, A> {
     }
 
     /**
-     * Inserts an point to the tree
+     * Inserts a point to the tree
      *
      * @param point element to insert
      */
