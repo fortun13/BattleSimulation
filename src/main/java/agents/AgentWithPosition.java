@@ -12,6 +12,8 @@ public abstract class AgentWithPosition extends Agent {
 
     protected int fieldOfView = 20;
 
+    protected World.AgentInTree position;
+
     public int getFieldOfView() { return fieldOfView; }
 
     public void setFieldOfView(int fov) { fieldOfView = fov; }
@@ -27,4 +29,8 @@ public abstract class AgentWithPosition extends Agent {
     public abstract boolean enemyInRangeOfAttack(AgentWithPosition enemy);
 
     public abstract World.AgentsSides getAgentSide();
+
+    public World.AgentInTree getPosition() {
+        return position;
+    }
 }

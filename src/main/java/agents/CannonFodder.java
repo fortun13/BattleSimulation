@@ -1,5 +1,11 @@
 package main.java.agents;
 
+import jade.core.AID;
+import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAException;
+import jade.lang.acl.ACLMessage;
 import javafx.geometry.Point2D;
 import java.lang.Math.*;
 
@@ -19,19 +25,21 @@ public class CannonFodder extends AgentWithPosition {
 
     protected void setup() {
 
-        /*DFAgentDescription template = new DFAgentDescription();
+        DFAgentDescription template = new DFAgentDescription();
         ServiceDescription service = new ServiceDescription();
         service.setType("world");
         template.addServices(service);
         try {
-            DFAgentDescription[] result = DFService.search(this,template);
-            world = result[0].getName();
+            DFAgentDescription[] result = DFService.search(this, template);
+
+
+            //world = result[0].getName();
 
         } catch (FIPAException e) {
             //TODO
             //handle exception
             e.printStackTrace();
-        }*/
+        }
 
         //TODO is it going to work?
 
@@ -51,6 +59,9 @@ public class CannonFodder extends AgentWithPosition {
         this.accuracy  = (int) parameters[4];
         this.agentSide = (World.AgentsSides) parameters[5];
         this.world = (World) parameters[6];
+        this.position = (World.AgentInTree) parameters[7];
+
+        setEnabledO2ACommunication(true,10);
     }
 
 
@@ -115,8 +126,9 @@ public class CannonFodder extends AgentWithPosition {
         // If not - then approach other agent as fast as possible (using computed vector)
 
         // Vector between agent and spotted enemy
-        Point2D thisPosition = world.getPosition(this);
-        Point2D enemyPosition = world.getPosition(enemy);
+
+        Point2D thisPosition = position.pos();
+        Point2D enemyPosition = enemy.getPosition().pos();
         int vec[] = new int[] {(int)thisPosition.getX() - (int)enemyPosition.getX(),
                                 (int)thisPosition.getY() - (int)enemyPosition.getY()};
         /* Compute movement vector, for example: [4, -7] => [4/|4|, -7/|-7|] => [1, -1] */
@@ -193,5 +205,6 @@ public class CannonFodder extends AgentWithPosition {
     public void setAgentSide(World.AgentsSides agentSide) {
         this.agentSide = agentSide;
     }
+
 
 }
