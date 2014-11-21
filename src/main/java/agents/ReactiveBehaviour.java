@@ -1,5 +1,6 @@
 package main.java.agents;
 
+import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 
@@ -10,7 +11,10 @@ public abstract class ReactiveBehaviour extends Behaviour {
 
     //protected CannonFodder agent = (CannonFodder) this.myAgent;
     protected int state = 0;
-    protected CannonFodder enemy;
+    //protected CannonFodder enemy;
+
+    protected World.AgentInTree enemyPosition;
+    protected AID enemy;
 
     @Override
     public void action() {
