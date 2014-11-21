@@ -1,6 +1,8 @@
 package main.java.agents;
 
+import jade.core.AID;
 import jade.core.behaviours.Behaviour;
+import jade.lang.acl.ACLMessage;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
@@ -271,7 +273,32 @@ public class World {
         return null;
     }
 
-    public void attack(CannonFodder attacker, CannonFodder attacked) {
+    public void attack(CannonFodder attacker, AID enemy, AgentInTree e) {
+
+        ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+        msg.addReceiver(enemy);
+        msg.setContent("get-state");
+        attacker.send(msg);
+        ACLMessage rpl = attacker.blockingReceive();
+        int enemyCondition = Integer.getInteger(rpl.getContent());
+
+        if (attacker instanceof Warrior) {
+
+            if (Math.random() * 100 > attacker.getAccuracy()) {
+                //attack missed
+            } else {
+                if (enemyCondition <= attacker.getStrength()) {
+                    killAgent(e);
+                } else {
+                    attacked.setCondition((attacked.getCondition() - attacker.getStrength()));
+                }
+            }
+        } else if (attacker instanceof Archer) {
+
+        }
+    }
+
+    /*public void attack(CannonFodder attacker, CannonFodder attacked) {
         //simple formula for now
         // can actually use for example speed to use more properties
         // i.e. - int speedPenalty = attacked.getSpeed() - attacker.getSpeed();
@@ -293,13 +320,13 @@ public class World {
         } else if (attacker instanceof Archer) {
 
         }
-    }
+    }*/
 
-    private void killAgent(CannonFodder agent) {
-        agents.rmPoint(agent.getPosition());
+    private void killAgent(AgentInTree agent) {
+        agents.rmPoint(agent);
         PlatformController container = server.getContainerController();
         try {
-            container.getAgent(agent.getName()).kill();
+            container.getAgent(agent.getAgentName()).kill();
         } catch (ControllerException e) {
             e.printStackTrace();
         }

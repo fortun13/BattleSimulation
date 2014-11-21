@@ -37,7 +37,7 @@ public class BerserkerBehaviour extends ReactiveBehaviour {
                     }
                 }
                 if (((CannonFodder)myAgent).enemyInRangeOfAttack(enemyPosition))
-                    ((CannonFodder)myAgent).attack(enemy);
+                    ((CannonFodder)myAgent).attack(enemy,enemyPosition);
                 else
                     ((CannonFodder)myAgent).gotoEnemy(enemyPosition);
 //                agent.attack(enemy);

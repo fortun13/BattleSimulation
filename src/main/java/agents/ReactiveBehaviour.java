@@ -29,6 +29,13 @@ public abstract class ReactiveBehaviour extends Behaviour {
                     System.out.println("WE WON!!");
                     state = 2;
                     return;
+                case "get-state":
+                    ACLMessage rpl = msg.createReply();
+                    rpl.setContent(String.valueOf(((CannonFodder)myAgent).getCondition()));
+                    myAgent.send(rpl);
+                    break;
+                case "set-state":
+
             }
         } else {
             block();

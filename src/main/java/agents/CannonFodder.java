@@ -24,7 +24,7 @@ public class CannonFodder extends AgentWithPosition {
 
     protected void setup() {
 
-        DFAgentDescription template = new DFAgentDescription();
+        /*DFAgentDescription template = new DFAgentDescription();
         ServiceDescription service = new ServiceDescription();
         service.setType("world");
         template.addServices(service);
@@ -38,7 +38,7 @@ public class CannonFodder extends AgentWithPosition {
             //TODO
             //handle exception
             e.printStackTrace();
-        }
+        }*/
 
         //TODO is it going to work?
 
@@ -156,8 +156,8 @@ public class CannonFodder extends AgentWithPosition {
             return false;
     }
 
-    protected void attack(AID enemy) {
-        world.attack(this,enemy);
+    protected void attack(AID enemy, World.AgentInTree e) {
+        world.attack(this,enemy,e);
     }
 
 
