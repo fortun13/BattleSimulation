@@ -1,14 +1,10 @@
 package main.java.adapters;
 
 import javafx.util.Pair;
-import main.java.gui.BoardPanel;
 import main.java.gui.MainFrame;
-import main.java.gui.OptionsPanel;
 import main.java.gui.SideOptionPanel;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -27,9 +23,7 @@ public class Controller {
             frame.getBoardPanel().generateBoard(size.getKey(), size.getValue());
         });
         
-        frame.getOptionsPanel().startSimulationButtonAddActionListener((e) -> {
-            frame.server.startSimulation(frame.getOptionsPanel().getBluesAgentsNumber(),frame.getOptionsPanel().getRedsAgentsNumber());
-        });
+        frame.getOptionsPanel().startSimulationButtonAddActionListener((e) -> frame.server.startSimulation(frame.getOptionsPanel().getBluesAgentsNumber(),frame.getOptionsPanel().getRedsAgentsNumber()));
 
         frame.addWindowListener(new WindowAdapter() {
             @Override

@@ -19,6 +19,7 @@ public abstract class ReactiveBehaviour extends Behaviour {
             // probably can do it with msg.getPrformative and some ACL static fields, but for now let it be string
             switch(msg.getConversationId()) {
                 case "new-turn":
+                    System.out.println("Next turn!! : " + myAgent.getName());
                     decideOnNextStep();
                     break;
                 case "battle-ended":

@@ -1,10 +1,6 @@
 package main.java.agents;
 
 import jade.core.AID;
-import jade.domain.DFService;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.FIPAException;
 import javafx.geometry.Point2D;
 
 /**
@@ -13,17 +9,13 @@ import javafx.geometry.Point2D;
  */
 public abstract class CannonFodder extends AgentWithPosition {
 
-    public enum Actions { ATTACK }
-
     private int condition, strength, speed, accuracy;
 
     protected World world;
 
-    private World.AgentsSides agentSide;
-
     //private MessageTemplate mt;
 
-    protected void setup() {
+    public void setup() {
 
         //TODO is it going to work?
 
@@ -34,6 +26,7 @@ public abstract class CannonFodder extends AgentWithPosition {
         // 4 - accuracy
         // 5 - agentSide
         // 6 - world
+        // 7 - position
 
         Object[] parameters = getArguments();
 
@@ -42,13 +35,14 @@ public abstract class CannonFodder extends AgentWithPosition {
         this.strength = (int) parameters[2];
         this.speed = (int) parameters[3];
         this.accuracy  = (int) parameters[4];
-        this.agentSide = (World.AgentsSides) parameters[5];
+        this.side = (World.AgentsSides) parameters[5];
         this.world = (World) parameters[6];
+        this.position = (World.AgentInTree) parameters[7];
     }
 
 
     protected void takeDown() {
-
+        //world.killAgent(this);
     }
 
     @Override
@@ -57,50 +51,6 @@ public abstract class CannonFodder extends AgentWithPosition {
         //have to have representation of environment to do something with it
         return world.getNearestEnemy(this);
     }
-
-    //protected void gotoEnemy(CannonFodder enemy) {
-        //Can be changed - it's just for visualization so don't care about Pair or something
-        //Pair<Point2D,Point2D> localization = enemy.getCurrentPosition();
-
-        // not exactly sure how to compute where agent should go
-
-        //Pair<Point2D,Point2D> destination = computeDestination(enemy.getCurrentPosition());
-
-        // CFP - i'm assuming that (maybe) agent should wait for confirmation if he can really go to destination point
-        //ACLMessage msg = new ACLMessage(ACLMessage.CFP);
-        //msg.addReceiver(world);
-
-        /*
-
-        Actually don't know if this "negotation" should be here or in behaviour class
-
-         */
-        //TODO
-        //do something bettern than .toString()
-        /*msg.setContent(destination.toString());
-        msg.setConversationId("destination-propose");
-        msg.setReplyWith("destination-propose"+System.currentTimeMillis());
-        send(msg);
-        mt = MessageTemplate.and(MessageTemplate.MatchConversationId("destination-purpose"), MessageTemplate.MatchInReplyTo(msg.getReplyWith()));
-
-        ACLMessage rpl = receive(mt);
-        if (rpl != null) {
-            if (rpl.getContent().equals("good")) {
-
-            }
-        }*/
-
-        //Nevermind - assuming i have method - i leave negotation commented in case it would be needed
-
-        //Pair<Point2D,Point2D> destination;
-        //Point2D destination;
-
-//        do {
-//            destination = computeDestination(enemy.getCurrentPosition());
-//            // I assume that method moveAgent is returning boolean - if agent can be move to that position, do it and return true
-//        } while (!world.moveAgent(this,destination));
-
-    //}
 
     @Override
     protected void gotoEnemy(World.AgentInTree enemy) {
@@ -126,9 +76,10 @@ public abstract class CannonFodder extends AgentWithPosition {
             if (!world.moveAgent(this,destination)) {
                 // Check if agent can move vertically
                 destination = new Point2D(thisPosition.getX(), thisPosition.getX() + vec[1]);
-                if(!world.moveAgent(this,destination)) {
+                world.moveAgent(this,destination);
+                /*if(!world.moveAgent(this,destination)) {
                     //TODO should we program this situation?
-                }
+                }*/
             }
         }
     }
@@ -136,14 +87,12 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     protected abstract void attack(AID enemy);
 
-
     public int getCondition() {
         return condition;
     }
 
-    public int setCondition(int condition) {
+    public void setCondition(int condition) {
         this.condition = condition;
-        return 1;
     }
 
     public int getStrength() {
@@ -168,14 +117,6 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     public void setAccuracy(int accuracy) {
         this.accuracy = accuracy;
-    }
-
-    public World.AgentsSides getAgentSide() {
-        return agentSide;
-    }
-
-    public void setAgentSide(World.AgentsSides agentSide) {
-        this.agentSide = agentSide;
     }
 
 

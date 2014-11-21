@@ -2,7 +2,6 @@ package main.java.agents;
 
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
-import jade.wrapper.AgentController;
 
 /**
  * Created by Marek on 2014-11-11.
@@ -10,15 +9,13 @@ import jade.wrapper.AgentController;
  */
 public class Warrior extends CannonFodder {
 
-    private AgentController agent;
-
     /*public Warrior() {
 
         super();
     }*/
 
-    protected void setup() {
-    super.setup();
+    public void setup() {
+        super.setup();
     }
 
 

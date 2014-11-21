@@ -2,7 +2,6 @@ package main.java.agents;
 
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
-import jade.lang.acl.ACLMessage;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
@@ -10,7 +9,10 @@ import javafx.geometry.Point2D;
 import javafx.scene.shape.Circle;
 import main.java.utils.KdTree;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Created by Marek on 2014-11-15.
@@ -20,8 +22,8 @@ public class World {
 
     private final KdTree.StdKd<AgentComparator.AgentSpace> agents;
 
-    public ArrayList<AID> bluesAgents = new ArrayList<AID>();
-    public ArrayList<AID> redsAgents = new ArrayList<AID>();
+    public ArrayList<AID> bluesAgents = new ArrayList<>();
+    public ArrayList<AID> redsAgents = new ArrayList<>();
 
     /*public ArrayList<AID> getBluesAgents() {
         return bluesAgents;
@@ -86,6 +88,8 @@ public class World {
         //start agents
         //agents = null;
 
+        this.server = server;
+
         PlatformController container = server.getContainerController();
 
         KdTree.StdKd<AgentComparator.AgentSpace> tmp;
@@ -137,86 +141,10 @@ public class World {
         agents = tmp;
     }
 
-    public World(ServerAgent server) {
+    /*public World(ServerAgent server) {
 
         this(server,10,10);
-        /*int agentsNumber = 10;
-        PlatformController container = server.getContainerController();
-
-        KdTree.StdKd<AgentComparator.AgentSpace> tmp;
-        try {
-            List<KdTree.Placed> l = new ArrayList<>(agentsNumber);
-
-            for (int i = 0; i < agentsNumber; i++) {
-                String agentName = "agentType_" + i;
-                AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", null);
-
-                l.add(new Warrior(agent));
-            }
-
-            tmp = new KdTree.StdKd<>(l, new AgentComparator());
-        } catch (ControllerException | KdTree.KdTreeException e) { // finally i have found exceptions useful :D:D
-            try {
-                tmp = new KdTree.StdKd<>(new ArrayList<>(), new AgentComparator());
-            } catch (KdTree.KdTreeException e1) {
-                tmp = null;
-                e1.printStackTrace();
-            }
-        }
-
-        agents = tmp;*/
-    }
-
-//    public World(ServerAgent server) {
-//        int agentsNumber = 10;
-//        this.server = server;
-//        PlatformController container = this.server.getContainerController();
-//
-//        try {
-//            ArrayList<KdTree.Placed> allAgents = new ArrayList<KdTree.Placed>();
-//            /*for (int i=0;i<agentsNumber;i++) {
-//                String agentName = "agentType_" + i;
-//                AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", arguments);
-//                allAgents.add(new AgentInTree(agentName,1,i));
-//
-//            }
-//            agents = new KdTree.StdKd(allAgents);*/
-//
-//            Object[] arguments = new Object[7];
-//            arguments[0] = new BerserkerBehaviour();
-//            arguments[1] = 40;
-//            arguments[2] = 5;
-//            arguments[3] = 3;
-//            arguments[4] = 90;
-//            arguments[5] = AgentsSides.Blues;
-//            arguments[6] = this;
-//
-//            Object[] dummyArguments = new Object[7];
-//            arguments[0] = ;
-//            arguments[1] = 40;
-//            arguments[2] = 5;
-//            arguments[3] = 3;
-//            arguments[4] = 90;
-//            arguments[5] = AgentsSides.Reds;
-//            arguments[6] = this;
-//
-//            String agent1 = "blueAgent_1";
-//            AgentController agent = container.createNewAgent(agent1, "main.java.agents.Warrior", arguments);
-//            allAgents.add(new AgentInTree(agent1,AgentsSides.Blues,1,1));
-//            agent.start();
-//            String agent2 = "redDummyAgent_1";
-//            AgentController dummyAgent = container.createNewAgent(agent2, "main.java.agents.Warrior", dummyArguments);
-//            allAgents.add(new AgentInTree(agent2,AgentsSides.Reds,10,10));
-//            dummyAgent.start();
-//
-//        } catch (ControllerException e) {
-//            //TODO
-//            e.printStackTrace();
-//        } catch (KdTree.KdTreeException e) {
-//            //TODO
-//            e.printStackTrace();
-//        }
-//    }
+    }*/
 
     private ArrayList<Object> getAgentArguments(Behaviour b, int cond, int str, int sp, int acc, AgentsSides s, World w) {
         //return new ArrayList<Object>().addAll({b,cond,str,sp,acc,s,w});
@@ -225,7 +153,7 @@ public class World {
         return tmp;
     }
 
-    public AgentInTree getNearestEnemy(CannonFodder agent) {
+    public AgentInTree getNearestEnemy(AgentWithPosition agent) {
         HashSet<AgentsSides> set = new HashSet<>();
         for (AgentsSides side : AgentsSides.values()) {
             if (side != agent.getAgentSide()) {
@@ -247,12 +175,12 @@ public class World {
         //return false; //żeby się nie czepiał :D
     }
 
-    public AgentInTree getNearestNeighbor(CannonFodder agent) {
+    /*public AgentInTree getNearestNeighbor(CannonFodder agent) {
         HashSet<AgentsSides> set = new HashSet<>();
         set.add(agent.getAgentSide());
         
         return (AgentInTree) agents.nearestNeighbour(agent.getPosition(), new AgentComparator.AgentSpace(set));
-    }
+    }*/
 
     public int[] countFriendFoe(AgentWithPosition agent, AgentsSides friendlySide, AgentsSides enemySide){
         int vec[] = new int[2];
@@ -270,65 +198,7 @@ public class World {
         return vec;
     }
 
-    private AgentWithPosition[] getNeighbors(AgentWithPosition agent) {
-        // I assume that list will be sorted from closest to farthest
-
-        // I don't understand; it should return agents from whole map???
-        return null;
-    }
-
-    public void attack(AgentInTree attacker, AgentInTree attacked) {
-    }
-//    public void attack(CannonFodder attacker, AID enemy, AgentInTree e) {
-//
-//        ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
-//        msg.addReceiver(enemy);
-//        msg.setContent("get-state");
-//        attacker.send(msg);
-//        ACLMessage rpl = attacker.blockingReceive();
-//        int enemyCondition = Integer.getInteger(rpl.getContent());
-//
-//        if (attacker instanceof Warrior) {
-//
-//            if (Math.random() * 100 > attacker.getAccuracy()) {
-//                //attack missed
-//            } else {
-//                if (enemyCondition <= attacker.getStrength()) {
-//                    killAgent(e);
-//                } else {
-//                    attacked.setCondition((attacked.getCondition() - attacker.getStrength()));
-//                }
-//            }
-//        } else if (attacker instanceof Archer) {
-//
-//        }
-//    }
-//
-//    /*public void attack(CannonFodder attacker, CannonFodder attacked) {
-//        //simple formula for now
-//        // can actually use for example speed to use more properties
-//        // i.e. - int speedPenalty = attacked.getSpeed() - attacker.getSpeed();
-//        //          if (speedPenalty > 0)
-//        //              Math.random()*100 > (attacker.getAccuracy() - speedPenalty)
-//
-//        //first of all - check what kind of agent is attacking
-//        if (attacker instanceof Warrior) {
-//
-//            if (Math.random() * 100 > attacker.getAccuracy()) {
-//                //attack missed
-//            } else {
-//                if (attacked.getCondition() <= attacker.getStrength()) {
-//                    killAgent(attacked);
-//                } else {
-//                    attacked.setCondition((attacked.getCondition() - attacker.getStrength()));
-//                }
-//            }
-//        } else if (attacker instanceof Archer) {
-//
-//        }
-//    }*/
-
-    private void killAgent(CannonFodder agent) {
+    public void killAgent(CannonFodder agent) {
         agents.rmPoint(agent.getPosition());
         PlatformController container = server.getContainerController();
         try {

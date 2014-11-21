@@ -19,8 +19,6 @@ public class ServerAgent extends Agent {
     //////////////////////////////////
     protected MainFrame m_frame = null;
 
-    private World world;
-
 
     public ServerAgent() {
         super();
@@ -99,9 +97,9 @@ public class ServerAgent extends Agent {
     public void startSimulation(int bluesAgentsNumber, int redsAgentsNumber) {
     	System.out.println("Simulation started");
 
-        world = new World(this,bluesAgentsNumber,redsAgentsNumber);
+        World world = new World(this, bluesAgentsNumber, redsAgentsNumber);
 
-        ArrayList<AID> allAgents = new ArrayList<AID>();
+        ArrayList<AID> allAgents = new ArrayList<>();
         allAgents.addAll(world.bluesAgents);
         allAgents.addAll(world.redsAgents);
 

@@ -1,7 +1,6 @@
 package main.java.agents;
 
 import jade.core.AID;
-import jade.core.behaviours.Behaviour;
 
 /**
  * Created by Jakub Fortunka on 19.11.14.
@@ -11,7 +10,7 @@ public class Archer extends CannonFodder {
     private int attackRange;
 
 
-    protected void setup() {
+    public void setup() {
 
         super.setup();
 
