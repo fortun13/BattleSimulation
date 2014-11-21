@@ -1,5 +1,9 @@
 package main.java.agents;
 
+import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAException;
 import javafx.geometry.Point2D;
 import java.lang.Math.*;
 

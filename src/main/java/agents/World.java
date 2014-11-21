@@ -195,7 +195,7 @@ public class World {
 
     private ArrayList<Object> getAgentArguments(Behaviour b, int cond, int str, int sp, int acc, AgentsSides s, World w) {
         //return new ArrayList<Object>().addAll({b,cond,str,sp,acc,s,w});
-        ArrayList<Object> tmp = new ArrayList<Object>();
+        ArrayList<Object> tmp = new ArrayList<>();
         Collections.addAll(tmp,b,cond,str,sp,acc,s,w);
         return tmp;
     }

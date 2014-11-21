@@ -82,6 +82,7 @@ public class KdTree<T, A> {
      * Returns at most k elements nearest to queryPoint from the set
      *
      * @param queryPoint referred point
+     * @param area       search area; if set to null, whole space will be considered
      * @param k          upper bound of found elements count
      * @return list of found points
      */
@@ -96,6 +97,16 @@ public class KdTree<T, A> {
         };
         tree.kNearestNeighbours(queryPoint, area, k, res);
         return res.subList(0, k);
+    }
+
+    /**
+     * Checks if given position is available
+     * @param p position to check
+     * @return true if some node exists on that position
+     */
+    public boolean isOccupied(T p) {
+        List<T> nearestNeighbour = kNearestNeighbours(p, null, 1);
+        return nearestNeighbour.size() > 0 && contains.distance(p, nearestNeighbour.get(0)) == 0;
     }
 
     public static class KdTreeException extends Throwable {
@@ -445,7 +456,7 @@ public class KdTree<T, A> {
 
         @Override
         public double kNearestNeighbours(T queryPoint, A area, int k, List<T> res) {
-            if (contains.contains(area, content)) {
+            if (area == null || contains.contains(area, content)) {
                 if (!(res.size() >= k) || (contains.distance(queryPoint, content) < contains.distance(queryPoint, res.get(k - 1)))) {
                     res.add(content);
                 }
@@ -520,6 +531,7 @@ public class KdTree<T, A> {
 
         @Override
         public double kNearestNeighbours(T queryPoint, A area, int k, List<T> res) {
+            if (!(area == null || contains.contains(area, val))) return Double.MAX_VALUE;
             boolean lower = contains.lower(queryPoint, val, depth % c.size());
             Tree<T, A> considered = lower ? left : right;
             double dist = considered.kNearestNeighbours(queryPoint, area, k, res);
