@@ -2,6 +2,7 @@ package main.java.agents;
 
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
+import jade.lang.acl.ACLMessage;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
@@ -49,6 +50,10 @@ public class World {
         public Point2D pos() {
             return p;
         }
+
+        public void setPosition(Point2D p) {
+            this.p = p;
+        }
     }
 
     private ServerAgent server;
@@ -77,8 +82,8 @@ public class World {
             //TODO factory or smth...
             List<KdTree.Placed> l = new ArrayList<>(bluesAgentsNumber+redsAgentsNumber);
 
-            ArrayList<Object> bluesArguments = getAgentArguments(new BerserkBehaviour(),40,5,3,90,AgentsSides.Blues,this);
-            ArrayList<Object> redsArguments = getAgentArguments(new BerserkBehaviour(),40,5,3,90,AgentsSides.Reds,this);
+            ArrayList<Object> bluesArguments = getAgentArguments(new BerserkerBehaviour(),40,5,3,90,AgentsSides.Blues,this);
+            ArrayList<Object> redsArguments = getAgentArguments(new BerserkerBehaviour(),40,5,3,90,AgentsSides.Reds,this);
 
             for (int i = 0; i < bluesAgentsNumber; i++) {
                 String agentName = "agentBlue_" + i;
@@ -212,13 +217,19 @@ public class World {
                 set.add(side);
             }
         }
-        
+
         return (AgentInTree) agents.nearestNeighbour(agent.getPosition(), new AgentComparator.AgentSpace(set));
     }
 
     public boolean moveAgent(CannonFodder agent, Point2D destination) {
         //TODO
-        return false; //żeby się nie czepiał :D
+        if (agents.isOccupied(agent.getPosition()))
+            return false;
+        else {
+            agent.getPosition().setPosition(destination);
+            return true;
+        }
+        //return false; //żeby się nie czepiał :D
     }
 
     public AgentInTree getNearestNeighbor(CannonFodder agent) {
@@ -259,6 +270,54 @@ public class World {
 
     public void attack(AgentInTree attacker, AgentInTree attacked) {
     }
+//    public void attack(CannonFodder attacker, AID enemy, AgentInTree e) {
+//
+//        ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+//        msg.addReceiver(enemy);
+//        msg.setContent("get-state");
+//        attacker.send(msg);
+//        ACLMessage rpl = attacker.blockingReceive();
+//        int enemyCondition = Integer.getInteger(rpl.getContent());
+//
+//        if (attacker instanceof Warrior) {
+//
+//            if (Math.random() * 100 > attacker.getAccuracy()) {
+//                //attack missed
+//            } else {
+//                if (enemyCondition <= attacker.getStrength()) {
+//                    killAgent(e);
+//                } else {
+//                    attacked.setCondition((attacked.getCondition() - attacker.getStrength()));
+//                }
+//            }
+//        } else if (attacker instanceof Archer) {
+//
+//        }
+//    }
+//
+//    /*public void attack(CannonFodder attacker, CannonFodder attacked) {
+//        //simple formula for now
+//        // can actually use for example speed to use more properties
+//        // i.e. - int speedPenalty = attacked.getSpeed() - attacker.getSpeed();
+//        //          if (speedPenalty > 0)
+//        //              Math.random()*100 > (attacker.getAccuracy() - speedPenalty)
+//
+//        //first of all - check what kind of agent is attacking
+//        if (attacker instanceof Warrior) {
+//
+//            if (Math.random() * 100 > attacker.getAccuracy()) {
+//                //attack missed
+//            } else {
+//                if (attacked.getCondition() <= attacker.getStrength()) {
+//                    killAgent(attacked);
+//                } else {
+//                    attacked.setCondition((attacked.getCondition() - attacker.getStrength()));
+//                }
+//            }
+//        } else if (attacker instanceof Archer) {
+//
+//        }
+//    }*/
 
     private void killAgent(CannonFodder agent) {
         agents.rmPoint(agent.getPosition());

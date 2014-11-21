@@ -24,7 +24,7 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     protected void setup() {
 
-        DFAgentDescription template = new DFAgentDescription();
+        /*DFAgentDescription template = new DFAgentDescription();
         ServiceDescription service = new ServiceDescription();
         service.setType("world");
         template.addServices(service);
@@ -38,7 +38,7 @@ public abstract class CannonFodder extends AgentWithPosition {
             //TODO
             //handle exception
             e.printStackTrace();
-        }
+        }*/
 
         //TODO is it going to work?
 
@@ -198,7 +198,4 @@ public abstract class CannonFodder extends AgentWithPosition {
     }
 
 
-    public void moveSomewhere() {
-        // TODO : implement
-    }
 }
