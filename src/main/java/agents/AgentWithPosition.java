@@ -26,7 +26,7 @@ public abstract class AgentWithPosition extends Agent {
      //   this.position = position;
    // }
 
-    public abstract boolean enemyInRangeOfAttack(AgentWithPosition enemy);
+    public abstract boolean enemyInRangeOfAttack(World.AgentInTree enemy);
 
     public abstract World.AgentsSides getAgentSide();
 

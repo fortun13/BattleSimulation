@@ -72,8 +72,8 @@ public class World {
             //TODO factory or smth...
             List<KdTree.Placed> l = new ArrayList<>(bluesAgentsNumber+redsAgentsNumber);
 
-            ArrayList<Object> bluesArguments = getAgentArguments(new BerserkerBehaviour(),40,5,3,90,AgentsSides.Blues,this);
-            ArrayList<Object> redsArguments = getAgentArguments(new BerserkerBehaviour(),40,5,3,90,AgentsSides.Reds,this);
+            ArrayList<Object> bluesArguments = getAgentArguments(new BerserkBehaviour(),40,5,3,90,AgentsSides.Blues,this);
+            ArrayList<Object> redsArguments = getAgentArguments(new BerserkBehaviour(),40,5,3,90,AgentsSides.Reds,this);
 
             for (int i = 0; i < bluesAgentsNumber; i++) {
                 String agentName = "agentBlue_" + i;
@@ -227,12 +227,12 @@ public class World {
         int vec[] = new int[2];
         int fov = agent.getFieldOfView();
         //number of friends
-        HashSet<AgentsSides> friends = new HashSet<AgentsSides>();
+        HashSet<AgentsSides> friends = new HashSet<>();
         friends.add(enemySide);
         vec[0] = this.agents.fetchElements(new AgentComparator.AgentSpace(friends,
                 new Circle(agent.getPosition().pos().getX(), agent.getPosition().pos().getY(), fov))).size();
         //number of enemies
-        HashSet<AgentsSides> enemies = new HashSet<AgentsSides>();
+        HashSet<AgentsSides> enemies = new HashSet<>();
         enemies.add(enemySide);
         vec[1] = this.agents.fetchElements(new AgentComparator.AgentSpace(enemies,
                 new Circle(agent.getPosition().pos().getX(), agent.getPosition().pos().getY(), fov))).size();
@@ -240,7 +240,7 @@ public class World {
     }
 
 
-    public Point2D getPosition(AgentWithPosition agent) {
+    public Point2D getPosition(AgentInTree agent) {
         //TODO how to do it ?
         return null;
     }
@@ -252,7 +252,7 @@ public class World {
         return null;
     }
 
-    public void attack(CannonFodder attacker, CannonFodder attacked) {
+    public void attack(AgentInTree attacker, AgentInTree attacked) {
         //simple formula for now
         // can actually use for example speed to use more properties
         // i.e. - int speedPenalty = attacked.getSpeed() - attacker.getSpeed();
@@ -260,6 +260,7 @@ public class World {
         //              Math.random()*100 > (attacker.getAccuracy() - speedPenalty)
 
         //first of all - check what kind of agent is attacking
+
         if (attacker instanceof Warrior) {
 
             if (Math.random() * 100 > attacker.getAccuracy()) {
@@ -277,7 +278,7 @@ public class World {
     }
 
     private void killAgent(CannonFodder agent) {
-        agents.rmPoint(agent);
+        agents.rmPoint(agent.getPosition());
         PlatformController container = server.getContainerController();
         try {
             container.getAgent(agent.getName()).kill();
