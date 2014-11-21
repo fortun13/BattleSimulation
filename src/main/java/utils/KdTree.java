@@ -101,7 +101,7 @@ public class KdTree<T, A> {
             }
         };
         tree.kNearestNeighbours(queryPoint, area, k, res);
-        return res.subList(0, k);
+        return res.subList(0, Math.min(res.size(), k));
     }
 
     /**
@@ -349,7 +349,7 @@ public class KdTree<T, A> {
                 System.out.print(a.pos() + ",");
             }
             System.out.println("]");
-            set = t.kNearestNeighbours(() -> new Point2D(4, 4), new Circle(Double.MAX_VALUE), 6);
+            set = t.kNearestNeighbours(() -> new Point2D(4, 4), null, 6);
             System.out.print("[" + set.size() + ":");
             for (Placed a : set) {
                 System.out.print(a.pos() + ",");
@@ -536,15 +536,17 @@ public class KdTree<T, A> {
 
         @Override
         public double kNearestNeighbours(T queryPoint, A area, int k, List<T> res) {
-            if (!(area == null || contains.contains(area, val))) return Double.MAX_VALUE;
-            boolean lower = contains.lower(queryPoint, val, depth % c.size());
-            Tree<T, A> considered = lower ? left : right;
-            double dist = considered.kNearestNeighbours(queryPoint, area, k, res);
-            if (contains.distance(queryPoint, val, depth % c.size()) < dist) {
-                considered = !lower ? left : right;
-                dist = considered.kNearestNeighbours(queryPoint, area, k, res);
-            }
-            return dist;
+//            if (area == null || contains.contains(area, val)) {
+                boolean lower = contains.lower(queryPoint, val, depth % c.size());
+                Tree<T, A> considered = lower ? left : right;
+                double dist = considered.kNearestNeighbours(queryPoint, area, k, res);
+                if (contains.distance(queryPoint, val, depth % c.size()) < dist) {
+                    considered = !lower ? left : right;
+                    dist = considered.kNearestNeighbours(queryPoint, area, k, res);
+                }
+                return dist;
+//            }
+//            return Double.MAX_VALUE;
         }
 
         private void doThat(A area, List<T> ret) {

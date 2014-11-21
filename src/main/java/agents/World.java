@@ -95,14 +95,14 @@ public class World {
         KdTree.StdKd<AgentComparator.AgentSpace> tmp;
         try {
             //TODO factory or smth...
-            List<KdTree.Placed> l = new ArrayList<>(bluesAgentsNumber+redsAgentsNumber);
+            List<KdTree.Placed> l = new ArrayList<>(bluesAgentsNumber + redsAgentsNumber);
 
-            ArrayList<Object> bluesArguments = getAgentArguments(new BerserkBehaviour(),40,5,3,90,AgentsSides.Blues,this);
-            ArrayList<Object> redsArguments = getAgentArguments(new BerserkBehaviour(),40,5,3,90,AgentsSides.Reds,this);
+            ArrayList<Object> bluesArguments = getAgentArguments(new BerserkBehaviour(), 40, 5, 3, 90, AgentsSides.Blues, this);
+            ArrayList<Object> redsArguments = getAgentArguments(new BerserkBehaviour(), 40, 5, 3, 90, AgentsSides.Reds, this);
 
             for (int i = 0; i < bluesAgentsNumber; i++) {
                 String agentName = "agentBlue_" + i;
-                AgentInTree ait = new AgentInTree("",AgentsSides.Blues,new Point2D(1,i+1));
+                AgentInTree ait = new AgentInTree("", AgentsSides.Blues, new Point2D(2, i + 1));
                 bluesArguments.add(ait);
                 AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", bluesArguments.toArray());
                 ait.setAgentName(agent.getName());
@@ -111,25 +111,26 @@ public class World {
 
                 agent.start();
 
-                bluesAgents.add(new AID(agent.getName(),true));
+                bluesAgents.add(new AID(agent.getName(), true));
             }
 
-            for (int i=0;i<redsAgentsNumber;i++) {
-                String agentName = "agentRed_"+i;
-                AgentInTree ait = new AgentInTree("",AgentsSides.Reds,new Point2D(1,i+1));
+            for (int i = 0; i < redsAgentsNumber; i++) {
+                String agentName = "agentRed_" + i;
+                AgentInTree ait = new AgentInTree("", AgentsSides.Reds, new Point2D(1, i + 1));
                 redsArguments.add(ait);
-                AgentController agent = container.createNewAgent(agentName,"main.java.agents.Warrior", redsArguments.toArray());
+                AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", redsArguments.toArray());
                 ait.setAgentName(agent.getName());
                 l.add(ait);
 
 
                 agent.start();
 
-                redsAgents.add(new AID(agent.getName(),true));
+                redsAgents.add(new AID(agent.getName(), true));
             }
 
             tmp = new KdTree.StdKd<>(l, new AgentComparator());
         } catch (ControllerException | KdTree.KdTreeException e) { // finally i have found exceptions useful :D:D
+            e.printStackTrace();
             try {
                 tmp = new KdTree.StdKd<>(new ArrayList<>(), new AgentComparator());
             } catch (KdTree.KdTreeException e1) {
@@ -211,15 +212,15 @@ public class World {
     private static class AgentComparator extends KdTree.CircleComparator<AgentComparator.AgentSpace> {
         @Override
         public boolean contains(AgentSpace area, KdTree.Placed point) {
-            CannonFodder agent = (CannonFodder) point;
-            return area.getAgentSide().contains(agent.getAgentSide()) && super.contains(area, point);
+            AgentInTree agent = (AgentInTree) point;
+            return area.getAgentSide().contains(agent.side) && super.contains(area, point);
         }
 
         @Override
         public boolean contains(AgentSpace area, ArrayList<KdTree.Placed> points) {
             for (KdTree.Placed p : points) {
-                CannonFodder f = (CannonFodder) p;
-                if (!area.getAgentSide().contains(f.getAgentSide())) return false;
+                AgentInTree f = (AgentInTree) p;
+                if (!area.getAgentSide().contains(f.side)) return false;
             }
 
             return super.contains(area, points);
@@ -229,8 +230,8 @@ public class World {
         public boolean intersects(AgentSpace area, ArrayList<KdTree.Placed> points, ArrayList<Boolean> ascending) {
             boolean intersect = false;
             for (KdTree.Placed p : points) {
-                CannonFodder f = (CannonFodder) p;
-                if (intersect = area.getAgentSide().contains(f.getAgentSide())) {
+                AgentInTree f = (AgentInTree) p;
+                if (intersect = area.getAgentSide().contains(f.side)) {
                     break;
                 }
             }
