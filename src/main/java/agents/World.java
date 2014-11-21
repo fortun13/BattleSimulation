@@ -201,18 +201,14 @@ public class World {
     }
 
     public AgentInTree getNearestEnemy(CannonFodder agent) {
-        // same reasoning as down below
-        try {
-            HashSet<AgentsSides> set = new HashSet<>();
-            for (AgentsSides side : AgentsSides.values()) {
-                if (side != agent.getAgentSide()) {
-                    set.add(side);
-                }
+        HashSet<AgentsSides> set = new HashSet<>();
+        for (AgentsSides side : AgentsSides.values()) {
+            if (side != agent.getAgentSide()) {
+                set.add(side);
             }
-            return (AgentWithPosition) agents.kNearestNeighbours(agent, new AgentComparator.AgentSpace(set), 2).get(1);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return null;
         }
+        
+        return (AgentInTree) agents.nearestNeighbour(agent.getPosition(), new AgentComparator.AgentSpace(set));
     }
 
     public boolean moveAgent(CannonFodder agent, Point2D destination) {
@@ -220,16 +216,11 @@ public class World {
         return false; //żeby się nie czepiał :D
     }
 
-    public CannonFodder getNearestNeighbor(CannonFodder agent) {
-        //in this case, i think it's better to implement it in the tree - then we won't need to return list
-        // when we find neighbor - boom, return it
+    public AgentInTree getNearestNeighbor(CannonFodder agent) {
         HashSet<AgentsSides> set = new HashSet<>();
         set.add(agent.getAgentSide());
-        try {
-            return (CannonFodder) agents.kNearestNeighbours(agent, new AgentComparator.AgentSpace(set), 2).get(1);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return null;
-        }
+        
+        return (AgentInTree) agents.nearestNeighbour(agent.getPosition(), new AgentComparator.AgentSpace(set));
     }
 
     public int[] countFriendFoe(AgentWithPosition agent, AgentsSides friendlySide, AgentsSides enemySide){

@@ -78,6 +78,11 @@ public class KdTree<T, A> {
         return ret;
     }
 
+    public T nearestNeighbour(T queryPoint, A area) {
+        List<T> res = kNearestNeighbours(queryPoint, area, 2);
+        return res.size() >= 2 ? res.get(1) : null;
+    }
+
     /**
      * Returns at most k elements nearest to queryPoint from the set
      *
