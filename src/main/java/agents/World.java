@@ -217,7 +217,7 @@ public class World {
 
     public boolean moveAgent(CannonFodder agent, Point2D destination) {
         //TODO
-
+        return false; //żeby się nie czepiał :D
     }
 
     public CannonFodder getNearestNeighbor(CannonFodder agent) {
@@ -231,6 +231,23 @@ public class World {
             return null;
         }
     }
+
+    public int[] countFriendFoe(AgentWithPosition agent, AgentsSides friendlySide, AgentsSides enemySide){
+        int vec[] = new int[2];
+        int fov = agent.getFieldOfView();
+        //number of friends
+        HashSet<AgentsSides> friends = new HashSet<AgentsSides>();
+        friends.add(enemySide);
+        vec[0] = this.agents.fetchElements(new AgentComparator.AgentSpace(friends,
+                new Circle(agent.getPosition().pos().getX(), agent.getPosition().pos().getY(), fov))).size();
+        //number of enemies
+        HashSet<AgentsSides> enemies = new HashSet<AgentsSides>();
+        enemies.add(enemySide);
+        vec[1] = this.agents.fetchElements(new AgentComparator.AgentSpace(enemies,
+                new Circle(agent.getPosition().pos().getX(), agent.getPosition().pos().getY(), fov))).size();
+        return vec;
+    }
+
 
     public Point2D getPosition(AgentWithPosition agent) {
         //TODO how to do it ?
