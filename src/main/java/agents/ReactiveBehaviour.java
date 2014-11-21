@@ -8,7 +8,7 @@ import jade.lang.acl.ACLMessage;
  */
 public abstract class ReactiveBehaviour extends Behaviour {
 
-    protected CannonFodder agent = (CannonFodder) this.myAgent;
+    //protected CannonFodder agent = (CannonFodder) this.myAgent;
     protected int state = 0;
     protected CannonFodder enemy;
 

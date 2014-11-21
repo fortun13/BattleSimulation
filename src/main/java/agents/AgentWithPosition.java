@@ -7,10 +7,12 @@ import main.java.utils.KdTree;
 /**
  * Created by Jakub Fortunka on 20.11.14.
  */
-public abstract class AgentWithPosition extends Agent implements KdTree.Placed {
+public abstract class AgentWithPosition extends Agent {
     //protected Point2D position;
 
     protected int fieldOfView = 20;
+
+    protected World.AgentInTree position;
 
     public int getFieldOfView() { return fieldOfView; }
 
@@ -27,4 +29,8 @@ public abstract class AgentWithPosition extends Agent implements KdTree.Placed {
     public abstract boolean enemyInRangeOfAttack(AgentWithPosition enemy);
 
     public abstract World.AgentsSides getAgentSide();
+
+    public World.AgentInTree getPosition() {
+        return position;
+    }
 }

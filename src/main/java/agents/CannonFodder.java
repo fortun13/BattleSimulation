@@ -1,6 +1,7 @@
 package main.java.agents;
 
 import javafx.geometry.Point2D;
+import java.lang.Math.*;
 
 /**
  * Created by Jakub Fortunka on 18.11.14.
@@ -18,19 +19,21 @@ public class CannonFodder extends AgentWithPosition {
 
     protected void setup() {
 
-        /*DFAgentDescription template = new DFAgentDescription();
+        DFAgentDescription template = new DFAgentDescription();
         ServiceDescription service = new ServiceDescription();
         service.setType("world");
         template.addServices(service);
         try {
-            DFAgentDescription[] result = DFService.search(this,template);
-            world = result[0].getName();
+            DFAgentDescription[] result = DFService.search(this, template);
+
+
+            //world = result[0].getName();
 
         } catch (FIPAException e) {
             //TODO
             //handle exception
             e.printStackTrace();
-        }*/
+        }
 
         //TODO is it going to work?
 
@@ -114,27 +117,27 @@ public class CannonFodder extends AgentWithPosition {
         // If not - then approach other agent as fast as possible (using computed vector)
 
         // Vector between agent and spotted enemy
-//        int vec[] = new int[] {(int)this.getPosition ().getX() - (int)enemy.getPosition().getX(),
-//                                (int)this.getPosition ().getY() - (int)enemy.getPosition().getY()};
-//        /* Compute movement vector, for example: [4, -7] => [4/|4|, -7/|-7|] => [1, -1] */
-//        vec[0] = vec[0]/Math.abs(vec[0]);
-//        vec[1] = vec[1]/Math.abs(vec[1]);
-//        Point2D destination = new Point2D(this.getPosition().getX() + vec[0], this.getPosition().getX() + vec[1]);
-//        // Check if agent can move in skew vector (Po ukośnym wektorze :D)
-//        if(world.moveAgent(this, destination))
-//            this.setPosition(destination);
-//        else {
-//            // Check if agent can move horizontally
-//            destination = new Point2D(this.getPosition().getX() + vec[0], this.getPosition().getX());
-//            if (world.moveAgent(this, destination))
-//                this.setPosition(destination);
-//            else {
-//                // Check if agent can move vertically
-//                destination = new Point2D(this.getPosition().getX(), this.getPosition().getX() + vec[1]);
-//                if(world.moveAgent(this, destination))
-//                    this.setPosition(destination);
-//            }
-//        }
+
+        Point2D thisPosition = position.pos();
+        Point2D enemyPosition = enemy.getPosition().pos();
+        int vec[] = new int[] {(int)thisPosition.getX() - (int)enemyPosition.getX(),
+                                (int)thisPosition.getY() - (int)enemyPosition.getY()};
+        /* Compute movement vector, for example: [4, -7] => [4/|4|, -7/|-7|] => [1, -1] */
+        vec[0] = vec[0]/Math.abs(vec[0]);
+        vec[1] = vec[1]/Math.abs(vec[1]);
+        Point2D destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getX() + vec[1]);
+        // Check if agent can move in skew vector (Po ukośnym wektorze :D)
+        if(!world.moveAgent(this,destination)) {
+            // Check if agent can move horizontally
+            destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getX());
+            if (!world.moveAgent(this,destination)) {
+                // Check if agent can move vertically
+                destination = new Point2D(thisPosition.getX(), thisPosition.getX() + vec[1]);
+                if(!world.moveAgent(this,destination)) {
+                    //TODO should we program this situation?
+                }
+            }
+        }
     }
 
     public boolean enemyInRangeOfAttack(AgentWithPosition enemy) {
@@ -142,8 +145,10 @@ public class CannonFodder extends AgentWithPosition {
         // i guess 1 is one square - so it will return true if agent is standing right beside enemy
         // have to be overridden for all agents that can attack from distance
         // TODO
-//        return position.distance(enemy.getPosition()) < 2;
-        return false;
+        if (world.getPosition(this).distance(world.getPosition(enemy)) < 2)
+            return true;
+        else
+            return false;
     }
 
     protected void attack(CannonFodder enemy) {
@@ -192,9 +197,5 @@ public class CannonFodder extends AgentWithPosition {
         this.agentSide = agentSide;
     }
 
-    @Override
-    public Point2D pos() {
-//        return position;
-        return Point2D.ZERO;
-    }
+
 }

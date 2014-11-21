@@ -10,29 +10,29 @@ public class BerserkerBehaviour extends ReactiveBehaviour {
         switch(state) {
             case 0:
                 //findEnemy, if enemyFound goto state 2
-                enemy = agent.getNearestEnemy();
+                enemy = ((CannonFodder)myAgent).getNearestEnemy();
                 if (enemy != null) {
-                    agent.gotoEnemy(enemy);
+                    ((CannonFodder)myAgent).gotoEnemy(enemy);
                     state++;
                 }
                 else {
                     //moveSomewhere
-//                    agent.moveSomewhere();
+                    ((CannonFodder)myAgent).moveSomewhere();
                 }
                 break;
             case 1:
                 // I assume that "world" will kill agent, so, when enemy will die, Agent enemy will become null (not sure if it's good thinking though)
                 if (enemy == null) {
-                    enemy = agent.getNearestEnemy();
+                    enemy = ((CannonFodder)myAgent).getNearestEnemy();
                     if (enemy == null) {
                         state--;
                         break;
                     }
                 }
-                if (agent.enemyInRangeOfAttack(enemy))
-                    agent.attack(enemy);
+                if (((CannonFodder)myAgent).enemyInRangeOfAttack(enemy))
+                    ((CannonFodder)myAgent).attack(enemy);
                 else
-                    agent.gotoEnemy(enemy);
+                    ((CannonFodder)myAgent).gotoEnemy(enemy);
 //                agent.attack(enemy);
                 break;
         }

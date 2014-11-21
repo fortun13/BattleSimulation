@@ -18,10 +18,6 @@ public class World {
 
     private final KdTree.StdKd<AgentComparator.AgentSpace> agents;
 
-    public boolean moveAgent(CannonFodder cannonFodder, Point2D destination) {
-        return false;
-    }
-
     public enum AgentsSides {Blues, Reds}
 
     public class AgentInTree implements KdTree.Placed {
@@ -38,6 +34,10 @@ public class World {
 
         public String getAgentName() {
             return agentName;
+        }
+
+        public void setAgentName(String name) {
+            agentName = name;
         }
 
         @Override
@@ -72,22 +72,28 @@ public class World {
             //TODO factory or smth...
             List<KdTree.Placed> l = new ArrayList<>(bluesAgentsNumber+redsAgentsNumber);
 
-            Object[] bluesArguments = getAgentArguments(new BerserkerBehaviour(),40,5,3,90,AgentsSides.Blues,this);
-            Object[] redsArguments = getAgentArguments(new BerserkerBehaviour(),40,5,3,90,AgentsSides.Reds,this);
+            ArrayList<Object> bluesArguments = getAgentArguments(new BerserkerBehaviour(),40,5,3,90,AgentsSides.Blues,this);
+            ArrayList<Object> redsArguments = getAgentArguments(new BerserkerBehaviour(),40,5,3,90,AgentsSides.Reds,this);
 
             for (int i = 0; i < bluesAgentsNumber; i++) {
                 String agentName = "agentBlue_" + i;
-                AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", bluesArguments);
+                AgentInTree ait = new AgentInTree("",AgentsSides.Blues,new Point2D(1,i+1));
+                bluesArguments.add(ait);
+                AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", bluesArguments.toArray());
+                ait.setAgentName(agent.getName());
 
-                l.add(new AgentInTree(agentName,AgentsSides.Blues,new Point2D(1,i+1)));
+                l.add(ait);
 
                 agent.start();
             }
 
             for (int i=0;i<redsAgentsNumber;i++) {
                 String agentName = "agentRed_"+i;
-                AgentController agent = container.createNewAgent(agentName,"main.java.agents.Warrior", redsArguments);
-                l.add(new AgentInTree(agentName,AgentsSides.Reds,new Point2D(10,i+1)));
+                AgentInTree ait = new AgentInTree("",AgentsSides.Reds,new Point2D(1,i+1));
+                redsArguments.add(ait);
+                AgentController agent = container.createNewAgent(agentName,"main.java.agents.Warrior", redsArguments.toArray());
+                ait.setAgentName(agent.getName());
+                l.add(ait);
 
 
                 agent.start();
@@ -187,8 +193,11 @@ public class World {
 //        }
 //    }
 
-    private Object[] getAgentArguments(Behaviour b, int cond, int str, int sp, int acc, AgentsSides s, World w) {
-        return new Object[] { b,cond,str,sp,acc,s,w };
+    private ArrayList<Object> getAgentArguments(Behaviour b, int cond, int str, int sp, int acc, AgentsSides s, World w) {
+        //return new ArrayList<Object>().addAll({b,cond,str,sp,acc,s,w});
+        ArrayList<Object> tmp = new ArrayList<Object>();
+        Collections.addAll(tmp,b,cond,str,sp,acc,s,w);
+        return tmp;
     }
 
     public AgentInTree getNearestEnemy(CannonFodder agent) {
@@ -206,7 +215,12 @@ public class World {
         }
     }
 
-    public AgentWithPosition getNearestNeighbor(AgentWithPosition agent) {
+    public boolean moveAgent(CannonFodder agent, Point2D destination) {
+        //TODO
+
+    }
+
+    public CannonFodder getNearestNeighbor(CannonFodder agent) {
         //in this case, i think it's better to implement it in the tree - then we won't need to return list
         // when we find neighbor - boom, return it
         HashSet<AgentsSides> set = new HashSet<>();
