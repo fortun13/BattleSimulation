@@ -237,7 +237,7 @@ public class World {
         int fov = agent.getFieldOfView();
         //number of friends
         HashSet<AgentsSides> friends = new HashSet<AgentsSides>();
-        friends.add(enemySide);
+        friends.add(friendlySide);
         vec[0] = this.agents.fetchElements(new AgentComparator.AgentSpace(friends,
                 new Circle(agent.getPosition().pos().getX(), agent.getPosition().pos().getY(), fov))).size();
         //number of enemies
