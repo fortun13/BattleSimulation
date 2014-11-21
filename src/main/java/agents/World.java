@@ -1,5 +1,6 @@
 package main.java.agents;
 
+import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
@@ -17,6 +18,10 @@ import java.util.*;
 public class World {
 
     private final KdTree.StdKd<AgentComparator.AgentSpace> agents;
+
+    public AID getAID() {
+        return server.getAID();
+    }
 
     public enum AgentsSides {Blues, Reds}
 
@@ -253,28 +258,6 @@ public class World {
     }
 
     public void attack(AgentInTree attacker, AgentInTree attacked) {
-        //simple formula for now
-        // can actually use for example speed to use more properties
-        // i.e. - int speedPenalty = attacked.getSpeed() - attacker.getSpeed();
-        //          if (speedPenalty > 0)
-        //              Math.random()*100 > (attacker.getAccuracy() - speedPenalty)
-
-        //first of all - check what kind of agent is attacking
-
-        if (attacker instanceof Warrior) {
-
-            if (Math.random() * 100 > attacker.getAccuracy()) {
-                //attack missed
-            } else {
-                if (attacked.getCondition() <= attacker.getStrength()) {
-                    killAgent(attacked);
-                } else {
-                    attacked.setCondition((attacked.getCondition() - attacker.getStrength()));
-                }
-            }
-        } else if (attacker instanceof Archer) {
-
-        }
     }
 
     private void killAgent(CannonFodder agent) {

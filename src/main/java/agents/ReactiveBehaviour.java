@@ -17,6 +17,10 @@ public abstract class ReactiveBehaviour extends Behaviour {
     public void action() {
         ACLMessage msg = myAgent.receive();
         if (msg != null) {
+            switch (msg.getConversationId()) {
+                case CannonFodder.Actions.ATTACK:
+
+            }
             // probably can do it with msg.getPrformative and some ACL static fields, but for now let it be string
             switch(msg.getContent()) {
                 case "new-step":

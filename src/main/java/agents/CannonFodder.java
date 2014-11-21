@@ -10,11 +10,13 @@ import javafx.geometry.Point2D;
  * Created by Jakub Fortunka on 18.11.14.
  *
  */
-public class CannonFodder extends AgentWithPosition {
+public abstract class CannonFodder extends AgentWithPosition {
+
+    public enum Actions { ATTACK }
 
     private int condition, strength, speed, accuracy;
 
-    private World world;
+    protected World world;
 
     private World.AgentsSides agentSide;
 
@@ -151,9 +153,7 @@ public class CannonFodder extends AgentWithPosition {
         return world.getPosition(getPosition()).distance(world.getPosition(enemy)) < 2;
     }
 
-    protected void attack(World.AgentInTree enemy) {
-        world.attack(getPosition(),enemy);
-    }
+    protected abstract jade.lang.acl.ACLMessage attack(World.AgentInTree enemy);
 
 
     public int getCondition() {
