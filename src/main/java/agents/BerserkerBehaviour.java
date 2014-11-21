@@ -17,7 +17,7 @@ public class BerserkerBehaviour extends ReactiveBehaviour {
                 }
                 else {
                     //moveSomewhere
-                    agent.moveSomewhere();
+//                    agent.moveSomewhere();
                 }
                 break;
             case 1:

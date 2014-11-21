@@ -191,7 +191,7 @@ public class World {
         return new Object[] { b,cond,str,sp,acc,s,w };
     }
 
-    public AgentWithPosition getNearestEnemy(CannonFodder agent) {
+    public AgentInTree getNearestEnemy(CannonFodder agent) {
         // same reasoning as down below
         try {
             HashSet<AgentsSides> set = new HashSet<>();
@@ -313,11 +313,11 @@ public class World {
             private HashSet<AgentsSides> agentSides;
 
             public AgentSpace(HashSet<AgentsSides> agentSides) {
-                this(agentSides, 0, 0, Double.MAX_VALUE);
+                this(agentSides, new Circle(Double.MAX_VALUE));
             }
 
-            public AgentSpace(HashSet<AgentsSides> agentSides, double x, double y, double r) {
-                super(x, y, r);
+            public AgentSpace(HashSet<AgentsSides> agentSides, Circle searchArea) {
+                super(searchArea.getCenterX(), searchArea.getCenterY(), searchArea.getRadius());
                 this.agentSides = agentSides;
             }
 
