@@ -2,6 +2,7 @@ package main.java.agents;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
@@ -106,19 +107,83 @@ public class ServerAgent extends Agent {
         Collections.shuffle(allAgents);
 
         //while (!world.bluesAgents.isEmpty() || !world.redsAgents.isEmpty()) {
-        for (int i=0;i<50;i++) {
-            for(AID agent : allAgents) {
-                ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-                msg.setConversationId("new-turn");
-                msg.addReceiver(agent);
-                send(msg);
+        ACLMessage newTurn = new ACLMessage(ACLMessage.INFORM);
+        newTurn.setConversationId("new-turn");
+        for(AID agent : allAgents) {
+            newTurn.addReceiver(agent);
+        }
+
+
+        addBehaviour(new Behaviour() {
+
+            int state = 0;
+            int agentsCounter=0;
+            int stepsCounter=0;
+            int agentsNumber = allAgents.size();
+
+            @Override
+            public void action() {
+                switch (state) {
+                    case 0:
+                        if (stepsCounter == 20) {
+                            state = 2;
+                            break;
+                        }
+                        send(newTurn);
+                        state++;
+                        break;
+                    case 1:
+                        ACLMessage msg = receive();
+                        if (msg != null) {
+                            if (msg.getConversationId().equals("ended-computation")) {
+                                agentsCounter++;
+                                if (agentsCounter == agentsNumber) {
+                                    agentsCounter = 0;
+                                    stepsCounter++;
+                                    state--;
+                                    break;
+                                }
+                            }
+                        } else {
+                            block();
+                        }
+                }
             }
+
+            @Override
+            public boolean done() {
+                return state == 2;
+            }
+        });
+
+        /*for (int i=0;i<20;i++) {
+
+            send(newTurn);
+
+            try {
+                wait(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }*/
+
+            //for now - slowing down program with empty loop
+            /*for (int j=0;j<100000;j++) {
+
+            }*/
+            //System.out.println("newturn");
             /*try {
                 wait(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }*/
-        }
+        //}
+
+        /*ACLMessage end = new ACLMessage(ACLMessage.INFORM);
+        end.setConversationId("battle-ended");
+        for (AID agent : allAgents)
+            end.addReceiver(agent);
+
+        send(end);*/
 
     }
 

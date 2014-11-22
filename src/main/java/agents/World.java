@@ -95,7 +95,6 @@ public class World {
 
         KdTree.StdKd<AgentComparator.AgentSpace> tmp;
         try {
-            //TODO factory or smth...
             List<KdTree.Placed> l = new ArrayList<>(bluesAgentsNumber + redsAgentsNumber);
 
             //ArrayList<Object> bluesArguments = getAgentArguments(new BerserkBehaviour(), 40, 5, 3, 90, AgentsSides.Blues, this);
@@ -187,8 +186,7 @@ public class World {
     }
 
     public boolean moveAgent(CannonFodder agent, Point2D destination) {
-        //TODO
-        if (agents.isOccupied(agent.getPosition()))
+        if (agents.isOccupied(new AgentInTree("",AgentsSides.Blues,destination)))
             return false;
         else {
             agent.getPosition().setPosition(destination);

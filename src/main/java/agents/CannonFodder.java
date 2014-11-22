@@ -47,8 +47,6 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     @Override
     protected World.AgentInTree getNearestEnemy() {
-        //TODO
-        //have to have representation of environment to do something with it
         return world.getNearestEnemy(this);
     }
 
@@ -63,12 +61,12 @@ public abstract class CannonFodder extends AgentWithPosition {
 
         Point2D thisPosition = position.pos();
         Point2D enemyPosition = enemy.pos();
-        int vec[] = new int[] {(int)thisPosition.getX() - (int)enemyPosition.getX(),
-                                (int)thisPosition.getY() - (int)enemyPosition.getY()};
+        int vec[] = new int[] {(int)enemyPosition.getX() - (int)thisPosition.getX(),
+                                (int)enemyPosition.getY() - (int)thisPosition.getY()};
         /* Compute movement vector, for example: [4, -7] => [4/|4|, -7/|-7|] => [1, -1] */
         if (vec[0] != 0) vec[0] = vec[0]/Math.abs(vec[0]);
         if (vec[1] != 0) vec[1] = vec[1]/Math.abs(vec[1]);
-        Point2D destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getX() + vec[1]);
+        Point2D destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getY() + vec[1]);
         // Check if agent can move in skew vector (Po ukośnym wektorze :D)
         if(!world.moveAgent(this,destination)) {
             // Check if agent can move horizontally
@@ -99,24 +97,12 @@ public abstract class CannonFodder extends AgentWithPosition {
         return strength;
     }
 
-    public void setStrength(int strength) {
-        this.strength = strength;
-    }
-
     public int getSpeed() {
         return speed;
     }
 
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
-
     public int getAccuracy() {
         return accuracy;
-    }
-
-    public void setAccuracy(int accuracy) {
-        this.accuracy = accuracy;
     }
 
 

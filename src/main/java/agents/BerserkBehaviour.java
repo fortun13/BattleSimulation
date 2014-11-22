@@ -15,6 +15,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                 //findEnemy, if enemyFound goto state 2
                 enemyPosition = ((AgentWithPosition)myAgent).getNearestEnemy();
                 if (enemyPosition != null) {
+                    System.out.println("Found enemy!" + myAgent.getName());
                     enemy = new AID(enemyPosition.getAgentName(),true);
                     ((AgentWithPosition)myAgent).gotoEnemy(enemyPosition);
                     state++;

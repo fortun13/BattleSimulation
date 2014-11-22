@@ -3,6 +3,7 @@ package main.java.utils;
 import jade.core.behaviours.Behaviour;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
+import main.java.agents.BerserkBehaviour;
 import main.java.agents.World;
 
 public class WarriorBuilder extends AgentBuilder {
@@ -55,7 +56,9 @@ public class WarriorBuilder extends AgentBuilder {
 
     @Override
     public void buildBehaviour() {
-        parameters.add(0,behaviour);
+        //parameters.add(0,behaviour);
+        //TODO can't be like that - maybe behaviour should implement clonable interface, and we could clone passed behaviour?
+        parameters.add(0,new BerserkBehaviour());
     }
 
     @Override

@@ -53,18 +53,18 @@ public class Warrior extends CannonFodder {
     public void reactToAttack(String content) {
         System.out.println("I'm attacked!! " + getName());
         String[] el = content.split(":");
-        int cond = Integer.getInteger(el[0]);
-        int str = Integer.getInteger(el[1]);
-        int spe = Integer.getInteger(el[2]);
-        int acc = Integer.getInteger(el[3]);
+        int cond = Integer.valueOf(el[0]);
+        int str = Integer.valueOf(el[1]);
+        int spe = Integer.valueOf(el[2]);
+        int acc = Integer.valueOf(el[3]);
         //simplest version - if i got the message - then i will get hit
-        if (getCondition() <= str) {
+        if (condition <= str) {
             //I am dead
             //TODO should there be method in world, or should we send message to world?
             System.out.println("I'm dead :(");
         } else {
             // I'm still alive
-            setCondition(getCondition()-cond);
+            condition = condition-str;
         }
     }
 }
