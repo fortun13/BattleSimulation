@@ -66,8 +66,8 @@ public abstract class CannonFodder extends AgentWithPosition {
         int vec[] = new int[] {(int)thisPosition.getX() - (int)enemyPosition.getX(),
                                 (int)thisPosition.getY() - (int)enemyPosition.getY()};
         /* Compute movement vector, for example: [4, -7] => [4/|4|, -7/|-7|] => [1, -1] */
-        vec[0] = vec[0]/Math.abs(vec[0]);
-        vec[1] = vec[1]/Math.abs(vec[1]);
+        if (vec[0] != 0) vec[0] = vec[0]/Math.abs(vec[0]);
+        if (vec[1] != 0) vec[1] = vec[1]/Math.abs(vec[1]);
         Point2D destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getX() + vec[1]);
         // Check if agent can move in skew vector (Po ukośnym wektorze :D)
         if(!world.moveAgent(this,destination)) {

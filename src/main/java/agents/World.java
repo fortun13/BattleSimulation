@@ -1,7 +1,6 @@
 package main.java.agents;
 
 import jade.core.AID;
-import jade.core.behaviours.Behaviour;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
@@ -13,7 +12,6 @@ import main.java.utils.KdTree;
 import main.java.utils.WarriorBuilder;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -279,9 +277,16 @@ public class World {
 
         public static class AgentSpace extends Circle {
             private HashSet<AgentsSides> agentSides;
+            boolean covered = false;
+
+            @Override
+            public boolean contains(Point2D localPoint) {
+                return covered || super.contains(localPoint);
+            }
 
             public AgentSpace(HashSet<AgentsSides> agentSides) {
-                this(agentSides, new Circle(Double.MAX_VALUE));
+                this.agentSides = agentSides;
+                covered = true;
             }
 
             public AgentSpace(HashSet<AgentsSides> agentSides, Circle searchArea) {

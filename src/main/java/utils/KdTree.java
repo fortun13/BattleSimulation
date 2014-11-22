@@ -355,6 +355,7 @@ public class KdTree<T, A> {
                 System.out.print(a.pos() + ",");
             }
             System.out.println("]");
+            System.out.println(t.nearestNeighbour(() -> new Point2D(4,4), null).pos());
 
         } catch (KdTreeException e) {
             e.printStackTrace();
