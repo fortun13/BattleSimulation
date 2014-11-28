@@ -21,6 +21,11 @@ public abstract class ReactiveBehaviour extends Behaviour {
                 case "new-turn":
                     System.out.println("Next turn!! : " + myAgent.getName());
                     decideOnNextStep();
+                    ACLMessage m = new ACLMessage(ACLMessage.INFORM);
+                    //TODO it's not good practice - i just want to test if this will work
+                    m.addReceiver(new AID("server",false));
+                    m.setConversationId("ended-computation");
+                    myAgent.send(m);
                     break;
                 case "battle-ended":
                     System.out.println("WE WON!!");
@@ -30,11 +35,11 @@ public abstract class ReactiveBehaviour extends Behaviour {
                     ((CannonFodder)myAgent).reactToAttack(msg.getContent());
                     break;
             }
-            ACLMessage m = new ACLMessage(ACLMessage.INFORM);
+            /*ACLMessage m = new ACLMessage(ACLMessage.INFORM);
             //TODO it's not good practice - i just want to test if this will work
             m.addReceiver(new AID("server",false));
             m.setConversationId("ended-computation");
-            myAgent.send(m);
+            myAgent.send(m);*/
         } else {
             block();
         }
