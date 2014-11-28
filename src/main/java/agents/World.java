@@ -23,6 +23,10 @@ public class World {
 
     private final KdTree.StdKd<AgentComparator.AgentSpace> agents;
 
+    public KdTree.StdKd<AgentComparator.AgentSpace> getAgents() {
+        return agents;
+    }
+
     public ArrayList<AID> bluesAgents = new ArrayList<>();
     public ArrayList<AID> redsAgents = new ArrayList<>();
 
@@ -43,8 +47,9 @@ public class World {
     public class AgentInTree implements KdTree.Placed {
 
         Point2D p;
-        AgentsSides side;
+        public AgentsSides side;
         String agentName;
+        public boolean isDead = false;
 
         public AgentInTree(String agentName,AgentsSides side, Point2D position) {
             this.agentName = agentName;
@@ -219,16 +224,17 @@ public class World {
     }
 
     public void killAgent(CannonFodder agent) {
-        agents.rmPoint(agent.getPosition());
+        agent.position.isDead=true;
+        /*agents.rmPoint(agent.getPosition());
         PlatformController container = server.getContainerController();
         try {
             container.getAgent(agent.getName()).kill();
         } catch (ControllerException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
-    private static class AgentComparator extends KdTree.CircleComparator<AgentComparator.AgentSpace> {
+    public static class AgentComparator extends KdTree.CircleComparator<AgentComparator.AgentSpace> {
         @Override
         public boolean contains(AgentSpace area, KdTree.Placed point) {
             AgentInTree agent = (AgentInTree) point;

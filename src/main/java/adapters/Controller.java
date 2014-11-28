@@ -1,6 +1,7 @@
 package main.java.adapters;
 
 import javafx.util.Pair;
+import main.java.agents.ServerAgent;
 import main.java.gui.MainFrame;
 import main.java.gui.SideOptionPanel;
 
@@ -12,6 +13,7 @@ import java.awt.event.WindowEvent;
 public class Controller {
 	
 	private final MainFrame frame;
+    //private final ServerAgent server;
 	
 	public Controller(MainFrame f) {
 		frame = f;

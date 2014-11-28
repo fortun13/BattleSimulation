@@ -62,6 +62,7 @@ public class Warrior extends CannonFodder {
             //I am dead
             //TODO should there be method in world, or should we send message to world?
             System.out.println("I'm dead :(");
+            world.killAgent(this);
         } else {
             // I'm still alive
             condition = condition-str;

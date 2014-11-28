@@ -141,6 +141,7 @@ public class ServerAgent extends Agent {
                                     agentsCounter = 0;
                                     stepsCounter++;
                                     state--;
+                                    m_frame.redrawBoard(world.getAgents());
                                     break;
                                 }
                             }

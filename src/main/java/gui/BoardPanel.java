@@ -1,7 +1,14 @@
 package main.java.gui;
 
+import javafx.geometry.Point2D;
+import javafx.scene.paint.*;
+import main.java.agents.World;
+import main.java.utils.KdTree;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.Color;
+import java.util.*;
 
 /**
  * Created by Jakub Fortunka on 08.11.14.
@@ -32,6 +39,7 @@ public class BoardPanel extends JPanel {
                 g.drawLine(squares.length*SQUARESIZE,0,squares.length*SQUARESIZE,height*SQUARESIZE);
             }
             g.drawLine(0,height*SQUARESIZE,squares[0].length*SQUARESIZE,height*SQUARESIZE);
+
         }
     }
 
@@ -132,6 +140,42 @@ public class BoardPanel extends JPanel {
 //            System.out.println(row);
 //        }
 
-        this.revalidate();
+        innerBoard.revalidate();
+        innerBoard.repaint();
+    }
+
+    public void drawAgents(java.util.List<? extends KdTree.Placed> agents) {
+        innerBoard.removeAll();
+        for (KdTree.Placed agent : agents) {
+            Color c;
+            Point2D p = agent.pos();
+            if (((World.AgentInTree)agent).isDead) {
+                c = new Color(0, 0, 0);
+            } else {
+                if (((World.AgentInTree)agent).side == World.AgentsSides.Blues)
+                    c = new Color(1, 0, 199);
+                else
+                    c = new Color(221, 0, 36);
+            }
+            innerBoard.add(new MySquare(c,p));
+        }
+
+        innerBoard.revalidate();
+        innerBoard.repaint();
+    }
+
+    class MySquare extends JComponent {
+
+        Color c;
+        Point2D p;
+        public MySquare(Color c,Point2D p) {
+            this.c = c;
+            this.p = p;
+        }
+
+        public void paint(Graphics g) {
+            g.fillRect((int)p.getX()*SQUARESIZE,(int)p.getY()*SQUARESIZE,SQUARESIZE,SQUARESIZE);
+        }
+
     }
 } 
