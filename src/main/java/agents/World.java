@@ -6,6 +6,7 @@ import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Circle;
+import javafx.util.Pair;
 import main.java.utils.AgentBuilder;
 import main.java.utils.Director;
 import main.java.utils.KdTree;
@@ -110,10 +111,18 @@ public class World {
             generator.setAgentBuilder(warrior);
             generator.setPlatform(container);
 
+            /* Maybye problem with returning position out of border is here?
+               I've added some code in moveAgent, but it won't help. Now program crashes while initializing agents
+               Agent in tree returns the beggining position, so there may be some problem
+             */
             for (int i = 0; i < bluesAgentsNumber; i++) {
                 String agentName = "agentBlue_" + i;
+                /*
+                Why i + 1?
                 AgentInTree ait = new AgentInTree("", AgentsSides.Blues, new Point2D(2, i + 1));
+                 */
 
+                AgentInTree ait = new AgentInTree("", AgentsSides.Blues, new Point2D(2, i));
                 warrior.setAgentName(agentName);
                 warrior.setPosition(ait);
                 generator.constructAgent();
@@ -191,7 +200,10 @@ public class World {
     }
 
     public boolean moveAgent(CannonFodder agent, Point2D destination) {
-        if (agents.isOccupied(new AgentInTree("",AgentsSides.Blues,destination)))
+        Pair borderSize = server.m_frame.getOptionsPanel().getBoardSize();
+        if (agents.isOccupied(new AgentInTree("",AgentsSides.Blues,destination))
+                || destination.getX() >= (int)borderSize.getKey() || destination.getX() < 0
+                || destination.getY() >= (int)borderSize.getValue() || destination.getY() < 0)
             return false;
         else {
             agent.getPosition().setPosition(destination);
