@@ -100,13 +100,14 @@ public class ServerAgent extends Agent {
 
         World world = new World(this, bluesAgentsNumber, redsAgentsNumber);
 
+        m_frame.redrawBoard(world.getAgents());
+
         ArrayList<AID> allAgents = new ArrayList<>();
         allAgents.addAll(world.bluesAgents);
         allAgents.addAll(world.redsAgents);
 
         Collections.shuffle(allAgents);
 
-        //while (!world.bluesAgents.isEmpty() || !world.redsAgents.isEmpty()) {
         ACLMessage newTurn = new ACLMessage(ACLMessage.INFORM);
         newTurn.setConversationId("new-turn");
         for(AID agent : allAgents) {
@@ -121,15 +122,18 @@ public class ServerAgent extends Agent {
             int stepsCounter=0;
             int agentsNumber = allAgents.size();
 
+            long time;
+
             @Override
             public void action() {
                 switch (state) {
                     case 0:
-                        if (stepsCounter == 20) {
+                        if (stepsCounter == 30) {
                             state = 2;
                             break;
                         }
                         send(newTurn);
+                        time = System.currentTimeMillis();
                         state++;
                         break;
                     case 1:
@@ -141,6 +145,8 @@ public class ServerAgent extends Agent {
                                     agentsCounter = 0;
                                     stepsCounter++;
                                     state--;
+                                    if (System.currentTimeMillis()-time < time)
+                                        block(1000-(System.currentTimeMillis()-time));
                                     m_frame.redrawBoard(world.getAgents());
                                     break;
                                 }
@@ -156,35 +162,6 @@ public class ServerAgent extends Agent {
                 return state == 2;
             }
         });
-
-        /*for (int i=0;i<20;i++) {
-
-            send(newTurn);
-
-            try {
-                wait(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
-
-            //for now - slowing down program with empty loop
-            /*for (int j=0;j<100000;j++) {
-
-            }*/
-            //System.out.println("newturn");
-            /*try {
-                wait(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
-        //}
-
-        /*ACLMessage end = new ACLMessage(ACLMessage.INFORM);
-        end.setConversationId("battle-ended");
-        for (AID agent : allAgents)
-            end.addReceiver(agent);
-
-        send(end);*/
 
     }
 

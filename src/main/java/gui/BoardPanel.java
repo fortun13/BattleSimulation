@@ -21,42 +21,10 @@ public class BoardPanel extends JPanel {
     private MySquare[][] squares;
 	private JPanel innerBoard;
 
-    public class A extends JPanel {
-        @Override
-        public void paint(Graphics g) {
-
-            super.paint(g);
-
-            for (int row = 0; row < squares.length; row++)
-                for (int col = 0; col < squares[row].length; col++)
-                    squares[row][col].paint(g);
-
-            int height = squares.length;
-            for (int row = 0; row < squares.length; row++) {
-                for (int col = 0; col < squares[row].length+1; col++) {
-//            	innerBoard.add(squares[row][col]);
-//                squares[row][col].paint(g);
-                    g.drawLine(col * SQUARESIZE, 0, col * SQUARESIZE, height*SQUARESIZE);
-                    g.drawLine(0, row * SQUARESIZE, squares[row].length*SQUARESIZE, row * SQUARESIZE);
-                }
-                g.drawLine(squares.length*SQUARESIZE,0,squares.length*SQUARESIZE,height*SQUARESIZE);
-            }
-            g.drawLine(0,height*SQUARESIZE,squares[0].length*SQUARESIZE,height*SQUARESIZE);
-
-
-        }
-    }
-
-    //public final int WIDTH = COLS*(SQUARESIZE+7);
-    //public final int HEIGHT = ROWS*SQUARESIZE;
-   
-    //public final int HEIGHT = ROWS*(SQUARESIZE+7);
-
-    
     public BoardPanel() {
         super();
         setBackground(Color.WHITE);
-                
+
         setPreferredSize(new Dimension(WIDTH,HEIGHT));
 
         //innerBoard = new JPanel(new GridLayout(ROWS, COLS)) {
@@ -92,14 +60,19 @@ public class BoardPanel extends JPanel {
         //};
 
 
-        
+
     }
-    
+
+    //public final int WIDTH = COLS*(SQUARESIZE+7);
+    //public final int HEIGHT = ROWS*SQUARESIZE;
+   
+    //public final int HEIGHT = ROWS*(SQUARESIZE+7);
+
     public void generateBoard(int height, int width) {
     	//setPreferredSize(new Dimension(WIDTH,HEIGHT));
-    	
+
     	this.removeAll();
-    	
+
     	setPreferredSize(new Dimension(width*(SQUARESIZE)+10, height*(SQUARESIZE)+10));
 
         innerBoard = new A();
@@ -150,20 +123,27 @@ public class BoardPanel extends JPanel {
         innerBoard.revalidate();
         innerBoard.repaint();
     }
-
+    
     public void drawAgents(java.util.List<? extends KdTree.Placed> agents) {
         innerBoard.removeAll();
         for (KdTree.Placed agent : agents) {
             Color c;
             Point2D p = agent.pos();
-            if (((World.AgentInTree)agent).isDead) {
-                c = new Color(0, 0, 0);
-            } else {
-                if (((World.AgentInTree)agent).side == World.AgentsSides.Blues)
-                    c = new Color(1, 0, 199);
-                else
-                    c = new Color(221, 0, 36);
-            }
+
+                if (((World.AgentInTree)agent).side == World.AgentsSides.Blues) {
+                    if (((World.AgentInTree)agent).isDead)
+                        c = new Color(0, 4, 78);
+                    else
+                        c = new Color(4, 3, 228);
+                }
+                else {
+                    if (((World.AgentInTree)agent).isDead) {
+                        c = new Color(75, 0, 0);
+                    }
+                    else
+                        c = new Color(221, 3, 0);
+                }
+
             System.out.println(p);
             //innerBoard.add(new MySquare(c,p));
             squares[(int)p.getX()][(int)p.getY()] = new MySquare(c,p);
@@ -171,6 +151,32 @@ public class BoardPanel extends JPanel {
 
         innerBoard.revalidate();
         innerBoard.repaint();
+    }
+
+    public class A extends JPanel {
+        @Override
+        public void paint(Graphics g) {
+
+            super.paint(g);
+
+            for (int row = 0; row < squares.length; row++)
+                for (int col = 0; col < squares[row].length; col++)
+                    squares[row][col].paint(g);
+
+            int height = squares.length;
+            for (int row = 0; row < squares.length; row++) {
+                for (int col = 0; col < squares[row].length+1; col++) {
+//            	innerBoard.add(squares[row][col]);
+//                squares[row][col].paint(g);
+                    g.drawLine(col * SQUARESIZE, 0, col * SQUARESIZE, height*SQUARESIZE);
+                    g.drawLine(0, row * SQUARESIZE, squares[row].length*SQUARESIZE, row * SQUARESIZE);
+                }
+                g.drawLine(squares.length*SQUARESIZE,0,squares.length*SQUARESIZE,height*SQUARESIZE);
+            }
+            g.drawLine(0,height*SQUARESIZE,squares[0].length*SQUARESIZE,height*SQUARESIZE);
+
+
+        }
     }
 
     class MySquare extends JComponent {

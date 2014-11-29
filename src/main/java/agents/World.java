@@ -143,7 +143,7 @@ public class World {
 
             for (int i = 0; i < redsAgentsNumber; i++) {
                 String agentName = "agentRed_" + i;
-                AgentInTree ait = new AgentInTree("", AgentsSides.Reds, new Point2D(10, i + 1));
+                AgentInTree ait = new AgentInTree("", AgentsSides.Reds, new Point2D(10, i));
 
                 warrior.setAgentName(agentName);
                 warrior.setPosition(ait);
