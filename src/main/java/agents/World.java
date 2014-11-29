@@ -78,22 +78,7 @@ public class World {
 
     private ServerAgent server;
 
-    /*public World() {
-        //initialize empty tree
-        KdTree.StdKd<AgentComparator.AgentSpace> tmp;
-        try {
-            tmp = new KdTree.StdKd<>(new ArrayList<>(), new AgentComparator());
-        } catch (KdTree.KdTreeException e) {
-            tmp = null;
-            e.printStackTrace();
-        }
-        agents = tmp;
-    }*/
-
     public World(ServerAgent server, int bluesAgentsNumber, int redsAgentsNumber) {
-        //initialize tree
-        //start agents
-        //agents = null;
 
         this.server = server;
 
@@ -102,9 +87,6 @@ public class World {
         KdTree.StdKd<AgentComparator.AgentSpace> tmp;
         try {
             List<KdTree.Placed> l = new ArrayList<>(bluesAgentsNumber + redsAgentsNumber);
-
-            //ArrayList<Object> bluesArguments = getAgentArguments(new BerserkBehaviour(), 40, 5, 3, 90, AgentsSides.Blues, this);
-            //ArrayList<Object> redsArguments = getAgentArguments(new BerserkBehaviour(), 40, 5, 3, 90, AgentsSides.Reds, this);
 
             AgentBuilder warrior = new WarriorBuilder(new BerserkBehaviour(),AgentsSides.Blues,this);
             Director generator = new Director();
@@ -126,8 +108,6 @@ public class World {
                 warrior.setAgentName(agentName);
                 warrior.setPosition(ait);
                 generator.constructAgent();
-                //bluesArguments.add(ait);
-                //AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", bluesArguments.toArray());
 
                 AgentController agent = generator.getAgent();
                 ait.setAgentName(agent.getName());
@@ -148,8 +128,6 @@ public class World {
                 warrior.setAgentName(agentName);
                 warrior.setPosition(ait);
                 generator.constructAgent();
-                //redsArguments.add(ait);
-                //AgentController agent = container.createNewAgent(agentName, "main.java.agents.Warrior", redsArguments.toArray());
 
                 AgentController agent = generator.getAgent();
 
@@ -176,18 +154,6 @@ public class World {
         agents = tmp;
     }
 
-    /*public World(ServerAgent server) {
-
-        this(server,10,10);
-    }*/
-
-    /*private ArrayList<Object> getAgentArguments(Behaviour b, int cond, int str, int sp, int acc, AgentsSides s, World w) {
-        //return new ArrayList<Object>().addAll({b,cond,str,sp,acc,s,w});
-        ArrayList<Object> tmp = new ArrayList<>();
-        Collections.addAll(tmp,b,cond,str,sp,acc,s,w);
-        return tmp;
-    }*/
-
     public AgentInTree getNearestEnemy(AgentWithPosition agent) {
         HashSet<AgentsSides> set = new HashSet<>();
         for (AgentsSides side : AgentsSides.values()) {
@@ -209,15 +175,7 @@ public class World {
             agent.getPosition().setPosition(destination);
             return true;
         }
-        //return false; //żeby się nie czepiał :D
     }
-
-    /*public AgentInTree getNearestNeighbor(CannonFodder agent) {
-        HashSet<AgentsSides> set = new HashSet<>();
-        set.add(agent.getAgentSide());
-        
-        return (AgentInTree) agents.nearestNeighbour(agent.getPosition(), new AgentComparator.AgentSpace(set));
-    }*/
 
     public int[] countFriendFoe(AgentWithPosition agent, AgentsSides friendlySide, AgentsSides enemySide){
         int vec[] = new int[2];

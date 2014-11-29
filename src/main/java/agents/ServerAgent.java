@@ -41,39 +41,6 @@ public class ServerAgent extends Agent {
 
             // add the GUI
             setupUI();
-
-            // add a Behaviour to handle messages from guests
-                /*addBehaviour( new CyclicBehaviour( this ) {
-                    public void action() {
-                        ACLMessage msg = receive();
-
-                        if (msg != null) {
-                            if (HELLO.equals( msg.getContent() )) {
-                                // a guest has arrived
-                                m_guestCount++;
-                                setPartyState( "Inviting guests (" + m_guestCount + " have arrived)" );
-
-                                if (m_guestCount == m_guestList.size()) {
-                                    System.out.println( "All guests have arrived, starting conversation" );
-                                    // all guests have arrived
-                                    beginConversation();
-                                }
-                            }
-                            else if (RUMOUR.equals( msg.getContent() )) {
-                                // count the agents who have heard the rumour
-                                incrementRumourCount();
-                            }
-                            else if (msg.getPerformative() == ACLMessage.REQUEST  &&  INTRODUCE.equals( msg.getContent() )) {
-                                // an agent has requested an introduction
-                                doIntroduction( msg.getSender() );
-                            }
-                        }
-                        else {
-                            // if no message is arrived, block the behaviour
-                            block();
-                        }
-                    }
-                } );*/
         }
         catch (Exception e) {
             System.out.println( "Saw exception in ServerAgent: " + e );
@@ -110,9 +77,7 @@ public class ServerAgent extends Agent {
 
         ACLMessage newTurn = new ACLMessage(ACLMessage.INFORM);
         newTurn.setConversationId("new-turn");
-        for(AID agent : allAgents) {
-            newTurn.addReceiver(agent);
-        }
+        allAgents.forEach(newTurn::addReceiver);
 
 
         addBehaviour(new Behaviour() {
@@ -128,7 +93,11 @@ public class ServerAgent extends Agent {
             public void action() {
                 switch (state) {
                     case 0:
-                        if (stepsCounter == 30) {
+                        /*TODO
+                            for now it's fixed number of iterations - but we will have to detect if every agent from one side is dead
+                            and then stop simulation
+                         */
+                        if (stepsCounter == 20) {
                             state = 2;
                             break;
                         }

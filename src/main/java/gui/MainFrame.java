@@ -61,13 +61,13 @@ public class MainFrame extends JFrame {
         validate();
 
         controller = new Controller(this);
-//        addWindowListener(new WindowAdapter() {
-//            @Override
-//            public void windowClosing(WindowEvent e) {
-//                server.doDelete();
-//            }
-//            }
-//        });
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                server.doDelete();
+            }
+
+        });
 
         server = s;
     }
