@@ -18,6 +18,10 @@ public abstract class ReactiveBehaviour extends Behaviour {
         if (msg != null) {
             // probably can do it with msg.getPrformative and some ACL static fields, but for now let it be string
             switch(msg.getConversationId()) {
+                case "enemy-dead":
+                    enemy = null;
+                    enemyPosition = null;
+                    break;
                 case "new-turn":
                     System.out.println("Next turn!! : " + myAgent.getName());
                     decideOnNextStep();
@@ -30,9 +34,9 @@ public abstract class ReactiveBehaviour extends Behaviour {
                 case "battle-ended":
                     System.out.println("WE WON!!");
                     state = 2;
-                    return;
+                    break;
                 case "attack":
-                    ((CannonFodder)myAgent).reactToAttack(msg.getContent());
+                    ((CannonFodder)myAgent).reactToAttack(msg);
                     break;
             }
         } else {

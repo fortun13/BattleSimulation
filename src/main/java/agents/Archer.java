@@ -1,6 +1,7 @@
 package main.java.agents;
 
 import jade.core.AID;
+import jade.lang.acl.ACLMessage;
 
 /**
  * Created by Jakub Fortunka on 19.11.14.
@@ -51,7 +52,7 @@ public class Archer extends CannonFodder {
     }
 
     @Override
-    public void reactToAttack(String content) {
+    public void reactToAttack(ACLMessage msg) {
 
     }
 }

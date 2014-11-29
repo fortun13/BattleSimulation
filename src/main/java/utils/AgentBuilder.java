@@ -5,6 +5,7 @@ import jade.core.behaviours.Behaviour;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
+import main.java.agents.BerserkBehaviour;
 import main.java.agents.ServerAgent;
 import main.java.agents.Warrior;
 import main.java.agents.World;
@@ -21,7 +22,7 @@ public abstract class AgentBuilder {
     protected ArrayList<Object> parameters = new ArrayList<>(7);
 
     World.AgentsSides side;
-    Behaviour behaviour;
+    String behaviourClassname;
     World.AgentInTree position;
     World world;
     String agentName;

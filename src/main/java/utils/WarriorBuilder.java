@@ -6,11 +6,14 @@ import jade.wrapper.ControllerException;
 import main.java.agents.BerserkBehaviour;
 import main.java.agents.World;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 public class WarriorBuilder extends AgentBuilder {
 
-    public WarriorBuilder(Behaviour b, World.AgentsSides s, World w) {
+    public WarriorBuilder(String b, World.AgentsSides s, World w) {
         side = s;
-        behaviour = b;
+        behaviourClassname = b;
         world = w;
     }
 
@@ -57,8 +60,21 @@ public class WarriorBuilder extends AgentBuilder {
     @Override
     public void buildBehaviour() {
         //parameters.add(0,behaviour);
-        //TODO can't be like that - maybe behaviour should implement clonable interface, and we could clone passed behaviour?
-        parameters.add(0,new BerserkBehaviour());
+        try {
+            parameters.add(0, Class.forName(behaviourClassname).getConstructor().newInstance());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        
+        //parameters.add(0,new BerserkBehaviour());
     }
 
     @Override

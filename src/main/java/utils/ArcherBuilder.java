@@ -5,14 +5,16 @@ import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import main.java.agents.World;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * Created by Jakub Fortunka on 21.11.14.
  */
 public class ArcherBuilder extends AgentBuilder {
 
-    public ArcherBuilder(Behaviour b, World.AgentsSides s, World w) {
+    public ArcherBuilder(String b, World.AgentsSides s, World w) {
         side = s;
-        behaviour = b;
+        behaviourClassname = b;
         world = w;
     }
 
@@ -58,7 +60,20 @@ public class ArcherBuilder extends AgentBuilder {
 
     @Override
     public void buildBehaviour() {
-        parameters.add(0,behaviour);
+        //parameters.add(0,behaviour);
+        try {
+            parameters.add(0, Class.forName(behaviourClassname).getConstructor().newInstance());
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -40,6 +40,7 @@ public class Warrior extends CannonFodder {
             msg.setContent(msgContent);
             msg.addReplyTo(getAID());
             msg.addReceiver(enemy);
+            msg.setSender(getAID());
             send(msg);
         }
     }
@@ -50,8 +51,9 @@ public class Warrior extends CannonFodder {
     }
 
     @Override
-    public void reactToAttack(String content) {
+    public void reactToAttack(ACLMessage msg) {
         System.out.println("I'm attacked!! " + getName());
+        String content = msg.getContent();
         String[] el = content.split(":");
         int cond = Integer.valueOf(el[0]);
         int str = Integer.valueOf(el[1]);
@@ -60,9 +62,13 @@ public class Warrior extends CannonFodder {
         //simplest version - if i got the message - then i will get hit
         if (condition <= str) {
             //I am dead
+            condition-=str;
             //TODO should there be method in world, or should we send message to world?
             System.out.println("I'm dead :(");
-            world.killAgent(this);
+            ACLMessage msgAboutDeath = msg.createReply();
+            msgAboutDeath.setConversationId("enemy-dead");
+            send(msgAboutDeath);
+            world.killAgent(this );
         } else {
             // I'm still alive
             condition = condition-str;

@@ -88,7 +88,7 @@ public class World {
         try {
             List<KdTree.Placed> l = new ArrayList<>(bluesAgentsNumber + redsAgentsNumber);
 
-            AgentBuilder warrior = new WarriorBuilder(new BerserkBehaviour(),AgentsSides.Blues,this);
+            AgentBuilder warrior = new WarriorBuilder("main.java.agents.BerserkBehaviour",AgentsSides.Blues,this);
             Director generator = new Director();
             generator.setAgentBuilder(warrior);
             generator.setPlatform(container);

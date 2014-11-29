@@ -1,6 +1,7 @@
 package main.java.agents;
 
 import jade.core.Agent;
+import jade.lang.acl.ACLMessage;
 
 /**
  * Created by Jakub Fortunka on 20.11.14.
@@ -32,5 +33,5 @@ public abstract class AgentWithPosition extends Agent {
         return position;
     }
 
-    public abstract void reactToAttack(String content);
+    public abstract void reactToAttack(ACLMessage msg);
 }
