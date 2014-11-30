@@ -73,7 +73,7 @@ public class KdTree<T, A> {
     public List<T> fetchElements(A area) {
         List<T> ret = new ArrayList<>();
         points = new ArrayList<>();
-        ascending = new ArrayList<>();
+//        ascending = new ArrayList<>();
         tree.getIntersection(area, ret);
         return ret;
     }

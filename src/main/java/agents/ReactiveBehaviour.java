@@ -10,6 +10,7 @@ import jade.lang.acl.ACLMessage;
  */
 public abstract class ReactiveBehaviour extends Behaviour {
 
+    public static final String DELETE = "DELETE";
     protected int state = 0;
     protected World.AgentInTree enemyPosition;
     protected AID enemy;
@@ -41,6 +42,8 @@ public abstract class ReactiveBehaviour extends Behaviour {
                 case "attack":
                     ((CannonFodder)myAgent).reactToAttack(msg);
                     break;
+                case DELETE:
+                    myAgent.doDelete();
             }
         } else {
             block();

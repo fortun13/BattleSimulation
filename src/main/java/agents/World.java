@@ -1,6 +1,7 @@
 package main.java.agents;
 
 import jade.core.AID;
+import jade.lang.acl.ACLMessage;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
@@ -15,6 +16,7 @@ import main.java.utils.WarriorBuilder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by Marek on 2014-11-15.
@@ -23,6 +25,7 @@ import java.util.List;
 public class World {
 
     private final KdTree.StdKd<AgentComparator.AgentSpace> agents;
+    private Semaphore cleared = new Semaphore(0);
 
     public KdTree.StdKd<AgentComparator.AgentSpace> getAgents() {
         return agents;
@@ -30,6 +33,33 @@ public class World {
 
     public ArrayList<AID> bluesAgents = new ArrayList<>();
     public ArrayList<AID> redsAgents = new ArrayList<>();
+
+    public void clean() {
+        if ((bluesAgents.size() | redsAgents.size()) != 0) {
+            ACLMessage m = new ACLMessage(ACLMessage.REQUEST);
+            m.setConversationId(ReactiveBehaviour.DELETE);
+            bluesAgents.forEach(m::addReceiver);
+            redsAgents.forEach(m::addReceiver);
+            server.send(m);
+
+            try {
+                cleared.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void removeAgent(CannonFodder cannonFodder) {
+        agents.rmPoint(cannonFodder.getPosition());
+        switch (cannonFodder.side) {
+            case Blues: bluesAgents.remove(cannonFodder.getAID()); break;
+            case Reds: redsAgents.remove(cannonFodder.getAID()); break;
+        }
+        if ((bluesAgents.size() | redsAgents.size()) == 0) {
+            cleared.release();
+        }
+    }
 
     /*public ArrayList<AID> getBluesAgents() {
         return bluesAgents;
@@ -168,7 +198,10 @@ public class World {
                 || destination.getY() >= (int)borderSize.getValue() || destination.getY() < 0)
             return false;
         else {
-            agent.getPosition().setPosition(destination);
+            AgentInTree position = agent.getPosition();
+            agents.rmPoint(position);
+            position.setPosition(destination);
+            agents.addPoint(position);
             return true;
         }
     }

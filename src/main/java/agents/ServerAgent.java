@@ -13,12 +13,14 @@ import java.util.Collections;
 
 /**
  * Created by Jakub Fortunka on 08.11.14.
+ *
  */
 public class ServerAgent extends Agent {
 
     // Instance variables
     //////////////////////////////////
     protected MainFrame m_frame = null;
+    private World world = null;
 
 
     public ServerAgent() {
@@ -63,9 +65,15 @@ public class ServerAgent extends Agent {
     }
     
     public void startSimulation(int bluesAgentsNumber, int redsAgentsNumber) {
-    	System.out.println("Simulation started");
+        System.out.println("Simulation started");
 
-        World world = new World(this, bluesAgentsNumber, redsAgentsNumber);
+        if (world != null) {
+            System.out.println("clearing the world");
+            world.clean();
+            System.out.println("world cleared");
+        }
+
+        world = new World(this, bluesAgentsNumber, redsAgentsNumber);
 
         m_frame.redrawBoard(world.getAgents());
 
@@ -83,8 +91,8 @@ public class ServerAgent extends Agent {
         addBehaviour(new Behaviour() {
 
             int state = 0;
-            int agentsCounter=0;
-            int stepsCounter=0;
+            int agentsCounter = 0;
+            int stepsCounter = 0;
             int agentsNumber = allAgents.size();
 
             long time;
@@ -114,8 +122,8 @@ public class ServerAgent extends Agent {
                                     agentsCounter = 0;
                                     stepsCounter++;
                                     state--;
-                                    if (System.currentTimeMillis()-time < time)
-                                        block(1000-(System.currentTimeMillis()-time));
+//                                    if (System.currentTimeMillis() - time < time)
+//                                        block(1000 - (System.currentTimeMillis() - time));
                                     m_frame.redrawBoard(world.getAgents());
                                     break;
                                 }
