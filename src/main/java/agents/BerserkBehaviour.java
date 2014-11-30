@@ -1,7 +1,6 @@
 package main.java.agents;
 
 import jade.core.AID;
-import jade.lang.acl.ACLMessage;
 
 /**
  * Created by Jakub Fortunka on 18.11.14.
@@ -9,14 +8,14 @@ import jade.lang.acl.ACLMessage;
  */
 public class BerserkBehaviour extends ReactiveBehaviour {
 
+    public BerserkBehaviour(AID serverAID) {
+        super(serverAID);
+    }
+
     @Override
     public void decideOnNextStep() {
         if (((CannonFodder)myAgent).condition <= 0) {
-            ACLMessage m = new ACLMessage(ACLMessage.INFORM);
-            //TODO it's not good practice - i just want to test if this will work
-            m.addReceiver(new AID("server",false));
-            m.setConversationId("ended-computation");
-            myAgent.send(m);
+            computationEnded();
             return ;
         }
         switch(state) {

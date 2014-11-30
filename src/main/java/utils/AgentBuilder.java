@@ -1,31 +1,31 @@
 package main.java.utils;
 
-import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
+import jade.core.AID;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
 import main.java.agents.BerserkBehaviour;
-import main.java.agents.ServerAgent;
-import main.java.agents.Warrior;
 import main.java.agents.World;
-
-import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * Created by Jakub Fortunka on 21.11.14.
+ *
  */
 public abstract class AgentBuilder {
+    protected AID serverAID;
     protected AgentController agent;
     protected PlatformController platform;
-    protected ArrayList<Object> parameters = new ArrayList<>(7);
+    protected Object[] parameters = new Object[9];
 
     World.AgentsSides side;
-    String behaviourClassname;
+    Class<BerserkBehaviour> behaviourClass;
     World.AgentInTree position;
     World world;
     String agentName;
+
+    protected AgentBuilder(AID serverAID) {
+        this.serverAID = serverAID;
+    }
 
     public void setPlatform(PlatformController platform) {
         this.platform = platform;
@@ -55,6 +55,6 @@ public abstract class AgentBuilder {
         buildSide();
         buildWorld();
         buildPosition();
-    };
+    }
 }
 

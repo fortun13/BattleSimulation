@@ -39,10 +39,6 @@ public class World {
         return redsAgents;
     }*/
 
-    public AID getAID() {
-        return server.getAID();
-    }
-
     public enum AgentsSides {Blues, Reds}
 
     public class AgentInTree implements KdTree.Placed {
@@ -88,7 +84,7 @@ public class World {
         try {
             List<KdTree.Placed> l = new ArrayList<>(bluesAgentsNumber + redsAgentsNumber);
 
-            AgentBuilder warrior = new WarriorBuilder("main.java.agents.BerserkBehaviour",AgentsSides.Blues,this);
+            AgentBuilder warrior = new WarriorBuilder(server.getAID(), BerserkBehaviour.class,AgentsSides.Blues,this);
             Director generator = new Director();
             generator.setAgentBuilder(warrior);
             generator.setPlatform(container);

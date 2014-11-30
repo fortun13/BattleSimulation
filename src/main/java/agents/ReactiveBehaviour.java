@@ -6,12 +6,19 @@ import jade.lang.acl.ACLMessage;
 
 /**
  * Created by Jakub Fortunka on 20.11.14.
+ *
  */
 public abstract class ReactiveBehaviour extends Behaviour {
 
     protected int state = 0;
     protected World.AgentInTree enemyPosition;
     protected AID enemy;
+    private AID serverAID;
+
+    protected ReactiveBehaviour(AID serverAID) {
+        this.serverAID = serverAID;
+    }
+
     @Override
     public void action() {
         ACLMessage msg = myAgent.receive();
@@ -25,11 +32,7 @@ public abstract class ReactiveBehaviour extends Behaviour {
                 case "new-turn":
                     System.out.println("Next turn!! : " + myAgent.getName());
                     decideOnNextStep();
-                    ACLMessage m = new ACLMessage(ACLMessage.INFORM);
-                    //TODO it's not good practice - i just want to test if this will work
-                    m.addReceiver(new AID("server",false));
-                    m.setConversationId("ended-computation");
-                    myAgent.send(m);
+                    computationEnded();
                     break;
                 case "battle-ended":
                     System.out.println("WE WON!!");
@@ -42,6 +45,14 @@ public abstract class ReactiveBehaviour extends Behaviour {
         } else {
             block();
         }
+    }
+
+    protected void computationEnded() {
+        ACLMessage m = new ACLMessage(ACLMessage.INFORM);
+        //TODO it's not good practice - i just want to test if this will work
+        m.addReceiver(serverAID);
+        m.setConversationId("ended-computation");
+        myAgent.send(m);
     }
 
     @Override
