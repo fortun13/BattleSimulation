@@ -3,7 +3,7 @@ package main.java.utils;
 import jade.core.AID;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
-import main.java.agents.BerserkBehaviour;
+import main.java.agents.ReactiveBehaviour;
 import main.java.agents.World;
 
 import java.lang.reflect.Constructor;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 public class WarriorBuilder extends AgentBuilder {
 
-    public WarriorBuilder(AID serverAID, Class<BerserkBehaviour> b, World.AgentsSides s, World w) {
+    public WarriorBuilder(AID serverAID, Class<? extends ReactiveBehaviour> b, World.AgentsSides s, World w) {
         super(serverAID);
         side = s;
         behaviourClass = b;

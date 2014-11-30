@@ -1,15 +1,11 @@
 package main.java.agents;
 
-import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import main.java.gui.MainFrame;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Created by Jakub Fortunka on 08.11.14.
@@ -21,6 +17,7 @@ public class ServerAgent extends Agent {
     //////////////////////////////////
     protected MainFrame m_frame = null;
     private World world = null;
+    private int agentsNumber;
 
 
     public ServerAgent() {
@@ -77,15 +74,11 @@ public class ServerAgent extends Agent {
 
         m_frame.redrawBoard(world.getAgents());
 
-        ArrayList<AID> allAgents = new ArrayList<>();
-        allAgents.addAll(world.bluesAgents);
-        allAgents.addAll(world.redsAgents);
-
-        Collections.shuffle(allAgents);
-
         ACLMessage newTurn = new ACLMessage(ACLMessage.INFORM);
+        world.bluesAgents.forEach(newTurn::addReceiver);
+        world.redsAgents.forEach(newTurn::addReceiver);
+
         newTurn.setConversationId("new-turn");
-        allAgents.forEach(newTurn::addReceiver);
 
 
         addBehaviour(new Behaviour() {
@@ -93,7 +86,6 @@ public class ServerAgent extends Agent {
             int state = 0;
             int agentsCounter = 0;
             int stepsCounter = 0;
-            int agentsNumber = allAgents.size();
 
             long time;
 
@@ -142,4 +134,7 @@ public class ServerAgent extends Agent {
 
     }
 
+    protected void updateState() {
+        agentsNumber = world.bluesAgents.size() + world.redsAgents.size();
+    }
 }

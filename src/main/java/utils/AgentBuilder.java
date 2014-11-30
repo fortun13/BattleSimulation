@@ -4,7 +4,7 @@ import jade.core.AID;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
-import main.java.agents.BerserkBehaviour;
+import main.java.agents.ReactiveBehaviour;
 import main.java.agents.World;
 
 /**
@@ -18,7 +18,7 @@ public abstract class AgentBuilder {
     protected Object[] parameters = new Object[9];
 
     World.AgentsSides side;
-    Class<BerserkBehaviour> behaviourClass;
+    Class<? extends ReactiveBehaviour> behaviourClass;
     World.AgentInTree position;
     World world;
     String agentName;

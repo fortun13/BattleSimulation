@@ -53,12 +53,17 @@ public class World {
     public void removeAgent(CannonFodder cannonFodder) {
         agents.rmPoint(cannonFodder.getPosition());
         switch (cannonFodder.side) {
-            case Blues: bluesAgents.remove(cannonFodder.getAID()); break;
-            case Reds: redsAgents.remove(cannonFodder.getAID()); break;
+            case Blues:
+                bluesAgents.remove(cannonFodder.getAID());
+                break;
+            case Reds:
+                redsAgents.remove(cannonFodder.getAID());
+                break;
         }
         if ((bluesAgents.size() | redsAgents.size()) == 0) {
             cleared.release();
         }
+        server.updateState();
     }
 
     /*public ArrayList<AID> getBluesAgents() {
