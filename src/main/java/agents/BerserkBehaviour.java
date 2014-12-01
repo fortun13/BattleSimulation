@@ -12,6 +12,8 @@ public class BerserkBehaviour extends ReactiveBehaviour {
         super(serverAID);
     }
 
+    private enum ActionType { Attack, GoTo };
+
     @Override
     public void decideOnNextStep() {
         if (((CannonFodder)myAgent).condition <= 0) {
@@ -23,7 +25,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                 //findEnemy, if enemyFound goto state 2
                 enemyPosition = ((AgentWithPosition)myAgent).getNearestEnemy();
                 if (enemyPosition != null) {
-                    System.out.println("Found enemy!" + myAgent.getName());
+                    //System.out.println("Found enemy!" + myAgent.getName());
                     enemy = new AID(enemyPosition.getAgentName(),true);
                     ((AgentWithPosition)myAgent).gotoEnemy(enemyPosition);
                     state++;
@@ -46,10 +48,28 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                     }
                 }
                 if (((AgentWithPosition)myAgent).enemyInRangeOfAttack(enemyPosition))
-                    ((CannonFodder)myAgent).attack(enemy);
+                    doAction(ActionType.Attack);
                 else
-                    ((CannonFodder)myAgent).gotoEnemy(enemyPosition);
+                    doAction(ActionType.GoTo);
+
 //                agent.attack(enemy);
+                break;
+        }
+    }
+
+    private void doAction(ActionType action) {
+        if (enemyPosition.isDead) {
+            enemyPosition = null;
+            enemy = null;
+            state--;
+            return ;
+        }
+        switch(action) {
+            case Attack:
+                ((CannonFodder) myAgent).attack(enemy);
+                break;
+            case GoTo:
+                ((CannonFodder)myAgent).gotoEnemy(enemyPosition);
                 break;
         }
     }

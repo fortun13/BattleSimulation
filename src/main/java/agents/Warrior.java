@@ -32,7 +32,7 @@ public class Warrior extends CannonFodder {
             msg.setContent(String.valueOf(getStrength()));
             msg.setConversationId(String.valueOf(Actions.ATTACK));*/
 
-            System.out.println("Attacking enemy: " + enemy.toString());
+            //System.out.println("Attacking enemy: " + enemy.toString());
 
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setConversationId("attack");
@@ -52,7 +52,7 @@ public class Warrior extends CannonFodder {
 
     @Override
     public void reactToAttack(ACLMessage msg) {
-        System.out.println("I'm attacked!! " + getName());
+        //System.out.println("I'm attacked!! " + getName());
         String content = msg.getContent();
         String[] el = content.split(":");
         int cond = Integer.valueOf(el[0]);
@@ -64,11 +64,11 @@ public class Warrior extends CannonFodder {
             //I am dead
             condition-=str;
             //TODO should there be method in world, or should we send message to world?
-            System.out.println("I'm dead :(");
+            System.out.println("I'm dead :( " + getLocalName());
             ACLMessage msgAboutDeath = msg.createReply();
             msgAboutDeath.setConversationId("enemy-dead");
             send(msgAboutDeath);
-            world.killAgent(this );
+            world.killAgent(this);
         } else {
             // I'm still alive
             condition = condition-str;

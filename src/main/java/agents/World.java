@@ -229,8 +229,12 @@ public class World {
 
     public void killAgent(CannonFodder agent) {
         agent.position.isDead=true;
-        /*agents.rmPoint(agent.getPosition());
-        PlatformController container = server.getContainerController();
+        agents.rmPoint(agent.getPosition());
+        if (agent.getAgentSide() == AgentsSides.Blues)
+            bluesAgents.remove(agent.getAID());
+        else
+            redsAgents.remove(agent.getAID());
+        /*PlatformController container = server.getContainerController();
         try {
             container.getAgent(agent.getName()).kill();
         } catch (ControllerException e) {

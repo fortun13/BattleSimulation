@@ -31,7 +31,7 @@ public abstract class ReactiveBehaviour extends Behaviour {
                     enemyPosition = null;
                     break;
                 case "new-turn":
-                    System.out.println("Next turn!! : " + myAgent.getName());
+                    //System.out.println("Next turn!! : " + myAgent.getName());
                     decideOnNextStep();
                     computationEnded();
                     break;

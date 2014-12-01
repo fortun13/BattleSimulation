@@ -1,14 +1,12 @@
 package main.java.gui;
 
 import javafx.geometry.Point2D;
-import javafx.scene.paint.*;
 import main.java.agents.World;
 import main.java.utils.KdTree;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.Color;
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * Created by Jakub Fortunka on 08.11.14.
@@ -127,7 +125,8 @@ public class BoardPanel extends JPanel {
 
         public void paint(Graphics g) {
             g.setColor(this.c);
-            g.fillRect((int)p.getX()*SQUARESIZE,(int)p.getY()*SQUARESIZE,SQUARESIZE,SQUARESIZE);
+            //g.fillRect((int)p.getX()*SQUARESIZE,(int)p.getY()*SQUARESIZE,SQUARESIZE,SQUARESIZE);
+            g.fillOval((int)p.getX()*SQUARESIZE,(int)p.getY()*SQUARESIZE,SQUARESIZE,SQUARESIZE);
         }
 
     }

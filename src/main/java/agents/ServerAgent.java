@@ -80,6 +80,7 @@ public class ServerAgent extends Agent {
 
         newTurn.setConversationId("new-turn");
 
+        updateState();
 
         addBehaviour(new Behaviour() {
 
@@ -88,6 +89,8 @@ public class ServerAgent extends Agent {
             int stepsCounter = 0;
 
             long time;
+
+            long interval = 1000;
 
             @Override
             public void action() {
@@ -99,11 +102,17 @@ public class ServerAgent extends Agent {
                          */
                         if (stepsCounter == 20) {
                             state = 2;
+                            System.out.println("Turn: " + stepsCounter);
+                            System.out.println("Blues: " + world.bluesAgents.size());
+                            System.out.println("Reds: " + world.redsAgents.size());
                             break;
                         }
                         send(newTurn);
                         time = System.currentTimeMillis();
                         state++;
+                        System.out.println("Turn: " + stepsCounter);
+                        System.out.println("Blues: " + world.bluesAgents.size());
+                        System.out.println("Reds: " + world.redsAgents.size());
                         break;
                     case 1:
                         ACLMessage msg = receive();
@@ -114,8 +123,8 @@ public class ServerAgent extends Agent {
                                     agentsCounter = 0;
                                     stepsCounter++;
                                     state--;
-//                                    if (System.currentTimeMillis() - time < time)
-//                                        block(1000 - (System.currentTimeMillis() - time));
+                                    if (System.currentTimeMillis() - time < interval)
+                                        block(interval - (System.currentTimeMillis() - time));
                                     m_frame.redrawBoard(world.getAgents());
                                     break;
                                 }
