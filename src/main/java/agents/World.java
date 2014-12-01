@@ -216,7 +216,7 @@ public class World {
         int fov = agent.getFieldOfView();
         //number of friends
         HashSet<AgentsSides> friends = new HashSet<>();
-        friends.add(enemySide);
+        friends.add(friendlySide);
         vec[0] = this.agents.fetchElements(new AgentComparator.AgentSpace(friends,
                 new Circle(agent.getPosition().pos().getX(), agent.getPosition().pos().getY(), fov))).size();
         //number of enemies
@@ -225,6 +225,19 @@ public class World {
         vec[1] = this.agents.fetchElements(new AgentComparator.AgentSpace(enemies,
                 new Circle(agent.getPosition().pos().getX(), agent.getPosition().pos().getY(), fov))).size();
         return vec;
+    }
+
+    public List getNeighborFriends(AgentWithPosition agent, AgentsSides friendlySide){
+        int fov = agent.getFieldOfView();
+        //number of friends
+        List<KdTree.Placed> friendlyNeighbors;
+        HashSet<AgentsSides> friends = new HashSet<>();
+        friends.add(friendlySide);
+        friendlyNeighbors = this.agents.fetchElements(new AgentComparator.AgentSpace(friends,
+                new Circle(agent.getPosition().pos().getX(), agent.getPosition().pos().getY(), fov)));
+        //number of enemies
+        HashSet<AgentsSides> enemies = new HashSet<>();
+        return friendlyNeighbors;
     }
 
     public void killAgent(CannonFodder agent) {

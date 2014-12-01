@@ -2,6 +2,9 @@ package main.java.agents;
 
 import jade.core.AID;
 import javafx.geometry.Point2D;
+import main.java.utils.KdTree;
+
+import java.util.List;
 
 /**
  * Created by Jakub Fortunka on 18.11.14.
@@ -94,6 +97,30 @@ public abstract class CannonFodder extends AgentWithPosition {
         }
     }
 
+    protected void keepPosition() {
+        List<KdTree.Placed> friendlyNeighbors;
+        friendlyNeighbors = world.getNeighborFriends(this, this.side);
+        Point2D thisPosition = position.pos();
+        double minDistance = 0, pomDistance, posX, posY;
+        int index = 0;
+        for(int i = 0; i < friendlyNeighbors.size(); ++i) {
+            posX = friendlyNeighbors.get(i).pos().getX();
+            posY = friendlyNeighbors.get(i).pos().getY();
+            pomDistance = Math.sqrt(Math.pow(posX, 2) + Math.pow(posY, 2));
+            if((pomDistance < minDistance) || (minDistance == 0)) {
+                minDistance = pomDistance;
+                index = i;
+            }
+            posX = friendlyNeighbors.get(index).pos().getX();
+            posY = friendlyNeighbors.get(index).pos().getY();
+            int vec[] = new int[] {(int)posX - (int)thisPosition.getX(),
+                    (int)posY - (int)thisPosition.getY()};
+            if (vec[0] != 0) vec[0] = vec[0]/Math.abs(vec[0]);
+            if (vec[1] != 0) vec[1] = vec[1]/Math.abs(vec[1]);
+            Point2D destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getY() + vec[1]);
+            world.moveAgent(this,destination);
+        }
+    }
 
     protected abstract void attack(AID enemy);
 

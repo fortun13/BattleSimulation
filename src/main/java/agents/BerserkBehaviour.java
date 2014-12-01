@@ -32,6 +32,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                 }
                 else {
                     //moveSomewhere
+                    ((AgentWithPosition)myAgent).keepPosition();
                     System.out.println("Staying in place (for now...)");
                 }
                 break;

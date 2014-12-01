@@ -25,6 +25,8 @@ public abstract class AgentWithPosition extends Agent {
 
     protected abstract void gotoEnemy(World.AgentInTree enemy);
 
+    protected abstract void keepPosition();
+
     public World.AgentsSides getAgentSide() {
         return side;
     }
