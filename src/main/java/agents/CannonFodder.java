@@ -97,7 +97,7 @@ public abstract class CannonFodder extends AgentWithPosition {
         }
     }
 
-    protected void keepPosition() {
+    /*protected void keepPosition() {
         List<KdTree.Placed> friendlyNeighbors;
         friendlyNeighbors = world.getNeighborFriends(this, this.side);
         Point2D thisPosition = position.pos();
@@ -106,7 +106,7 @@ public abstract class CannonFodder extends AgentWithPosition {
         for(int i = 0; i < friendlyNeighbors.size(); ++i) {
             posX = friendlyNeighbors.get(i).pos().getX();
             posY = friendlyNeighbors.get(i).pos().getY();
-            pomDistance = Math.sqrt(Math.pow(posX, 2) + Math.pow(posY, 2));
+            pomDistance = Math.sqrt(Math.pow(posX - thisPosition.getX(), 2) + Math.pow(posY - thisPosition.getY(), 2));
             if((pomDistance < minDistance) || (minDistance == 0)) {
                 minDistance = pomDistance;
                 index = i;
@@ -115,11 +115,38 @@ public abstract class CannonFodder extends AgentWithPosition {
             posY = friendlyNeighbors.get(index).pos().getY();
             int vec[] = new int[] {(int)posX - (int)thisPosition.getX(),
                     (int)posY - (int)thisPosition.getY()};
-            if (vec[0] != 0) vec[0] = vec[0]/Math.abs(vec[0]);
-            if (vec[1] != 0) vec[1] = vec[1]/Math.abs(vec[1]);
+            vec[0] = vec[0]/Math.abs(vec[0]);
+            vec[1] = vec[1]/Math.abs(vec[1]);
             Point2D destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getY() + vec[1]);
             world.moveAgent(this,destination);
         }
+     }*/
+
+    protected void keepPosition() {
+        List<KdTree.Placed> friendlyNeighbors;
+        friendlyNeighbors = world.getNeighborFriends(this, this.side);
+        Point2D thisPosition = position.pos();
+        double vec[] = {0, 0};
+        double posX, posY, srDistance = 0, pomDistance;
+        for(int i = 0; i < friendlyNeighbors.size(); ++i) {
+            posX = friendlyNeighbors.get(i).pos().getX();
+            posY = friendlyNeighbors.get(i).pos().getY();
+            srDistance = srDistance + Math.sqrt(Math.pow(posX - thisPosition.getX(), 2) + Math.pow(posY - thisPosition.getY(), 2));
+        }
+
+        for(int i = 0; i < friendlyNeighbors.size(); ++i) {
+            posX = friendlyNeighbors.get(i).pos().getX();
+            posY = friendlyNeighbors.get(i).pos().getY();
+            pomDistance = Math.sqrt(Math.pow(posX - thisPosition.getX(), 2) + Math.pow(posY - thisPosition.getY(), 2));
+            vec[0] = vec[0] + ((posX - thisPosition.getX()) * (pomDistance - srDistance))/pomDistance;
+            vec[1] = vec[1] + ((posY - thisPosition.getY()) * (pomDistance - srDistance))/pomDistance;
+        }
+        vec[0] = Math.round(vec[0]);
+        vec[1] = Math.round(vec[1]);
+        if (vec[0] != 0) vec[0] = vec[0]/Math.abs(vec[0]);
+        if (vec[1] != 0) vec[1] = vec[1]/Math.abs(vec[1]);
+        Point2D destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getY() + vec[1]);
+        world.moveAgent(this,destination);
     }
 
     protected abstract void attack(AID enemy);
