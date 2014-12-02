@@ -11,6 +11,8 @@ public abstract class AgentWithPosition extends Agent {
 
     protected int fieldOfView = 20;
 
+    protected World world;
+
     protected World.AgentInTree position;
 
     protected World.AgentsSides side;
@@ -36,4 +38,8 @@ public abstract class AgentWithPosition extends Agent {
     }
 
     public abstract void reactToAttack(ACLMessage msg);
+
+    public void kill() {
+        world.killAgent(this);
+    }
 }

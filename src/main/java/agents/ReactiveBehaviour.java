@@ -51,6 +51,8 @@ public abstract class ReactiveBehaviour extends Behaviour {
     }
 
     protected void computationEnded() {
+        /*if (((CannonFodder)myAgent).condition <= 0)
+            return;*/
         ACLMessage m = new ACLMessage(ACLMessage.INFORM);
         //TODO it's not good practice - i just want to test if this will work
         m.addReceiver(serverAID);

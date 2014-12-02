@@ -123,9 +123,11 @@ public class ServerAgent extends Agent {
                                     agentsCounter = 0;
                                     stepsCounter++;
                                     state--;
+                                    m_frame.redrawBoard(world.getAgents());
+                                    //System.out.println("Time: " + time);
                                     if (System.currentTimeMillis() - time < interval)
                                         block(interval - (System.currentTimeMillis() - time));
-                                    m_frame.redrawBoard(world.getAgents());
+
                                     break;
                                 }
                             }

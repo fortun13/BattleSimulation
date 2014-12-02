@@ -197,6 +197,8 @@ public class World {
     }
 
     public boolean moveAgent(CannonFodder agent, Point2D destination) {
+        if (destination.getX() < 0 || destination.getY() < 0)
+            return false;
         Pair borderSize = server.m_frame.getOptionsPanel().getBoardSize();
         if (agents.isOccupied(new AgentInTree("",AgentsSides.Blues,destination))
                 || destination.getX() >= (int)borderSize.getKey() || destination.getX() < 0
@@ -240,13 +242,14 @@ public class World {
         return friendlyNeighbors;
     }
 
-    public void killAgent(CannonFodder agent) {
+    public void killAgent(AgentWithPosition agent) {
         agent.position.isDead=true;
         agents.rmPoint(agent.getPosition());
-        if (agent.getAgentSide() == AgentsSides.Blues)
+        /*if (agent.getAgentSide() == AgentsSides.Blues)
             bluesAgents.remove(agent.getAID());
         else
             redsAgents.remove(agent.getAID());
+        server.updateState();*/
         /*PlatformController container = server.getContainerController();
         try {
             container.getAgent(agent.getName()).kill();

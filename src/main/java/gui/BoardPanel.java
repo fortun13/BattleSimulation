@@ -16,10 +16,10 @@ public class BoardPanel extends JPanel {
     private final int HEIGHT = 400;
 	private final int SQUARESIZE = 20;
     
-    private MySquare[][] squares;
+    //private MyAgent[][] squares;
 	private JPanel innerBoard;
 
-    private ArrayList<MySquare> test = new ArrayList<>();
+    private ArrayList<MyAgent> agentsList = new ArrayList<>();
 
     public BoardPanel() {
         super();
@@ -55,7 +55,7 @@ public class BoardPanel extends JPanel {
     
     public void drawAgents(java.util.List<? extends KdTree.Placed> agents) {
         innerBoard.removeAll();
-        test.clear();
+        agentsList.clear();
         for (KdTree.Placed agent : agents) {
             Color c;
             Point2D p = agent.pos();
@@ -77,7 +77,7 @@ public class BoardPanel extends JPanel {
             //System.out.println(p);
             //innerBoard.add(new MySquare(c,p));
             //squares[(int)p.getX()][(int)p.getY()] = new MySquare(c,p);
-            test.add(new MySquare(c,p));
+            agentsList.add(new MyAgent(c, p));
         }
 
         innerBoard.revalidate();
@@ -90,7 +90,7 @@ public class BoardPanel extends JPanel {
 
             super.paint(g);
 
-            for(MySquare s : test) {
+            for(MyAgent s : agentsList) {
                 s.paint(g);
             }
 
@@ -114,11 +114,11 @@ public class BoardPanel extends JPanel {
         }
     }
 
-    class MySquare extends JComponent {
+    class MyAgent extends JComponent {
 
         Color c;
         Point2D p;
-        public MySquare(Color c,Point2D p) {
+        public MyAgent(Color c, Point2D p) {
             this.c = c;
             this.p = p;
         }

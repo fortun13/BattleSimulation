@@ -17,7 +17,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
     @Override
     public void decideOnNextStep() {
         if (((CannonFodder)myAgent).condition <= 0) {
-            computationEnded();
+            //computationEnded();
             return ;
         }
         switch(state) {
@@ -49,30 +49,23 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                     }
                 }
                 if (((AgentWithPosition)myAgent).enemyInRangeOfAttack(enemyPosition))
-                    doAction(ActionType.Attack);
+                    doAction(() -> ((CannonFodder) myAgent).attack(enemy));
                 else
-                    doAction(ActionType.GoTo);
+                    doAction(() -> ((CannonFodder)myAgent).gotoEnemy(enemyPosition));
 
 //                agent.attack(enemy);
                 break;
         }
     }
 
-    private void doAction(ActionType action) {
+    private void doAction(Runnable action) {
         if (enemyPosition.isDead) {
             enemyPosition = null;
             enemy = null;
             state--;
             return ;
         }
-        switch(action) {
-            case Attack:
-                ((CannonFodder) myAgent).attack(enemy);
-                break;
-            case GoTo:
-                ((CannonFodder)myAgent).gotoEnemy(enemyPosition);
-                break;
-        }
+        action.run();
     }
 
 }
