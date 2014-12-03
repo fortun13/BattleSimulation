@@ -200,9 +200,9 @@ public class World {
         if (destination.getX() < 0 || destination.getY() < 0)
             return false;
         Pair borderSize = server.m_frame.getOptionsPanel().getBoardSize();
-        if (agents.isOccupied(new AgentInTree("",AgentsSides.Blues,destination))
-                || destination.getX() >= (int)borderSize.getKey() || destination.getX() < 0
-                || destination.getY() >= (int)borderSize.getValue() || destination.getY() < 0)
+        if (destination.getX() >= (int)borderSize.getKey() || destination.getX() < 0
+                || destination.getY() >= (int)borderSize.getValue() || destination.getY() < 0
+                || agents.isOccupied(new AgentInTree("",AgentsSides.Blues,destination)))
             return false;
         else {
             AgentInTree position = agent.getPosition();

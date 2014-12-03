@@ -46,6 +46,43 @@ public class Warrior extends CannonFodder {
     }
 
     @Override
+    public boolean isMotivated() {
+        int [] count;
+        switch (side) {
+            case Blues:
+                count = world.countFriendFoe(this,side, World.AgentsSides.Reds);
+                break;
+            default:
+                count = world.countFriendFoe(this,side, World.AgentsSides.Blues);
+                break;
+        }
+        if (count[1] == 0)
+            return true;
+        float ratio = count[0]/count[1];
+        if (ratio < psychologicalResistance) {
+            if (ratio < previousRatio) {
+                morale -= 2/ratio;
+            }
+        }
+        if (ratio > 1)
+            morale += 2/ratio;
+
+        previousRatio = ratio;
+        if (morale <= 0)
+            return false;
+        else
+            return true;
+    }
+
+    @Override
+    protected void killYourself(ACLMessage msgToSend) {
+        System.out.println("I'm dead :( " + getLocalName());
+        msgToSend.setConversationId("enemy-dead");
+        send(msgToSend);
+        world.killAgent(this);
+    }
+
+    @Override
     public boolean enemyInRangeOfAttack(World.AgentInTree enemy) {
         return position.pos().distance(enemy.pos()) < 2;
     }
@@ -63,12 +100,7 @@ public class Warrior extends CannonFodder {
         if (condition <= str) {
             //I am dead
             condition-=str;
-            //TODO should there be method in world, or should we send message to world?
-            System.out.println("I'm dead :( " + getLocalName());
-            ACLMessage msgAboutDeath = msg.createReply();
-            msgAboutDeath.setConversationId("enemy-dead");
-            send(msgAboutDeath);
-            world.killAgent(this);
+            killYourself(msg.createReply());
         } else {
             // I'm still alive
             condition = condition-str;

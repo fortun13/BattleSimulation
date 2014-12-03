@@ -1,6 +1,7 @@
 package main.java.agents;
 
 import jade.core.AID;
+import jade.lang.acl.ACLMessage;
 
 /**
  * Created by Jakub Fortunka on 18.11.14.
@@ -10,6 +11,11 @@ public class BerserkBehaviour extends ReactiveBehaviour {
 
     public BerserkBehaviour(AID serverAID) {
         super(serverAID);
+    }
+
+    @Override
+    public void handleMessage(ACLMessage msg) {
+
     }
 
     private enum ActionType { Attack, GoTo };

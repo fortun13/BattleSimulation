@@ -14,8 +14,6 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     protected int condition, strength, speed, accuracy;
 
-    protected World world;
-
     //private MessageTemplate mt;
 
     public void setup() {

@@ -32,8 +32,14 @@ public abstract class ReactiveBehaviour extends Behaviour {
                     break;
                 case "new-turn":
                     //System.out.println("Next turn!! : " + myAgent.getName());
-                    decideOnNextStep();
-                    computationEnded();
+                    if (((AgentWithPosition)myAgent).isMotivated()) {
+                        decideOnNextStep();
+                        computationEnded();
+                    } else {
+                        ACLMessage deathMsg = new ACLMessage(ACLMessage.INFORM);
+                        deathMsg.addReceiver(serverAID);
+                        ((AgentWithPosition)myAgent).killYourself(deathMsg);
+                    }
                     break;
                 case "battle-ended":
                     System.out.println("WE WON!!");
@@ -42,8 +48,15 @@ public abstract class ReactiveBehaviour extends Behaviour {
                 case "attack":
                     ((CannonFodder)myAgent).reactToAttack(msg);
                     break;
+                case "commander-init":
+                    //TODO probably will have to check if this turn message was send to server (boolean?)
+                    myAgent.addBehaviour(new CommanderMinionBehaviour(serverAID,new AID(msg.getContent(),false)));
+                    state = 2;
+                    break;
                 case DELETE:
                     myAgent.doDelete();
+                default:
+                    handleMessage(msg);
             }
         } else {
             block();
@@ -64,6 +77,8 @@ public abstract class ReactiveBehaviour extends Behaviour {
     public boolean done() {
         return state == 2;
     }
+
+    public abstract void handleMessage(ACLMessage msg);
 
     public abstract void decideOnNextStep();
 }
