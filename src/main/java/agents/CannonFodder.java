@@ -130,7 +130,6 @@ public abstract class CannonFodder extends AgentWithPosition {
             posY = friendlyNeighbors.get(i).pos().getY();
             srDistance = srDistance + Math.sqrt(Math.pow(posX - thisPosition.getX(), 2) + Math.pow(posY - thisPosition.getY(), 2));
         }
-
         for(int i = 0; i < friendlyNeighbors.size(); ++i) {
             posX = friendlyNeighbors.get(i).pos().getX();
             posY = friendlyNeighbors.get(i).pos().getY();
@@ -142,6 +141,10 @@ public abstract class CannonFodder extends AgentWithPosition {
         vec[1] = Math.round(vec[1]);
         if (vec[0] != 0) vec[0] = vec[0]/Math.abs(vec[0]);
         if (vec[1] != 0) vec[1] = vec[1]/Math.abs(vec[1]);
+        // Just move your ass...
+        if(vec[0] == 0.0 && vec[1] == 0.0){
+            vec[0] = world.computeBoardCenter(this.position.pos());
+        }
         Point2D destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getY() + vec[1]);
         world.moveAgent(this,destination);
     }

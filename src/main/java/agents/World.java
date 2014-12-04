@@ -26,6 +26,7 @@ import java.util.concurrent.Semaphore;
 public class World {
 
     private final KDTree<AgentInTree> agents2 = new KDTree<AgentInTree>(2);
+    private int boardCenterX;
 
 
     //private final KdTree.StdKd<AgentComparator.AgentSpace> agents;
@@ -130,6 +131,7 @@ public class World {
     public World(ServerAgent server, int bluesAgentsNumber, int redsAgentsNumber) {
 
         this.server = server;
+        this.boardCenterX = (int)server.getFrame().getOptionsPanel().getBoardWidth().getValue();
 
         PlatformController container = server.getContainerController();
 
@@ -411,7 +413,6 @@ public class World {
                 }
             }
             return intersect && super.intersects(area, points, ascending);
-
         }
 
         @Override
@@ -452,5 +453,14 @@ public class World {
                 return agentSides;
             }
         }
+    }
+
+    public double computeBoardCenter(Point2D position){
+        double X = position.getX();
+        double returnVal;
+        returnVal = (boardCenterX/2 - X);
+        if(returnVal != 0)
+            returnVal = returnVal/Math.abs(returnVal) ;
+        return returnVal;
     }
 }

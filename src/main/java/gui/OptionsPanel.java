@@ -19,8 +19,8 @@ public class OptionsPanel extends JPanel {
 
     private SideOptionPanel bluePanel;
     private SideOptionPanel redPanel;
-	
-	public OptionsPanel() {
+
+    public OptionsPanel() {
 		setLayout(new GridLayout(1, 0, 0, 0));
 
         bluePanel = new SideOptionPanel("Blues");
@@ -115,4 +115,7 @@ public class OptionsPanel extends JPanel {
         bluePanel.setSliderChangeListener(listener);
     }
 
+    public JSpinner getBoardWidth() {
+        return boardWidth;
+    }
 }

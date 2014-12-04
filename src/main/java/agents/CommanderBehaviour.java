@@ -66,19 +66,13 @@ public class CommanderBehaviour extends Behaviour {
             case 1:
                 //TODO for now - basic, find nearest enemy and send minions to kill
                 enemyPosition = ((CannonFodder)myAgent).getNearestEnemy();
+                ACLMessage fightingStance = new ACLMessage(ACLMessage.REQUEST);
+                minions.forEach(fightingStance::addReceiver);
                 if (enemyPosition != null)
-                    state++;
-                break;
-            case 2:
-                // enemyPosition can be nulled if enemy was killed in the meantime
-                if (enemyPosition != null) {
-                    ACLMessage sendToKill = new ACLMessage(ACLMessage.REQUEST);
-                    minions.forEach(sendToKill::addReceiver);
-                    sendToKill.setConversationId("kill-enemy");
-                    sendToKill.setContent(enemyPosition.getAgentName());
-                    break;
-                } else
-                    state--;
+                    fightingStance.setConversationId("stance-fight");
+                else
+                    fightingStance.setConversationId("stance-march");
+                state--;
                 break;
 
         }

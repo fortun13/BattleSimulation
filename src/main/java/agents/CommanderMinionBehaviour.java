@@ -9,6 +9,7 @@ import jade.lang.acl.ACLMessage;
 public class CommanderMinionBehaviour extends ReactiveBehaviour {
 
     AID commander;
+    boolean stance = false;
 
     public CommanderMinionBehaviour(AID serverAID, AID commander) {
         super(serverAID);
@@ -18,15 +19,12 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
     @Override
     public void handleMessage(ACLMessage msg) {
         switch(msg.getConversationId()) {
-            case "kill-enemy":
-                enemy = new AID(msg.getContent(),false);
+            case "stance-fight":
+                stance = true;
                 //TODO - get enemyPosition somehow...
                 break;
-            case "move-to-position":
-                String[] e = msg.getContent().split(":");
-                int x = Integer.valueOf(e[0]);
-                int y = Integer.valueOf(e[1]);
-                //((CannonFodder)myAgent).gotoPosition(new Point2D(x,y));
+            case "stance-march":
+                stance = false;
                 break;
         }
     }

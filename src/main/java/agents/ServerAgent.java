@@ -153,4 +153,5 @@ public class ServerAgent extends Agent {
     protected void updateState() {
         agentsNumber = world.bluesAgents.size() + world.redsAgents.size();
     }
+    public MainFrame getFrame() {return this.m_frame;}
 }
