@@ -59,22 +59,24 @@ public class World {
     }
 
     public void removeAgent(CannonFodder cannonFodder) {
-        double[] agentKey = {cannonFodder.position.p.getX(),cannonFodder.position.p.getY()};
-        try {
-            agents2.delete(agentKey);
-        } catch (KeySizeException e) {
-            e.printStackTrace();
-        } catch (KeyMissingException e) {
-            e.printStackTrace();
-        }
-        //agents.rmPoint(cannonFodder.getPosition());
-        switch (cannonFodder.side) {
-            case Blues:
-                bluesAgents.remove(cannonFodder.getAID());
-                break;
-            case Reds:
-                redsAgents.remove(cannonFodder.getAID());
-                break;
+        if (!cannonFodder.position.isDead) {
+            double[] agentKey = {cannonFodder.position.p.getX(), cannonFodder.position.p.getY()};
+            try {
+                agents2.delete(agentKey);
+            } catch (KeySizeException e) {
+                e.printStackTrace();
+            } catch (KeyMissingException e) {
+                e.printStackTrace();
+            }
+            //agents.rmPoint(cannonFodder.getPosition());
+            switch (cannonFodder.side) {
+                case Blues:
+                    bluesAgents.remove(cannonFodder.getAID());
+                    break;
+                case Reds:
+                    redsAgents.remove(cannonFodder.getAID());
+                    break;
+            }
         }
         if ((bluesAgents.size() | redsAgents.size()) == 0) {
             cleared.release();
@@ -364,11 +366,16 @@ public class World {
         } catch (KeyMissingException e) {
             e.printStackTrace();
         }
+        if (bluesAgents.contains(agent.getAID()))
+            bluesAgents.remove(agent.getAID());
+        else if (redsAgents.contains(agent.getAID()))
+            redsAgents.remove(agent.getAID());
+
         /*if (agent.getAgentSide() == AgentsSides.Blues)
             bluesAgents.remove(agent.getAID());
         else
-            redsAgents.remove(agent.getAID());
-        server.updateState();*/
+            redsAgents.remove(agent.getAID());*/
+        server.updateState();
         /*PlatformController container = server.getContainerController();
         try {
             container.getAgent(agent.getName()).kill();

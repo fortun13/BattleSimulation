@@ -32,7 +32,7 @@ public class Warrior extends CannonFodder {
             msg.setContent(String.valueOf(getStrength()));
             msg.setConversationId(String.valueOf(Actions.ATTACK));*/
 
-            System.out.println(getLocalName() + " Attacking enemy: " + enemy.toString());
+            //System.out.println(getLocalName() + " Attacking enemy: " + enemy.toString());
 
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setConversationId("attack");

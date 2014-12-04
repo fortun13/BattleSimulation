@@ -72,8 +72,8 @@ public abstract class ReactiveBehaviour extends Behaviour {
         m.setConversationId("ended-computation");
         myAgent.send(m);
 
-        if (!((AgentWithPosition)myAgent).position.isDead)
-            System.out.println(myAgent.getLocalName() + " pos: " + ((AgentWithPosition)myAgent).position.p);
+        /*if (!((AgentWithPosition)myAgent).position.isDead)
+            System.out.println(myAgent.getLocalName() + " pos: " + ((AgentWithPosition)myAgent).position.p);*/
     }
 
     @Override

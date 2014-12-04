@@ -1,7 +1,12 @@
 package main.java.agents;
 
+import edu.wlu.cs.levy.CG.KeySizeException;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
+import javafx.geometry.Point2D;
+
+import java.util.ArrayList;
 
 /**
  * Created by Jakub Fortunka on 20.11.14.
@@ -43,6 +48,20 @@ public abstract class AgentWithPosition extends Agent {
         return position;
     }
 
+    public ArrayList<AID> getMinionsWithinRange(Point2D commanderPlace, int attractionForce, World.AgentsSides side) {
+        double[] key = {commanderPlace.getX(),commanderPlace.getY()};
+        ArrayList<World.AgentInTree> list = new ArrayList<>();
+        try {
+            world.getAgents2().nearestEuclidean(key,attractionForce).stream().filter(a -> a.side==side).forEach(list::add);
+        } catch (KeySizeException e) {
+            e.printStackTrace();
+        }
+        ArrayList<AID> ans = new ArrayList<>();
+        for (World.AgentInTree a : list) {
+            ans.add(new AID(a.getAgentName(),false));
+        }
+        return ans;
+    }
 
     public abstract void reactToAttack(ACLMessage msg);
 

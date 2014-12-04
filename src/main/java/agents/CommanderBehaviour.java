@@ -56,7 +56,7 @@ public class CommanderBehaviour extends Behaviour {
         switch (state) {
             case 0:
                 //TODO - get some limit for controlled minions
-                //minions = ((AgentWithPosition) myAgent).getFoesWithinRange(((Commander) myAgent).attractionForce);
+                minions = ((AgentWithPosition) myAgent).getMinionsWithinRange(((Commander)myAgent).position.p,((Commander) myAgent).attractionForce, ((Commander)myAgent).side);
                 ACLMessage commanderAddMessage = new ACLMessage(ACLMessage.REQUEST);
                 commanderAddMessage.setConversationId("commander-init");
                 commanderAddMessage.setContent(myAgent.getName());

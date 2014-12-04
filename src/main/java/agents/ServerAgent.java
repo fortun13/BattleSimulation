@@ -101,19 +101,22 @@ public class ServerAgent extends Agent {
                             for now it's fixed number of iterations - but we will have to detect if every agent from one side is dead
                             and then stop simulation
                          */
-                        if (stepsCounter == 20) {
+                        if (stepsCounter == 50) {
                             state = 2;
                             System.out.println("Turn: " + stepsCounter);
                             System.out.println("Blues: " + world.bluesAgents.size());
                             System.out.println("Reds: " + world.redsAgents.size());
+                            System.out.println("State: " + agentsNumber);
                             break;
                         }
+
                         send(newTurn);
                         time = System.currentTimeMillis();
                         state++;
                         System.out.println("Turn: " + stepsCounter);
                         System.out.println("Blues: " + world.bluesAgents.size());
                         System.out.println("Reds: " + world.redsAgents.size());
+                        System.out.println("State: " + agentsNumber);
                         break;
                     case 1:
                         ACLMessage msg = receive();
