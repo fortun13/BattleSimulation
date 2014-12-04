@@ -72,7 +72,8 @@ public class ServerAgent extends Agent {
 
         world = new World(this, bluesAgentsNumber, redsAgentsNumber);
 
-        m_frame.redrawBoard(world.getAgents());
+        //m_frame.redrawBoard(world.getAgents());
+        m_frame.redrawBoard2(world.getAgents2());
 
         ACLMessage newTurn = new ACLMessage(ACLMessage.INFORM);
         world.bluesAgents.forEach(newTurn::addReceiver);
@@ -123,7 +124,8 @@ public class ServerAgent extends Agent {
                                     agentsCounter = 0;
                                     stepsCounter++;
                                     state--;
-                                    m_frame.redrawBoard(world.getAgents());
+                                    m_frame.redrawBoard2(world.getAgents2());
+                                   //m_frame.redrawBoard(world.getAgents());
                                     //System.out.println("Time: " + time);
                                     if (System.currentTimeMillis() - time < interval)
                                         block(interval - (System.currentTimeMillis() - time));

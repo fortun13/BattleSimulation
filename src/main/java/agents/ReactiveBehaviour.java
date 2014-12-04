@@ -14,7 +14,7 @@ public abstract class ReactiveBehaviour extends Behaviour {
     protected int state = 0;
     protected World.AgentInTree enemyPosition;
     protected AID enemy;
-    private AID serverAID;
+    protected AID serverAID;
 
     protected ReactiveBehaviour(AID serverAID) {
         this.serverAID = serverAID;
@@ -32,6 +32,10 @@ public abstract class ReactiveBehaviour extends Behaviour {
                     break;
                 case "new-turn":
                     //System.out.println("Next turn!! : " + myAgent.getName());
+                    if (((AgentWithPosition)myAgent).position.isDead) {
+                        computationEnded();
+                        break;
+                    }
                     if (((AgentWithPosition)myAgent).isMotivated()) {
                         decideOnNextStep();
                         computationEnded();
@@ -39,6 +43,7 @@ public abstract class ReactiveBehaviour extends Behaviour {
                         ACLMessage deathMsg = new ACLMessage(ACLMessage.INFORM);
                         deathMsg.addReceiver(serverAID);
                         ((AgentWithPosition)myAgent).killYourself(deathMsg);
+                        computationEnded();
                     }
                     break;
                 case "battle-ended":
@@ -47,11 +52,6 @@ public abstract class ReactiveBehaviour extends Behaviour {
                     break;
                 case "attack":
                     ((CannonFodder)myAgent).reactToAttack(msg);
-                    break;
-                case "commander-init":
-                    //TODO probably will have to check if this turn message was send to server (boolean?)
-                    myAgent.addBehaviour(new CommanderMinionBehaviour(serverAID,new AID(msg.getContent(),false)));
-                    state = 2;
                     break;
                 case DELETE:
                     myAgent.doDelete();
@@ -71,6 +71,9 @@ public abstract class ReactiveBehaviour extends Behaviour {
         m.addReceiver(serverAID);
         m.setConversationId("ended-computation");
         myAgent.send(m);
+
+        if (!((AgentWithPosition)myAgent).position.isDead)
+            System.out.println(myAgent.getLocalName() + " pos: " + ((AgentWithPosition)myAgent).position.p);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package main.java.gui;
 
+import edu.wlu.cs.levy.CG.KDTree;
+import edu.wlu.cs.levy.CG.KeySizeException;
 import javafx.scene.shape.Circle;
 import main.java.adapters.Controller;
 import main.java.agents.ServerAgent;
@@ -7,11 +9,9 @@ import main.java.agents.World;
 import main.java.utils.KdTree;
 
 import javax.swing.*;
-
-import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.*;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -79,6 +79,18 @@ public class MainFrame extends JFrame {
         List<? extends KdTree.Placed> ag = agents.fetchElements(new World.AgentComparator.AgentSpace(sides, new Circle(0, 0, 1000)));
         //((World.AgentInTree)ag.get(0)).isDead = false;
         boardPanel.drawAgents(ag);
+    }
+
+    public void redrawBoard2(KDTree<World.AgentInTree> agents) {
+        double[] testKey = {0,0};
+        double[] upperKey = {1000,1000};
+        List<World.AgentInTree> lst = null;
+        try {
+            lst = agents.range(testKey,upperKey);
+        } catch (KeySizeException e) {
+            e.printStackTrace();
+        }
+        boardPanel.drawAgents(lst);
     }
 
     public BoardPanel getBoardPanel() {

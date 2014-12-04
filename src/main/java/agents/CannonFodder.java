@@ -2,7 +2,6 @@ package main.java.agents;
 
 import jade.core.AID;
 import javafx.geometry.Point2D;
-import main.java.utils.KdTree;
 
 import java.util.List;
 
@@ -65,11 +64,6 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     @Override
     protected void gotoEnemy(World.AgentInTree enemy) {
-        // I don't really know...
-        // I mean - here should be computed some kind of "vector" in which we will be travelling
-        // If agent is in range of other agent - then set destination to closest free point
-        // If not - then approach other agent as fast as possible (using computed vector)
-
         // Vector between agent and spotted enemy
 
         Point2D thisPosition = position.pos();
@@ -93,6 +87,7 @@ public abstract class CannonFodder extends AgentWithPosition {
                 }*/
             }
         }
+        //System.out.println(this.getLocalName() + " pos: " + position.p);
     }
 
     /*protected void keepPosition() {
@@ -121,8 +116,12 @@ public abstract class CannonFodder extends AgentWithPosition {
      }*/
 
     protected void keepPosition() {
-        List<KdTree.Placed> friendlyNeighbors;
+        //List<KdTree.Placed> friendlyNeighbors;
+        List<World.AgentInTree> friendlyNeighbors;
+
         friendlyNeighbors = world.getNeighborFriends(this, this.side);
+
+
         Point2D thisPosition = position.pos();
         double vec[] = {0, 0};
         double posX, posY, srDistance = 0, pomDistance;

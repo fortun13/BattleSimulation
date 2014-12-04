@@ -2,7 +2,6 @@ package main.java.agents;
 
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
-import javafx.geometry.Point2D;
 
 /**
  * Created by Fortun on 2014-12-03.
@@ -27,7 +26,7 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                 String[] e = msg.getContent().split(":");
                 int x = Integer.valueOf(e[0]);
                 int y = Integer.valueOf(e[1]);
-                ((CannonFodder)myAgent).gotoPosition(new Point2D(x,y));
+                //((CannonFodder)myAgent).gotoPosition(new Point2D(x,y));
                 break;
         }
     }

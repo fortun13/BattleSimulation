@@ -32,7 +32,7 @@ public class Warrior extends CannonFodder {
             msg.setContent(String.valueOf(getStrength()));
             msg.setConversationId(String.valueOf(Actions.ATTACK));*/
 
-            //System.out.println("Attacking enemy: " + enemy.toString());
+            System.out.println(getLocalName() + " Attacking enemy: " + enemy.toString());
 
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setConversationId("attack");
@@ -47,7 +47,8 @@ public class Warrior extends CannonFodder {
 
     @Override
     public boolean isMotivated() {
-        int [] count;
+        return true;
+        /*int [] count;
         switch (side) {
             case Blues:
                 count = world.countFriendFoe(this,side, World.AgentsSides.Reds);
@@ -71,7 +72,7 @@ public class Warrior extends CannonFodder {
         if (morale <= 0)
             return false;
         else
-            return true;
+            return true;*/
     }
 
     @Override
