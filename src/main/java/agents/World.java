@@ -82,7 +82,7 @@ public class World {
         if ((bluesAgents.size() | redsAgents.size()) == 0) {
             cleared.release();
         }
-        server.updateState();
+        //server.updateState();
     }
 
     /*public ArrayList<AID> getBluesAgents() {
@@ -377,7 +377,7 @@ public class World {
             bluesAgents.remove(agent.getAID());
         else
             redsAgents.remove(agent.getAID());*/
-        server.updateState();
+        //server.updateState();
         /*PlatformController container = server.getContainerController();
         try {
             container.getAgent(agent.getLocalName()).kill();

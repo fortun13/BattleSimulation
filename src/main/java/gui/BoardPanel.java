@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class BoardPanel extends JPanel {
     private final int WIDTH = 800;
     private final int HEIGHT = 400;
-	private final int SQUARESIZE = 20;
+	private final int SQUARESIZE = 10;
     
     //private MyAgent[][] squares;
 	private JPanel innerBoard;

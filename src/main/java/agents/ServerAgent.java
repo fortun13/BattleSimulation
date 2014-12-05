@@ -118,7 +118,7 @@ public class ServerAgent extends Agent {
 
                         send(newTurn);
                         time = System.currentTimeMillis();
-                        state++;
+                        state = 1;
                         System.out.println("Turn: " + stepsCounter);
                         //System.out.println("Blues: " + world.bluesAgents.size());
                         //System.out.println("Reds: " + world.redsAgents.size());
@@ -132,18 +132,19 @@ public class ServerAgent extends Agent {
                                 if (agentsCounter == agentsNumber) {
                                     agentsCounter = 0;
                                     stepsCounter++;
-                                    state--;
+
                                     m_frame.redrawBoard2(world.getAgents2());
                                    //m_frame.redrawBoard(world.getAgents());
                                     //System.out.println("Time: " + time);
                                     while (System.currentTimeMillis() - time < interval)
                                         block(interval - (System.currentTimeMillis() - time));
 
+                                    state = 0;
                                     break;
                                 }
                             } else if (msg.getConversationId().equals("agent-dead")) {
                                 //AID sender = msg.getSender();
-                                newTurn.removeReceiver(msg.getSender());
+                                //newTurn.removeReceiver(msg.getSender());
                                 /*if (world.bluesAgents.contains(sender)) {
                                     world.bluesAgents.remove(sender);
                                     newTurn.removeReceiver(sender);
@@ -151,7 +152,7 @@ public class ServerAgent extends Agent {
                                     world.redsAgents.remove(sender);
                                     newTurn.removeReceiver(sender);
                                 }*/
-                                updateState();
+                                //updateState();
 
                                 while (System.currentTimeMillis() - time < interval)
                                     block(interval - (System.currentTimeMillis() - time));
