@@ -91,7 +91,7 @@ public class ServerAgent extends Agent {
 
             long time;
 
-            long interval = 1000;
+            long interval = 500;
 
             @Override
             public void action() {
@@ -101,12 +101,18 @@ public class ServerAgent extends Agent {
                             for now it's fixed number of iterations - but we will have to detect if every agent from one side is dead
                             and then stop simulation
                          */
-                        if (stepsCounter == 50) {
+                        if (world.redsAgents.size() == 0 || world.bluesAgents.size() == 0) {
                             state = 2;
                             System.out.println("Turn: " + stepsCounter);
-                            System.out.println("Blues: " + world.bluesAgents.size());
-                            System.out.println("Reds: " + world.redsAgents.size());
-                            System.out.println("State: " + agentsNumber);
+                            //System.out.println("Blues: " + world.bluesAgents.size());
+                            //System.out.println("Reds: " + world.redsAgents.size());
+                            //System.out.println("State: " + agentsNumber);
+                            ACLMessage endBattle = new ACLMessage(ACLMessage.INFORM);
+                            world.redsAgents.forEach(endBattle::addReceiver);
+                            world.bluesAgents.forEach(endBattle::addReceiver);
+                            endBattle.setConversationId("battle-ended");
+                            send(endBattle);
+                            m_frame.redrawBoard2(world.getAgents2());
                             break;
                         }
 
@@ -114,9 +120,9 @@ public class ServerAgent extends Agent {
                         time = System.currentTimeMillis();
                         state++;
                         System.out.println("Turn: " + stepsCounter);
-                        System.out.println("Blues: " + world.bluesAgents.size());
-                        System.out.println("Reds: " + world.redsAgents.size());
-                        System.out.println("State: " + agentsNumber);
+                        //System.out.println("Blues: " + world.bluesAgents.size());
+                        //System.out.println("Reds: " + world.redsAgents.size());
+                        //System.out.println("State: " + agentsNumber);
                         break;
                     case 1:
                         ACLMessage msg = receive();
@@ -130,11 +136,26 @@ public class ServerAgent extends Agent {
                                     m_frame.redrawBoard2(world.getAgents2());
                                    //m_frame.redrawBoard(world.getAgents());
                                     //System.out.println("Time: " + time);
-                                    if (System.currentTimeMillis() - time < interval)
+                                    while (System.currentTimeMillis() - time < interval)
                                         block(interval - (System.currentTimeMillis() - time));
 
                                     break;
                                 }
+                            } else if (msg.getConversationId().equals("agent-dead")) {
+                                //AID sender = msg.getSender();
+                                newTurn.removeReceiver(msg.getSender());
+                                /*if (world.bluesAgents.contains(sender)) {
+                                    world.bluesAgents.remove(sender);
+                                    newTurn.removeReceiver(sender);
+                                } else if (world.redsAgents.contains(sender)) {
+                                    world.redsAgents.remove(sender);
+                                    newTurn.removeReceiver(sender);
+                                }*/
+                                updateState();
+
+                                while (System.currentTimeMillis() - time < interval)
+                                    block(interval - (System.currentTimeMillis() - time));
+
                             }
                         } else {
                             block();
@@ -153,5 +174,8 @@ public class ServerAgent extends Agent {
     protected void updateState() {
         agentsNumber = world.bluesAgents.size() + world.redsAgents.size();
     }
-    public MainFrame getFrame() {return this.m_frame;}
+
+    public MainFrame getFrame() {
+        return m_frame;
+    }
 }

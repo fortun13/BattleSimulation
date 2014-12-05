@@ -126,7 +126,7 @@ public class World {
         }
     }
 
-    private ServerAgent server;
+    public ServerAgent server;
 
     public World(ServerAgent server, int bluesAgentsNumber, int redsAgentsNumber) {
 
@@ -380,7 +380,7 @@ public class World {
         server.updateState();
         /*PlatformController container = server.getContainerController();
         try {
-            container.getAgent(agent.getName()).kill();
+            container.getAgent(agent.getLocalName()).kill();
         } catch (ControllerException e) {
             e.printStackTrace();
         }*/

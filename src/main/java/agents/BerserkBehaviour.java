@@ -53,7 +53,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                     enemyPosition = ((AgentWithPosition)myAgent).getNearestEnemy();
                     if (enemyPosition == null) {
                         state--;
-                        break;
+                        return ;
                     } else {
                         enemy = new AID(enemyPosition.getAgentName(),true);
                     }

@@ -47,8 +47,8 @@ public class Warrior extends CannonFodder {
 
     @Override
     public boolean isMotivated() {
-        return true;
-        /*int [] count;
+        //return true;
+        int [] count;
         switch (side) {
             case Blues:
                 count = world.countFriendFoe(this,side, World.AgentsSides.Reds);
@@ -57,30 +57,39 @@ public class Warrior extends CannonFodder {
                 count = world.countFriendFoe(this,side, World.AgentsSides.Blues);
                 break;
         }
+        //System.out.println("Friends: " + count[0] + " Enemies: " + count[1]);
         if (count[1] == 0)
             return true;
-        float ratio = count[0]/count[1];
-        if (ratio < psychologicalResistance) {
-            if (ratio < previousRatio) {
-                morale -= 2/ratio;
-            }
+        double ratio = ((double)count[0])/((double)count[1]);
+        //System.out.println("Ratio: " + ratio);
+        if (ratio < psychologicalResistance && ratio < previousRatio) {
+            morale -= (1/ratio +2);
+
         }
-        if (ratio > 1)
-            morale += 2/ratio;
+        if (ratio >= 1 && morale<50)
+            morale += ratio;
 
         previousRatio = ratio;
+        //System.out.println(getLocalName() + " Morale: " + morale);
         if (morale <= 0)
             return false;
         else
-            return true;*/
+            return true;
     }
 
     @Override
     protected void killYourself(ACLMessage msgToSend) {
         System.out.println("I'm dead :( " + getLocalName());
+        sendMessageToEnemy(msgToSend);
+        //msgToSend.setConversationId("enemy-dead");
+        //msgToSend.addReceiver(world.server.getAID());
+        //send(msgToSend);
+        world.killAgent(this);
+    }
+
+    protected void sendMessageToEnemy(ACLMessage msgToSend) {
         msgToSend.setConversationId("enemy-dead");
         send(msgToSend);
-        world.killAgent(this);
     }
 
     @Override
@@ -90,6 +99,10 @@ public class Warrior extends CannonFodder {
 
     @Override
     public void reactToAttack(ACLMessage msg) {
+        if (position.isDead) {
+            sendMessageToEnemy(msg.createReply());
+            return ;
+        }
         //System.out.println("I'm attacked!! " + getName());
         String content = msg.getContent();
         String[] el = content.split(":");
@@ -101,6 +114,11 @@ public class Warrior extends CannonFodder {
         if (condition <= str) {
             //I am dead
             condition-=str;
+            //ACLMessage toServer = new ACLMessage(ACLMessage.INFORM);
+            //toServer.addReceiver(world.server.getAID());
+            //toServer.setConversationId("agent-dead");
+            //send(toServer);
+
             killYourself(msg.createReply());
         } else {
             // I'm still alive

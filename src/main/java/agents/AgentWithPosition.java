@@ -16,11 +16,11 @@ public abstract class AgentWithPosition extends Agent {
 
     protected int fieldOfView = 20;
 
-    protected int morale = 50;
+    protected double morale = 50;
 
-    protected float previousRatio=1;
+    protected double previousRatio=1;
 
-    protected float psychologicalResistance = 1;
+    protected double psychologicalResistance = 0.7;
 
     protected World world;
 
@@ -69,7 +69,4 @@ public abstract class AgentWithPosition extends Agent {
 
     protected abstract void killYourself(ACLMessage msgToSend);
 
-    public void kill() {
-        world.killAgent(this);
-    }
 }

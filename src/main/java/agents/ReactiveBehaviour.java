@@ -32,19 +32,16 @@ public abstract class ReactiveBehaviour extends Behaviour {
                     break;
                 case "new-turn":
                     //System.out.println("Next turn!! : " + myAgent.getName());
-                    if (((AgentWithPosition)myAgent).position.isDead) {
-                        computationEnded();
-                        break;
-                    }
-                    if (((AgentWithPosition)myAgent).isMotivated()) {
+                    if (((AgentWithPosition)myAgent).position.isDead) ;
+                        //state = 2;
+                    else if (((AgentWithPosition)myAgent).isMotivated()) {
                         decideOnNextStep();
-                        computationEnded();
                     } else {
                         ACLMessage deathMsg = new ACLMessage(ACLMessage.INFORM);
                         deathMsg.addReceiver(serverAID);
                         ((AgentWithPosition)myAgent).killYourself(deathMsg);
-                        computationEnded();
                     }
+                    computationEnded();
                     break;
                 case "battle-ended":
                     System.out.println("WE WON!!");
@@ -55,6 +52,7 @@ public abstract class ReactiveBehaviour extends Behaviour {
                     break;
                 case DELETE:
                     myAgent.doDelete();
+                    break;
                 default:
                     handleMessage(msg);
             }
