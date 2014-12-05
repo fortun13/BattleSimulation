@@ -2,10 +2,13 @@ package main.java.gui;
 
 import javafx.geometry.Point2D;
 import main.java.agents.World;
-import main.java.utils.KdTree;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -14,7 +17,7 @@ import java.util.ArrayList;
 public class BoardPanel extends JPanel {
     private final int WIDTH = 800;
     private final int HEIGHT = 400;
-	private final int SQUARESIZE = 10;
+	private final int SQUARESIZE = 20;
     
     //private MyAgent[][] squares;
 	private JPanel innerBoard;
@@ -53,10 +56,10 @@ public class BoardPanel extends JPanel {
         innerBoard.repaint();
     }
     
-    public void drawAgents(java.util.List<? extends KdTree.Placed> agents) {
+    public void drawAgents(java.util.List<World.AgentInTree> agents) {
         innerBoard.removeAll();
         agentsList.clear();
-        for (KdTree.Placed agent : agents) {
+        for (World.AgentInTree agent : agents) {
             Color c;
             Point2D p = agent.pos();
 
@@ -77,7 +80,7 @@ public class BoardPanel extends JPanel {
             //System.out.println(p);
             //innerBoard.add(new MySquare(c,p));
             //squares[(int)p.getX()][(int)p.getY()] = new MySquare(c,p);
-            agentsList.add(new MyAgent(c, p));
+            agentsList.add(new MyAgent(c, p,agent.type));
         }
 
         innerBoard.revalidate();
@@ -118,15 +121,27 @@ public class BoardPanel extends JPanel {
 
         Color c;
         Point2D p;
-        public MyAgent(Color c, Point2D p) {
+        World.AgentType type;
+
+        public MyAgent(Color c, Point2D p, World.AgentType type) {
             this.c = c;
             this.p = p;
+            this.type = type;
+
+
         }
 
         public void paint(Graphics g) {
             g.setColor(this.c);
             //g.fillRect((int)p.getX()*SQUARESIZE,(int)p.getY()*SQUARESIZE,SQUARESIZE,SQUARESIZE);
             g.fillOval((int)p.getX()*SQUARESIZE,(int)p.getY()*SQUARESIZE,SQUARESIZE,SQUARESIZE);
+            //TODO I think images should be stored somewhere, and here we should use them to draw, but for now it works
+            try {
+                BufferedImage image = ImageIO.read(new File(type.getValue()));
+                g.drawImage(image,(int)p.getX()*SQUARESIZE,(int)p.getY()*SQUARESIZE,null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }

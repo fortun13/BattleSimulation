@@ -13,6 +13,7 @@ public class OptionsPanel extends JPanel {
 	//private final int HEIGTH = 300;
 	
 	private JButton generateBoard;
+    private JButton spawnAgents;
 	private JButton btnStartSimulation;
 	private JSpinner boardWidth;
 	private JSpinner boardHeight;
@@ -28,28 +29,6 @@ public class OptionsPanel extends JPanel {
 
         add(bluePanel);
         add(redPanel);
-		
-		/*JPanel bluePanel = new JPanel();
-		bluePanel.setBorder(BorderFactory.createTitledBorder("Blues"));
-		add(bluePanel);
-		bluePanel.setLayout(new GridLayout(1, 0, 0, 0));
-		
-		JPanel blueAgentsSliderPanel = new JPanel();
-		blueAgentsSliderPanel.setBorder(BorderFactory.createTitledBorder("No. Agents"));
-		bluePanel.add(blueAgentsSliderPanel);
-		
-		JSpinner bluesAgentsSpinner = new JSpinner();
-		
-		blueAgentsSliderPanel.add(bluesAgentsSpinner);
-		
-		JSlider blueAgentsSlider = new JSlider();
-		blueAgentsSlider.setValue(20);
-		bluesAgentsSpinner.setValue(20);
-		blueAgentsSliderPanel.add(blueAgentsSlider);
-		
-		JPanel redPanel = new JPanel();
-		redPanel.setBorder(BorderFactory.createTitledBorder("Reds"));
-		add(redPanel);*/
 		
 		JPanel generalPanel = new JPanel();
 		generalPanel.setBorder(BorderFactory.createTitledBorder("General"));
@@ -81,11 +60,14 @@ public class OptionsPanel extends JPanel {
 		boardHeight.setValue(20);
 		boardHeightPanel.add(boardHeight);
 		
-		btnStartSimulation = new JButton("Start simulation");
-		generalPanel.add(btnStartSimulation);
-		
 		generateBoard = new JButton("Generate Board");
 		generalPanel.add(generateBoard);
+
+        spawnAgents = new JButton("Spawn Agents");
+        generalPanel.add(spawnAgents);
+
+        btnStartSimulation = new JButton("Start simulation");
+        generalPanel.add(btnStartSimulation);
 		
 		//setSize(new Dimension(WIDTH,HEIGHT));
 	}
@@ -93,6 +75,10 @@ public class OptionsPanel extends JPanel {
 	public void generateButtonAddActionListener(ActionListener listener) {
 		generateBoard.addActionListener(listener);
 	}
+
+    public void spawnAgentsAddActionListener(ActionListener listener) {
+        spawnAgents.addActionListener(listener);
+    }
 	
 	public void startSimulationButtonAddActionListener(ActionListener listener) {
 		btnStartSimulation.addActionListener(listener);

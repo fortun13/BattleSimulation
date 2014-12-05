@@ -60,10 +60,8 @@ public class ServerAgent extends Agent {
 
 
     }
-    
-    public void startSimulation(int bluesAgentsNumber, int redsAgentsNumber) {
-        System.out.println("Simulation started");
 
+    public void prepareSimulation(int bluesAgentsNumber, int redsAgentsNumber) {
         if (world != null) {
             System.out.println("clearing the world");
             world.clean();
@@ -72,8 +70,13 @@ public class ServerAgent extends Agent {
 
         world = new World(this, bluesAgentsNumber, redsAgentsNumber);
 
-        //m_frame.redrawBoard(world.getAgents());
         m_frame.redrawBoard2(world.getAgents2());
+    }
+    
+    public void startSimulation() {
+        System.out.println("Simulation started");
+
+        //m_frame.redrawBoard(world.getAgents());
 
         ACLMessage newTurn = new ACLMessage(ACLMessage.INFORM);
         world.bluesAgents.forEach(newTurn::addReceiver);

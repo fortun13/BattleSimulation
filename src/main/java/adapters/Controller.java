@@ -1,7 +1,6 @@
 package main.java.adapters;
 
 import javafx.util.Pair;
-import main.java.agents.ServerAgent;
 import main.java.gui.MainFrame;
 import main.java.gui.SideOptionPanel;
 
@@ -25,7 +24,7 @@ public class Controller {
             frame.getBoardPanel().generateBoard(size.getKey(), size.getValue());
         });
         
-        frame.getOptionsPanel().startSimulationButtonAddActionListener((e) -> frame.server.startSimulation(frame.getOptionsPanel().getBluesAgentsNumber(),frame.getOptionsPanel().getRedsAgentsNumber()));
+        frame.getOptionsPanel().startSimulationButtonAddActionListener((e) -> frame.server.startSimulation());
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -43,6 +42,8 @@ public class Controller {
             p.sliderMoved();
             //p.getAgentsNumberSpinner().setValue(source.getValue());
         });
+
+        frame.getOptionsPanel().spawnAgentsAddActionListener((e) -> frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgentsNumber(),frame.getOptionsPanel().getRedsAgentsNumber()));
     }
 
     public static <T extends Container> T findParent(Component comp, Class<T> clazz)  {
