@@ -6,8 +6,8 @@ import main.java.gui.SideOptionPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 
 public class Controller {
 	
@@ -33,11 +33,15 @@ public class Controller {
         });
         
         frame.getOptionsPanel().startSimulationButtonAddActionListener(e -> {
+            setMouseWheelListenerForBoard();
             frame.getBoardPanel().innerBoard.removeMouseMotionListener(motionListener);
             frame.getBoardPanel().innerBoard.removeMouseListener(mouseListener);
-            frame.server.startSimulation();
 
+            frame.server.startSimulation();
         });
+
+
+
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -53,7 +57,6 @@ public class Controller {
             //TODO it's very unefficient
             // ... although - even if I define it inside SideOptionPanel (so no finding parent and so on), it's still eating CPU...
             p.sliderMoved();
-            //p.getAgentsNumberSpinner().setValue(source.getValue());
         });
 
         frame.getOptionsPanel().spawnAgentsAddActionListener((e) -> frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgentsNumber(),frame.getOptionsPanel().getRedsAgentsNumber()));
@@ -66,6 +69,37 @@ public class Controller {
             return (clazz.cast(comp));
         else
             return findParent(comp.getParent(), clazz);
+    }
+
+    private void setMouseWheelListenerForBoard() {
+        frame.getBoardPanel().innerBoard.addMouseWheelListener(new MouseWheelListener() {
+            private double factor = 0.05;
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                int mask = InputEvent.CTRL_DOWN_MASK;
+
+                if ((e.getModifiersEx() & mask) == mask) {
+                    //System.out.println("event");
+                    Dimension n = frame.getBoardPanel().innerBoard.getPreferredSize();
+                    AffineTransform at2 = new AffineTransform();
+                    if (e.getWheelRotation() < 0) {
+                        n.setSize(((n.width + 1) + (n.width) * factor), ((n.height + 1) + (n.height) * factor));
+                        at2.scale(frame.getBoardPanel().at.getScaleX() + factor, frame.getBoardPanel().at.getScaleY() + factor);
+                    } else {
+                        n.setSize(((n.width+1)-(n.width)*factor),((n.height+1)-(n.height)*factor));
+                        at2.scale(frame.getBoardPanel().at.getScaleX() - factor, frame.getBoardPanel().at.getScaleY() - factor);
+                    }
+                    //System.out.println(n);
+                    frame.getBoardPanel().innerBoard.setPreferredSize(n);
+                    n.height = n.height+10;
+                    n.width = n.width+10;
+                    frame.getBoardPanel().setPreferredSize(n);
+                    frame.getBoardPanel().at = at2;
+                    frame.getBoardPanel().innerBoard.revalidate();
+                    frame.getBoardPanel().innerBoard.repaint();
+                }
+            }
+        });
     }
 
 }

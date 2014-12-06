@@ -18,7 +18,7 @@ public class MainFrame extends JFrame {
 
     private final int FRAMEHEIGHT = 700;
 
-	private final int FRAMEWIDTH = 800;
+	private final int FRAMEWIDTH = 900;
 
     private BoardPanel boardPanel;
 	private OptionsPanel optionsPanel;

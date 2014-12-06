@@ -9,9 +9,6 @@ import main.java.agents.World;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.InputEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -30,15 +27,14 @@ public class BoardPanel extends JPanel {
 
     double factor = 0.05;
 
-    private AffineTransform at = new AffineTransform();
+    public AffineTransform at = new AffineTransform();
 
     private ArrayList<Pair<World.AgentType,BufferedImage>> images = new ArrayList<>();
 
     public int x1, y1, x2, y2;
 
     public MyAgent clickedAgent = null;
-    
-    //private MyAgent[][] squares;
+
 	public JPanel innerBoard;
 
     private ArrayList<MyAgent> agentsList = new ArrayList<>();
@@ -50,34 +46,6 @@ public class BoardPanel extends JPanel {
         setPreferredSize(new Dimension(WIDTH,HEIGHT));
 
         innerBoard = new A();
-
-        innerBoard.addMouseWheelListener(new MouseWheelListener() {
-
-            double factor = 0.05;
-
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-
-                int mask = InputEvent.CTRL_DOWN_MASK;
-
-                if ((e.getModifiersEx() & mask) == mask) {
-                    System.out.println("event");
-                    if (e.getWheelRotation() < 0) {
-                        //wheel spun away from user
-                        // board should be bigger
-                        //at.scale(at.getScaleX() + factor, at.getScaleY() + factor);
-                        zoomIn();
-                    } else {
-                        //wheel spun to user
-                        //board should be smaller
-                        //at.scale(at.getScaleX() - factor, at.getScaleY() - factor);
-                        zoomOut();
-                    }
-                    innerBoard.revalidate();
-                    innerBoard.repaint();
-                }
-            }
-        });
 
         at.scale(1,1);
     }
@@ -92,15 +60,6 @@ public class BoardPanel extends JPanel {
         innerBoard.setPreferredSize(new Dimension(width*(SQUARESIZE)+1, height*(SQUARESIZE)+1));
         add(innerBoard);
 
-        //Color c = new Color(218, 218, 218, 254);
-        //Point2D p;
-        /*squares = new MySquare[height][width];
-        for (int row = 0; row < squares.length; row++) {
-            for (int col = 0; col < squares[row].length; col++) {
-                p = new Point2D(row, col);
-                squares[(int)p.getX()][(int)p.getY()] = new MySquare(c,p);
-            }
-        }*/
         innerBoard.revalidate();
         innerBoard.repaint();
     }
@@ -134,6 +93,8 @@ public class BoardPanel extends JPanel {
 
         innerBoard.revalidate();
         innerBoard.repaint();
+
+
     }
 
     public ArrayList<MyAgent> getMyAgents() {
@@ -153,50 +114,7 @@ public class BoardPanel extends JPanel {
             if (cursor != null)
                 setCursor(cursor);
 
-            /*for (int row = 0; row < squares.length; row++)
-                for (int col = 0; col < squares[row].length; col++)
-                    squares[row][col].paint(g);
-
-            int height = squares.length;
-            for (int row = 0; row < squares.length; row++) {
-                for (int col = 0; col < squares[row].length+1; col++) {
-//            	innerBoard.add(squares[row][col]);
-//                squares[row][col].paint(g);
-                    g.drawLine(col * SQUARESIZE, 0, col * SQUARESIZE, height*SQUARESIZE);
-                    g.drawLine(0, row * SQUARESIZE, squares[row].length*SQUARESIZE, row * SQUARESIZE);
-                }
-                g.drawLine(squares.length*SQUARESIZE,0,squares.length*SQUARESIZE,height*SQUARESIZE);
-            }
-            g.drawLine(0,height*SQUARESIZE,squares[0].length*SQUARESIZE,height*SQUARESIZE);*/
-
-
         }
-    }
-
-    public void zoomIn() {
-        Dimension n = innerBoard.getPreferredSize();
-        n.setSize(((n.width+1)+(n.width)*factor),((n.height+1)+(n.height)*factor));
-        innerBoard.setPreferredSize(n);
-        AffineTransform at2 = new AffineTransform();
-        at2.scale(at.getScaleX() + factor, at.getScaleY() + factor);
-        at = at2;
-        //at.scale(at.getScaleX() + factor, at.getScaleY() + factor);
-        System.out.println("Scale: " + at.getScaleX() + " " + at.getScaleY());
-        innerBoard.revalidate();
-        innerBoard.repaint();
-    }
-
-    public void zoomOut() {
-        Dimension n = innerBoard.getPreferredSize();
-        n.setSize(((n.width+1)-(n.width)*factor),((n.height+1)-(n.height)*factor));
-        innerBoard.setPreferredSize(n);
-        AffineTransform at2 = new AffineTransform();
-        at2.scale(at.getScaleX() - factor, at.getScaleY() - factor);
-        at = at2;
-        //at.scale(at.getScaleX() - factor, at.getScaleY() - factor);
-        System.out.println("Scale: " + at.getScaleX() + " " + at.getScaleY());
-        innerBoard.revalidate();
-        innerBoard.repaint();
     }
 
     public class MyAgent extends JComponent {
