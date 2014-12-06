@@ -13,18 +13,31 @@ public class Controller {
 	
 	private final MainFrame frame;
     //private final ServerAgent server;
+
+    private BoardMouseMotionListener motionListener;
+    private BoardMouseListener mouseListener;
 	
 	public Controller(MainFrame f) {
 		frame = f;
+
+        motionListener = new BoardMouseMotionListener(frame.getBoardPanel());
+        mouseListener = new BoardMouseListener(frame.getBoardPanel());
 
         frame.getOptionsPanel().generateButtonAddActionListener((e) -> {
             // TODO Auto-generated method stub
             Pair<Integer, Integer> size = frame.getOptionsPanel().getBoardSize();
             //System.out.println(size);
             frame.getBoardPanel().generateBoard(size.getKey(), size.getValue());
+            frame.getBoardPanel().innerBoard.addMouseMotionListener(motionListener);
+            frame.getBoardPanel().innerBoard.addMouseListener(mouseListener);
         });
         
-        frame.getOptionsPanel().startSimulationButtonAddActionListener((e) -> frame.server.startSimulation());
+        frame.getOptionsPanel().startSimulationButtonAddActionListener(e -> {
+            frame.getBoardPanel().innerBoard.removeMouseMotionListener(motionListener);
+            frame.getBoardPanel().innerBoard.removeMouseListener(mouseListener);
+            frame.server.startSimulation();
+
+        });
 
         frame.addWindowListener(new WindowAdapter() {
             @Override

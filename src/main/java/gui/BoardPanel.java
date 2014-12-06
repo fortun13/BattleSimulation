@@ -1,5 +1,7 @@
 package main.java.gui;
 
+//import javafx.geometry.Point2D;
+
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
 import main.java.agents.World;
@@ -22,16 +24,22 @@ import java.util.ArrayList;
 public class BoardPanel extends JPanel {
     private final int WIDTH = 800;
     private final int HEIGHT = 400;
-	private final int SQUARESIZE = 20;
+	public final int SQUARESIZE = 20;
+
+    public Cursor cursor;
 
     double factor = 0.05;
 
     private AffineTransform at = new AffineTransform();
 
     private ArrayList<Pair<World.AgentType,BufferedImage>> images = new ArrayList<>();
+
+    public int x1, y1, x2, y2;
+
+    public MyAgent clickedAgent = null;
     
     //private MyAgent[][] squares;
-	private JPanel innerBoard;
+	public JPanel innerBoard;
 
     private ArrayList<MyAgent> agentsList = new ArrayList<>();
 
@@ -72,7 +80,6 @@ public class BoardPanel extends JPanel {
         });
 
         at.scale(1,1);
-
     }
 
     public void generateBoard(int height, int width) {
@@ -129,6 +136,10 @@ public class BoardPanel extends JPanel {
         innerBoard.repaint();
     }
 
+    public ArrayList<MyAgent> getMyAgents() {
+        return agentsList;
+    }
+
     public class A extends JPanel {
         @Override
         public void paint(Graphics g) {
@@ -138,6 +149,9 @@ public class BoardPanel extends JPanel {
             for(MyAgent s : agentsList) {
                 s.paint(g);
             }
+
+            if (cursor != null)
+                setCursor(cursor);
 
             /*for (int row = 0; row < squares.length; row++)
                 for (int col = 0; col < squares[row].length; col++)
@@ -185,7 +199,7 @@ public class BoardPanel extends JPanel {
         innerBoard.repaint();
     }
 
-    class MyAgent extends JComponent {
+    public class MyAgent extends JComponent {
 
         Color c;
         Point2D p;
@@ -193,15 +207,22 @@ public class BoardPanel extends JPanel {
 
         public MyAgent(Color c, Point2D p, World.AgentType type) {
             this.c = c;
-            this.p = p;
+            //this.p = p;
+
+            this.p = new Point2D(p.getX()*SQUARESIZE,p.getY()*SQUARESIZE);
+
             this.type = type;
+        }
 
+        public Point2D getPoint() {
+            return p;
+        }
 
+        public void setPoint(Point2D point) {
+            this.p = point;
         }
 
         public void paint(Graphics g) {
-
-
 
             Graphics2D g2d = (Graphics2D)g;
 
@@ -212,7 +233,9 @@ public class BoardPanel extends JPanel {
 
             g2d.setColor(this.c);
             //g.fillRect((int)p.getX()*SQUARESIZE,(int)p.getY()*SQUARESIZE,SQUARESIZE,SQUARESIZE);
-            g2d.fillOval((int) p.getX() * SQUARESIZE, (int) p.getY() * SQUARESIZE, SQUARESIZE, SQUARESIZE);
+            //g2d.fillOval((int) p.getX() * SQUARESIZE, (int) p.getY() * SQUARESIZE, SQUARESIZE, SQUARESIZE);
+
+            g2d.fillOval((int) p.getX(), (int) p.getY(), SQUARESIZE, SQUARESIZE);
 
             //TODO I think images should be stored somewhere, and here we should use them to draw, but for now it works
             try {
@@ -225,7 +248,8 @@ public class BoardPanel extends JPanel {
                 }
                 //BufferedImage image = ImageIO.read(new File(type.getValue()));
 
-                g2d.drawImage(image, (int) p.getX() * SQUARESIZE, (int) p.getY() * SQUARESIZE, null);
+                //g2d.drawImage(image, (int) p.getX() * SQUARESIZE, (int) p.getY() * SQUARESIZE, null);
+                g2d.drawImage(image,(int)p.getX(),(int)p.getY(),null);
             } catch (IOException e) {
                 e.printStackTrace();
             }
