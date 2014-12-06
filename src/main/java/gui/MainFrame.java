@@ -67,6 +67,8 @@ public class MainFrame extends JFrame {
         });
 
         server = s;
+
+
     }
 
     /*public void redrawBoard(KdTree.StdKd<World.AgentComparator.AgentSpace> agents) {

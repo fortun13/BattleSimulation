@@ -64,10 +64,16 @@ public class OptionsPanel extends JPanel {
 		generalPanel.add(generateBoard);
 
         spawnAgents = new JButton("Spawn Agents");
-        generalPanel.add(spawnAgents);
+        //generalPanel.add(spawnAgents);
 
         btnStartSimulation = new JButton("Start simulation");
-        generalPanel.add(btnStartSimulation);
+        //generalPanel.add(btnStartSimulation);
+
+        JPanel test = new JPanel();
+        //test.add(generateBoard);
+        test.add(spawnAgents);
+        test.add(btnStartSimulation);
+        generalPanel.add(test);
 		
 		//setSize(new Dimension(WIDTH,HEIGHT));
 	}

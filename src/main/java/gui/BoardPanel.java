@@ -1,11 +1,16 @@
 package main.java.gui;
 
 import javafx.geometry.Point2D;
+import javafx.util.Pair;
 import main.java.agents.World;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +23,12 @@ public class BoardPanel extends JPanel {
     private final int WIDTH = 800;
     private final int HEIGHT = 400;
 	private final int SQUARESIZE = 20;
+
+    double factor = 0.05;
+
+    private AffineTransform at = new AffineTransform();
+
+    private ArrayList<Pair<World.AgentType,BufferedImage>> images = new ArrayList<>();
     
     //private MyAgent[][] squares;
 	private JPanel innerBoard;
@@ -30,21 +41,52 @@ public class BoardPanel extends JPanel {
 
         setPreferredSize(new Dimension(WIDTH,HEIGHT));
 
+        innerBoard = new A();
+
+        innerBoard.addMouseWheelListener(new MouseWheelListener() {
+
+            double factor = 0.05;
+
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+
+                int mask = InputEvent.CTRL_DOWN_MASK;
+
+                if ((e.getModifiersEx() & mask) == mask) {
+                    System.out.println("event");
+                    if (e.getWheelRotation() < 0) {
+                        //wheel spun away from user
+                        // board should be bigger
+                        //at.scale(at.getScaleX() + factor, at.getScaleY() + factor);
+                        zoomIn();
+                    } else {
+                        //wheel spun to user
+                        //board should be smaller
+                        //at.scale(at.getScaleX() - factor, at.getScaleY() - factor);
+                        zoomOut();
+                    }
+                    innerBoard.revalidate();
+                    innerBoard.repaint();
+                }
+            }
+        });
+
+        at.scale(1,1);
+
     }
 
     public void generateBoard(int height, int width) {
     	//setPreferredSize(new Dimension(WIDTH,HEIGHT));
 
-    	this.removeAll();
+    	innerBoard.removeAll();
 
     	setPreferredSize(new Dimension(width*(SQUARESIZE)+10, height*(SQUARESIZE)+10));
 
-        innerBoard = new A();
         innerBoard.setPreferredSize(new Dimension(width*(SQUARESIZE)+1, height*(SQUARESIZE)+1));
         add(innerBoard);
 
-        Color c = new Color(218, 218, 218, 254);
-        Point2D p;
+        //Color c = new Color(218, 218, 218, 254);
+        //Point2D p;
         /*squares = new MySquare[height][width];
         for (int row = 0; row < squares.length; row++) {
             for (int col = 0; col < squares[row].length; col++) {
@@ -117,6 +159,32 @@ public class BoardPanel extends JPanel {
         }
     }
 
+    public void zoomIn() {
+        Dimension n = innerBoard.getPreferredSize();
+        n.setSize(((n.width+1)+(n.width)*factor),((n.height+1)+(n.height)*factor));
+        innerBoard.setPreferredSize(n);
+        AffineTransform at2 = new AffineTransform();
+        at2.scale(at.getScaleX() + factor, at.getScaleY() + factor);
+        at = at2;
+        //at.scale(at.getScaleX() + factor, at.getScaleY() + factor);
+        System.out.println("Scale: " + at.getScaleX() + " " + at.getScaleY());
+        innerBoard.revalidate();
+        innerBoard.repaint();
+    }
+
+    public void zoomOut() {
+        Dimension n = innerBoard.getPreferredSize();
+        n.setSize(((n.width+1)-(n.width)*factor),((n.height+1)-(n.height)*factor));
+        innerBoard.setPreferredSize(n);
+        AffineTransform at2 = new AffineTransform();
+        at2.scale(at.getScaleX() - factor, at.getScaleY() - factor);
+        at = at2;
+        //at.scale(at.getScaleX() - factor, at.getScaleY() - factor);
+        System.out.println("Scale: " + at.getScaleX() + " " + at.getScaleY());
+        innerBoard.revalidate();
+        innerBoard.repaint();
+    }
+
     class MyAgent extends JComponent {
 
         Color c;
@@ -132,16 +200,37 @@ public class BoardPanel extends JPanel {
         }
 
         public void paint(Graphics g) {
-            g.setColor(this.c);
+
+
+
+            Graphics2D g2d = (Graphics2D)g;
+
+            AffineTransform old = g2d.getTransform();
+            //g2d.setTransform(at);
+
+            g2d.transform(at);
+
+            g2d.setColor(this.c);
             //g.fillRect((int)p.getX()*SQUARESIZE,(int)p.getY()*SQUARESIZE,SQUARESIZE,SQUARESIZE);
-            g.fillOval((int)p.getX()*SQUARESIZE,(int)p.getY()*SQUARESIZE,SQUARESIZE,SQUARESIZE);
+            g2d.fillOval((int) p.getX() * SQUARESIZE, (int) p.getY() * SQUARESIZE, SQUARESIZE, SQUARESIZE);
+
             //TODO I think images should be stored somewhere, and here we should use them to draw, but for now it works
             try {
-                BufferedImage image = ImageIO.read(new File(type.getValue()));
-                g.drawImage(image,(int)p.getX()*SQUARESIZE,(int)p.getY()*SQUARESIZE,null);
+                BufferedImage image;
+                if (!images.stream().anyMatch(p -> p.getKey().equals(type))) {
+                    image = ImageIO.read(new File(type.getValue()));
+                    images.add(new Pair<>(type,image));
+                } else {
+                    image = ((Pair< World.AgentType,BufferedImage>)images.stream().filter( p -> p.getKey().equals(type)).toArray()[0]).getValue();
+                }
+                //BufferedImage image = ImageIO.read(new File(type.getValue()));
+
+                g2d.drawImage(image, (int) p.getX() * SQUARESIZE, (int) p.getY() * SQUARESIZE, null);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            g2d.setTransform(old);
         }
 
     }
