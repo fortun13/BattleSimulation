@@ -24,7 +24,6 @@ public class Archer extends CannonFodder {
         this.world = (World) parameters[5];
         this.position = (AgentInTree) parameters[6];
         this.attackRange = (int) parameters[7];
-
     }
 
     protected void takeDown() {
@@ -32,8 +31,17 @@ public class Archer extends CannonFodder {
     }
 
     @Override
-    protected void attack(AID enemy) {
-
+    protected void attack(AID enemy, AgentInTree position) {
+        if (Math.random() * 100 <= (accuracy - position.p.distance(position.p)*2)) {
+            ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+            msg.setConversationId("attack");
+            String msgContent = condition + ":" + strength + ":" + speed + ":" + accuracy;
+            msg.setContent(msgContent);
+            msg.addReplyTo(getAID());
+            msg.addReceiver(enemy);
+            msg.setSender(getAID());
+            send(msg);
+        }
     }
 
 
@@ -41,18 +49,9 @@ public class Archer extends CannonFodder {
         return attackRange;
     }
 
-    public void setAttackRange(int attackRange) {
-        this.attackRange = attackRange;
-    }
-
     @Override
     public boolean enemyInRangeOfAttack(AgentInTree enemy) {
         return getPosition().pos().distance(enemy.pos()) < (2+getAttackRange());
-    }
-
-    @Override
-    protected void gotoEnemy(AgentInTree enemy) {
-
     }
 
     @Override
@@ -72,11 +71,6 @@ public class Archer extends CannonFodder {
             // I'm still alive
             condition = condition-str;
         }
-    }
-
-    @Override
-    public boolean isMotivated() {
-        return false;
     }
 
     @Override

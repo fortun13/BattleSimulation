@@ -25,54 +25,17 @@ public class Warrior extends CannonFodder {
     }
 
     @Override
-    protected void attack(AID enemy) {
-        if (Math.random() * 100 <= getAccuracy()) {
-            /*ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
-            msg.addReceiver(new AID(enemy.getAgentName(), false));
-            msg.addReplyTo(world.getAID());
-            msg.setContent(String.valueOf(getStrength()));
-            msg.setConversationId(String.valueOf(Actions.ATTACK));*/
-
-            //System.out.println(getLocalName() + " Attacking enemy: " + enemy.toString());
-
+    protected void attack(AID enemy, AgentInTree position) {
+        if (Math.random() * 100 <= accuracy) {
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setConversationId("attack");
-            String msgContent = getCondition() + ":" + getStrength() + ":" + getSpeed() + ":" + getAccuracy();
+            String msgContent = condition + ":" + strength + ":" + speed + ":" + accuracy;
             msg.setContent(msgContent);
             msg.addReplyTo(getAID());
             msg.addReceiver(enemy);
             msg.setSender(getAID());
             send(msg);
         }
-    }
-
-    @Override
-    public boolean isMotivated() {
-        //return true;
-        int [] count;
-        switch (position.side) {
-            case Blues:
-                count = world.countFriendFoe(this);
-                break;
-            default:
-                count = world.countFriendFoe(this);
-                break;
-        }
-        //System.out.println("Friends: " + count[0] + " Enemies: " + count[1]);
-        if (count[1] == 0)
-            return true;
-        double ratio = ((double)count[0])/((double)count[1]);
-        //System.out.println("Ratio: " + ratio);
-        if (ratio < psychologicalResistance && ratio < previousRatio) {
-            morale -= (1/ratio +2);
-
-        }
-        if (ratio >= 1 && morale<50)
-            morale += ratio;
-
-        previousRatio = ratio;
-        //System.out.println(getLocalName() + " Morale: " + morale);
-        return morale > 0;
     }
 
     @Override

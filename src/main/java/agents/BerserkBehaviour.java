@@ -42,7 +42,6 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                 else {
                     //moveSomewhere
                     ((AgentWithPosition)myAgent).keepPosition();
-                    //System.out.println("Staying in place (for now...)");
                 }
                 break;
             case 1:
@@ -57,7 +56,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                     }
                 }
                 if (((AgentWithPosition)myAgent).enemyInRangeOfAttack(enemyPosition))
-                    doAction(() -> ((CannonFodder) myAgent).attack(enemy));
+                    doAction(() -> ((CannonFodder) myAgent).attack(enemy, enemyPosition));
                 else
                     doAction(() -> ((CannonFodder)myAgent).gotoEnemy(enemyPosition));
                 break;

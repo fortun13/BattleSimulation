@@ -79,17 +79,15 @@ public class Controller {
                     Dimension n = frame.getBoardPanel().innerBoard.getPreferredSize();
                     AffineTransform at2 = new AffineTransform();
                     if (e.getWheelRotation() < 0) {
-                        n.setSize(((n.width + 1) + (n.width) * factor), ((n.height + 1) + (n.height) * factor));
+                        n.setSize(((n.width) + (n.width) * factor), ((n.height) + (n.height) * factor));
                         at2.scale(frame.getBoardPanel().at.getScaleX() + factor, frame.getBoardPanel().at.getScaleY() + factor);
                     } else {
-                        n.setSize(((n.width+1)-(n.width)*factor),((n.height+1)-(n.height)*factor));
+                        n.setSize(((n.width)-(n.width)*factor),((n.height)-(n.height)*factor));
                         at2.scale(frame.getBoardPanel().at.getScaleX() - factor, frame.getBoardPanel().at.getScaleY() - factor);
                     }
-                    //System.out.println(n);
                     frame.getBoardPanel().innerBoard.setPreferredSize(n);
-                    n.height = n.height+10;
-                    n.width = n.width+10;
-                    frame.getBoardPanel().setPreferredSize(n);
+                    Dimension tmp = new Dimension(n.width+10,n.height+10);
+                    frame.getBoardPanel().setPreferredSize(tmp);
                     frame.getBoardPanel().at = at2;
                     frame.getBoardPanel().innerBoard.revalidate();
                     frame.getBoardPanel().innerBoard.repaint();

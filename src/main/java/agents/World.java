@@ -62,16 +62,21 @@ public class World {
 
         try {
             AgentBuilder warrior = new WarriorBuilder(server.getAID(), BerserkBehaviour.class, this);
+            AgentBuilder archer = new ArcherBuilder(server.getAID(),BerserkBehaviour.class, this);
             Director generator = new Director();
-            generator.setAgentBuilder(warrior);
+            //generator.setAgentBuilder(warrior);
+            generator.setAgentBuilder(archer);
             generator.setPlatform(container);
+
 
             for (int i = 0; i < bluesAgentsNumber; i++) {
                 String agentName = "agentBlue_" + i;
 
-                AgentInTree ait = new AgentInTree("", AgentsSides.Blues, new Point2D(2, i), AgentType.WARRIOR);
-                warrior.setAgentName(agentName);
-                warrior.setPosition(ait);
+                AgentInTree ait = new AgentInTree("", AgentsSides.Blues, new Point2D(2, i), AgentType.ARCHER);
+                archer.setAgentName(agentName);
+                archer.setPosition(ait);
+                //warrior.setAgentName(agentName);
+                //warrior.setPosition(ait);
                 generator.constructAgent();
 
                 AgentController agent = generator.getAgent();
@@ -90,6 +95,8 @@ public class World {
                 }
             }
 
+            generator.setAgentBuilder(warrior);
+            generator.setPlatform(container);
             for (int i = 0; i < redsAgentsNumber; i++) {
                 String agentName = "agentRed_" + i;
                 AgentInTree ait = new AgentInTree("", AgentsSides.Reds, new Point2D(10, i), AgentType.WARRIOR);

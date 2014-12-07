@@ -111,27 +111,6 @@ public abstract class CannonFodder extends AgentWithPosition {
         world.moveAgent(this,destination);
     }
 
-    protected abstract void attack(AID enemy);
-
-    public int getCondition() {
-        return condition;
-    }
-
-    public void setCondition(int condition) {
-        this.condition = condition;
-    }
-
-    public int getStrength() {
-        return strength;
-    }
-
-    public int getSpeed() {
-        return speed;
-    }
-
-    public int getAccuracy() {
-        return accuracy;
-    }
-
+    protected abstract void attack(AID enemy, AgentInTree position);
 
 }

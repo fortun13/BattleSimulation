@@ -60,7 +60,24 @@ public abstract class AgentWithPosition extends Agent {
 
     public abstract void reactToAttack(ACLMessage msg);
 
-    public abstract boolean isMotivated();
+    public boolean isMotivated() {
+        int [] count;
+        count = world.countFriendFoe(this);
+        //System.out.println("Friends: " + count[0] + " Enemies: " + count[1]);
+        if (count[1] == 0) {
+            morale += 2;
+            return true;
+        }
+        double ratio = ((double)count[0])/((double)count[1]);
+        //System.out.println("Ratio: " + ratio);
+        if (ratio < psychologicalResistance && ratio < previousRatio)
+            morale -= (1/ratio +2);
+        if (ratio >= 1 && morale<50)
+            morale += ratio;
+        previousRatio = ratio;
+        //System.out.println(getLocalName() + " Morale: " + morale);
+        return morale > 0;
+    }
 
     protected abstract void killYourself(ACLMessage msgToSend);
 
