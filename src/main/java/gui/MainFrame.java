@@ -4,7 +4,7 @@ import edu.wlu.cs.levy.CG.KDTree;
 import edu.wlu.cs.levy.CG.KeySizeException;
 import main.java.adapters.Controller;
 import main.java.agents.ServerAgent;
-import main.java.agents.World;
+import main.java.utils.AgentInTree;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -32,7 +32,7 @@ public class MainFrame extends JFrame {
         setTitle("Battle!");
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        
+
         setSize(FRAMEWIDTH, FRAMEHEIGHT);
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
         
@@ -42,13 +42,7 @@ public class MainFrame extends JFrame {
         
         boardPanel = new BoardPanel();
         JScrollPane scrollPane = new JScrollPane(boardPanel);
-        
-        /*JScrollPane scrollPane = new JScrollPane();
-        JPanel tmp = new JPanel();
-        tmp.setLayout(new GridBagLayout());
-        tmp.add(new BoardPanel());
-        scrollPane.add(tmp);*/
-        
+
         splitPane.setLeftComponent(scrollPane);
         
         optionsPanel = new OptionsPanel();
@@ -67,23 +61,12 @@ public class MainFrame extends JFrame {
         });
 
         server = s;
-
-
     }
 
-    /*public void redrawBoard(KdTree.StdKd<World.AgentComparator.AgentSpace> agents) {
-        HashSet<World.AgentsSides> sides = new HashSet<World.AgentsSides>();
-        sides.add(World.AgentsSides.Blues);
-        sides.add(World.AgentsSides.Reds);
-        List<? extends KdTree.Placed> ag = agents.fetchElements(new World.AgentComparator.AgentSpace(sides, new Circle(0, 0, 1000)));
-        //((World.AgentInTree)ag.get(0)).isDead = false;
-        boardPanel.drawAgents(ag);
-    }*/
-
-    public void redrawBoard2(KDTree<World.AgentInTree> agents) {
+    public void redrawBoard(KDTree<AgentInTree> agents) {
         double[] testKey = {0,0};
         double[] upperKey = {1000,1000};
-        List<World.AgentInTree> lst = null;
+        List<AgentInTree> lst = null;
         try {
             lst = agents.range(testKey,upperKey);
         } catch (KeySizeException e) {

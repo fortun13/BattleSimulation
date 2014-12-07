@@ -2,7 +2,7 @@ package main.java.agents;
 
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
-import main.java.agents.World.AgentInTree;
+import main.java.utils.AgentInTree;
 
 public class Commander extends CannonFodder {
 	
@@ -32,7 +32,6 @@ public class Commander extends CannonFodder {
 
 	@Override
 	protected boolean enemyInRangeOfAttack(AgentInTree enemy) {
-		// TODO Auto-generated method stub
 		return (position.p.distance(enemy.p) < 2);
 	}
 
@@ -48,7 +47,6 @@ public class Commander extends CannonFodder {
 		if (condition <= str) {
 			//I am dead
 			condition-=str;
-			//TODO should there be method in world, or should we send message to world?
 			System.out.println("I'm dead :( " + getLocalName());
 			ACLMessage msgAboutDeath = msg.createReply();
 			msgAboutDeath.setConversationId("enemy-dead");

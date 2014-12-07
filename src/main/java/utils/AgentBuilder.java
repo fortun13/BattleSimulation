@@ -13,13 +13,11 @@ import main.java.agents.World;
  */
 public abstract class AgentBuilder {
     protected AID serverAID;
-    protected AgentController agent;
     protected PlatformController platform;
     protected Object[] parameters = new Object[9];
 
-    World.AgentsSides side;
     Class<? extends ReactiveBehaviour> behaviourClass;
-    World.AgentInTree position;
+    AgentInTree position;
     World world;
     String agentName;
 
@@ -37,14 +35,12 @@ public abstract class AgentBuilder {
     public abstract void buildStrength();
     public abstract void buildSpeed();
     public abstract void buildAccuracy();
-    public abstract void buildSide();
     public abstract void buildPosition();
     public abstract void buildWorld();
     public abstract void buildBehaviour();
 
-    public abstract void setSide(World.AgentsSides side);
     public abstract void setAgentName(String agentName);
-    public abstract void setPosition(World.AgentInTree position);
+    public abstract void setPosition(AgentInTree position);
 
     public void constructAgent() {
         buildBehaviour();
@@ -52,7 +48,6 @@ public abstract class AgentBuilder {
         buildStrength();
         buildSpeed();
         buildAccuracy();
-        buildSide();
         buildWorld();
         buildPosition();
     }

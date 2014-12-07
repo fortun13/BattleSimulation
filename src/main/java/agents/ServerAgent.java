@@ -70,7 +70,7 @@ public class ServerAgent extends Agent {
 
         world = new World(this, bluesAgentsNumber, redsAgentsNumber);
 
-        m_frame.redrawBoard2(world.getAgents2());
+        m_frame.redrawBoard(world.getAgentsTree());
     }
     
     public void startSimulation() {
@@ -100,10 +100,6 @@ public class ServerAgent extends Agent {
             public void action() {
                 switch (state) {
                     case 0:
-                        /*TODO
-                            for now it's fixed number of iterations - but we will have to detect if every agent from one side is dead
-                            and then stop simulation
-                         */
                         if (world.redsAgents.size() == 0 || world.bluesAgents.size() == 0) {
                             state = 2;
                             System.out.println("Turn: " + stepsCounter);
@@ -115,7 +111,7 @@ public class ServerAgent extends Agent {
                             world.bluesAgents.forEach(endBattle::addReceiver);
                             endBattle.setConversationId("battle-ended");
                             send(endBattle);
-                            m_frame.redrawBoard2(world.getAgents2());
+                            m_frame.redrawBoard(world.getAgentsTree());
                             break;
                         }
 
@@ -136,7 +132,7 @@ public class ServerAgent extends Agent {
                                     agentsCounter = 0;
                                     stepsCounter++;
 
-                                    m_frame.redrawBoard2(world.getAgents2());
+                                    m_frame.redrawBoard(world.getAgentsTree());
                                    //m_frame.redrawBoard(world.getAgents());
                                     //System.out.println("Time: " + time);
                                     while (System.currentTimeMillis() - time < interval)

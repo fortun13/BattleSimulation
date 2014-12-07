@@ -5,6 +5,7 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import javafx.geometry.Point2D;
+import main.java.utils.AgentInTree;
 
 import java.util.ArrayList;
 
@@ -24,40 +25,34 @@ public abstract class AgentWithPosition extends Agent {
 
     protected World world;
 
-    protected World.AgentInTree position;
-
-    protected World.AgentsSides side;
+    protected AgentInTree position;
 
     public int getFieldOfView() { return fieldOfView; }
 
     public void setFieldOfView(int fov) { fieldOfView = fov; }
 
-    protected abstract boolean enemyInRangeOfAttack(World.AgentInTree enemy);
+    protected abstract boolean enemyInRangeOfAttack(AgentInTree enemy);
 
-    protected abstract World.AgentInTree getNearestEnemy();
+    protected abstract AgentInTree getNearestEnemy();
 
-    protected abstract void gotoEnemy(World.AgentInTree enemy);
+    protected abstract void gotoEnemy(AgentInTree enemy);
 
     protected abstract void keepPosition();
 
-    public World.AgentsSides getAgentSide() {
-        return side;
-    }
-
-    public World.AgentInTree getPosition() {
+    public AgentInTree getPosition() {
         return position;
     }
 
     public ArrayList<AID> getMinionsWithinRange(Point2D commanderPlace, int attractionForce, World.AgentsSides side) {
         double[] key = {commanderPlace.getX(),commanderPlace.getY()};
-        ArrayList<World.AgentInTree> list = new ArrayList<>();
+        ArrayList<AgentInTree> list = new ArrayList<>();
         try {
-            world.getAgents2().nearestEuclidean(key,attractionForce).stream().filter(a -> a.side==side).forEach(list::add);
+            world.getAgentsTree().nearestEuclidean(key,attractionForce).stream().filter(a -> a.side==side).forEach(list::add);
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
         ArrayList<AID> ans = new ArrayList<>();
-        for (World.AgentInTree a : list) {
+        for (AgentInTree a : list) {
             ans.add(new AID(a.getAgentName(),false));
         }
         return ans;

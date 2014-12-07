@@ -2,6 +2,7 @@ package main.java.agents;
 
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
+import main.java.utils.AgentInTree;
 
 /**
  * Created by Marek on 2014-11-11.
@@ -49,12 +50,12 @@ public class Warrior extends CannonFodder {
     public boolean isMotivated() {
         //return true;
         int [] count;
-        switch (side) {
+        switch (position.side) {
             case Blues:
-                count = world.countFriendFoe(this,side, World.AgentsSides.Reds);
+                count = world.countFriendFoe(this);
                 break;
             default:
-                count = world.countFriendFoe(this,side, World.AgentsSides.Blues);
+                count = world.countFriendFoe(this);
                 break;
         }
         //System.out.println("Friends: " + count[0] + " Enemies: " + count[1]);
@@ -71,10 +72,7 @@ public class Warrior extends CannonFodder {
 
         previousRatio = ratio;
         //System.out.println(getLocalName() + " Morale: " + morale);
-        if (morale <= 0)
-            return false;
-        else
-            return true;
+        return morale > 0;
     }
 
     @Override
@@ -93,7 +91,7 @@ public class Warrior extends CannonFodder {
     }
 
     @Override
-    public boolean enemyInRangeOfAttack(World.AgentInTree enemy) {
+    public boolean enemyInRangeOfAttack(AgentInTree enemy) {
         return position.pos().distance(enemy.pos()) < 2;
     }
 

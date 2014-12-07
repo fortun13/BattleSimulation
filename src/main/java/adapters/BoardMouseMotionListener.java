@@ -30,15 +30,6 @@ public class BoardMouseMotionListener extends MouseMotionAdapter {
                         .stream()
                         .filter(l -> l.getPoint().distance(p) < board.SQUARESIZE)
                         .toArray()[0];
-
-
-
-            /*x2 = e.getX();
-            y2 = e.getY();
-            x = x + x2 - x1;
-            y = y + y2 - y1;
-            x1 = x2;
-            y1 = y2;*/
             }
         } else {
             board.x2 = e.getX();

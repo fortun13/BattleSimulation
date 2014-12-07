@@ -9,9 +9,6 @@ import java.awt.event.ActionListener;
 
 public class OptionsPanel extends JPanel {
 	
-	//private final int WIDTH = 800;
-	//private final int HEIGTH = 300;
-	
 	private JButton generateBoard;
     private JButton spawnAgents;
 	private JButton btnStartSimulation;
@@ -64,18 +61,12 @@ public class OptionsPanel extends JPanel {
 		generalPanel.add(generateBoard);
 
         spawnAgents = new JButton("Spawn Agents");
-        //generalPanel.add(spawnAgents);
-
         btnStartSimulation = new JButton("Start simulation");
-        //generalPanel.add(btnStartSimulation);
 
         JPanel test = new JPanel();
-        //test.add(generateBoard);
         test.add(spawnAgents);
         test.add(btnStartSimulation);
         generalPanel.add(test);
-		
-		//setSize(new Dimension(WIDTH,HEIGHT));
 	}
 	
 	public void generateButtonAddActionListener(ActionListener listener) {

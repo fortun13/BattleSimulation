@@ -3,6 +3,7 @@ package main.java.agents;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
+import main.java.utils.AgentInTree;
 
 import java.util.ArrayList;
 
@@ -14,7 +15,7 @@ public class CommanderBehaviour extends Behaviour {
     private ArrayList<AID> minions = new ArrayList<>();
     private AID serverAID;
 
-    protected World.AgentInTree enemyPosition;
+    protected AgentInTree enemyPosition;
 
     int state = 0;
 
@@ -46,7 +47,6 @@ public class CommanderBehaviour extends Behaviour {
 
     protected void computationEnded() {
         ACLMessage m = new ACLMessage(ACLMessage.INFORM);
-        //TODO it's not good practice - i just want to test if this will work
         m.addReceiver(serverAID);
         m.setConversationId("ended-computation");
         myAgent.send(m);
@@ -56,7 +56,7 @@ public class CommanderBehaviour extends Behaviour {
         switch (state) {
             case 0:
                 //TODO - get some limit for controlled minions
-                minions = ((AgentWithPosition) myAgent).getMinionsWithinRange(((Commander)myAgent).position.p,((Commander) myAgent).attractionForce, ((Commander)myAgent).side);
+                minions = ((AgentWithPosition) myAgent).getMinionsWithinRange(((Commander)myAgent).position.p,((Commander) myAgent).attractionForce, ((Commander)myAgent).position.side);
                 ACLMessage commanderAddMessage = new ACLMessage(ACLMessage.REQUEST);
                 commanderAddMessage.setConversationId("commander-init");
                 commanderAddMessage.setContent(myAgent.getName());

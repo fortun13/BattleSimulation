@@ -24,7 +24,6 @@ public class Controller {
         mouseListener = new BoardMouseListener(frame.getBoardPanel());
 
         frame.getOptionsPanel().generateButtonAddActionListener((e) -> {
-            // TODO Auto-generated method stub
             Pair<Integer, Integer> size = frame.getOptionsPanel().getBoardSize();
             //System.out.println(size);
             frame.getBoardPanel().generateBoard(size.getKey(), size.getValue());
@@ -39,9 +38,6 @@ public class Controller {
 
             frame.server.startSimulation();
         });
-
-
-
 
         frame.addWindowListener(new WindowAdapter() {
             @Override

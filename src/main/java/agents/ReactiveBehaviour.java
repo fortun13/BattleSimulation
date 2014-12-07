@@ -3,6 +3,7 @@ package main.java.agents;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
+import main.java.utils.AgentInTree;
 
 /**
  * Created by Jakub Fortunka on 20.11.14.
@@ -12,7 +13,7 @@ public abstract class ReactiveBehaviour extends Behaviour {
 
     public static final String DELETE = "DELETE";
     protected int state = 0;
-    protected World.AgentInTree enemyPosition;
+    protected AgentInTree enemyPosition;
     protected AID enemy;
     protected AID serverAID;
 
@@ -62,16 +63,10 @@ public abstract class ReactiveBehaviour extends Behaviour {
     }
 
     protected void computationEnded() {
-        /*if (((CannonFodder)myAgent).condition <= 0)
-            return;*/
         ACLMessage m = new ACLMessage(ACLMessage.INFORM);
-        //TODO it's not good practice - i just want to test if this will work
         m.addReceiver(serverAID);
         m.setConversationId("ended-computation");
         myAgent.send(m);
-
-        /*if (!((AgentWithPosition)myAgent).position.isDead)
-            System.out.println(myAgent.getLocalName() + " pos: " + ((AgentWithPosition)myAgent).position.p);*/
     }
 
     @Override

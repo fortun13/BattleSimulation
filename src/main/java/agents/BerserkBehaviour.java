@@ -27,7 +27,6 @@ public class BerserkBehaviour extends ReactiveBehaviour {
     @Override
     public void decideOnNextStep() {
         if (((CannonFodder)myAgent).condition <= 0) {
-            //computationEnded();
             return ;
         }
         switch(state) {
@@ -48,7 +47,6 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                 break;
             case 1:
                 // I assume that "world" will kill agent, so, when enemy will die, Agent enemy will become null (not sure if it's good thinking though)
-
                 if (enemy == null) {
                     enemyPosition = ((AgentWithPosition)myAgent).getNearestEnemy();
                     if (enemyPosition == null) {
@@ -62,8 +60,6 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                     doAction(() -> ((CannonFodder) myAgent).attack(enemy));
                 else
                     doAction(() -> ((CannonFodder)myAgent).gotoEnemy(enemyPosition));
-
-//                agent.attack(enemy);
                 break;
         }
     }

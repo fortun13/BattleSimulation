@@ -5,6 +5,7 @@ package main.java.gui;
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
 import main.java.agents.World;
+import main.java.utils.AgentInTree;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -19,20 +20,15 @@ import java.util.ArrayList;
  * Created by Jakub Fortunka on 08.11.14.
  */
 public class BoardPanel extends JPanel {
+
     private final int WIDTH = 800;
     private final int HEIGHT = 400;
-	public final int SQUARESIZE = 20;
 
+    public final int SQUARESIZE = 20;
     public Cursor cursor;
-
-    double factor = 0.05;
-
     public AffineTransform at = new AffineTransform();
-
     private ArrayList<Pair<World.AgentType,BufferedImage>> images = new ArrayList<>();
-
     public int x1, y1, x2, y2;
-
     public MyAgent clickedAgent = null;
 
 	public JPanel innerBoard;
@@ -45,14 +41,13 @@ public class BoardPanel extends JPanel {
 
         setPreferredSize(new Dimension(WIDTH,HEIGHT));
 
-        innerBoard = new A();
+        innerBoard = new Board();
 
         at.scale(1,1);
     }
 
     public void generateBoard(int height, int width) {
     	//setPreferredSize(new Dimension(WIDTH,HEIGHT));
-
     	innerBoard.removeAll();
 
     	setPreferredSize(new Dimension(width*(SQUARESIZE)+10, height*(SQUARESIZE)+10));
@@ -64,30 +59,26 @@ public class BoardPanel extends JPanel {
         innerBoard.repaint();
     }
     
-    public void drawAgents(java.util.List<World.AgentInTree> agents) {
+    public void drawAgents(java.util.List<AgentInTree> agents) {
         innerBoard.removeAll();
         agentsList.clear();
-        for (World.AgentInTree agent : agents) {
+        for (AgentInTree agent : agents) {
             Color c;
             Point2D p = agent.pos();
 
-                if (((World.AgentInTree)agent).side == World.AgentsSides.Blues) {
-                    if (((World.AgentInTree)agent).isDead)
+                if (agent.side == World.AgentsSides.Blues) {
+                    if (agent.isDead)
                         c = new Color(0, 4, 78);
                     else
                         c = new Color(4, 3, 228);
                 }
                 else {
-                    if (((World.AgentInTree)agent).isDead) {
+                    if (agent.isDead) {
                         c = new Color(75, 0, 0);
                     }
                     else
                         c = new Color(221, 3, 0);
                 }
-
-            //System.out.println(p);
-            //innerBoard.add(new MySquare(c,p));
-            //squares[(int)p.getX()][(int)p.getY()] = new MySquare(c,p);
             agentsList.add(new MyAgent(c, p,agent.type));
         }
 
@@ -101,7 +92,7 @@ public class BoardPanel extends JPanel {
         return agentsList;
     }
 
-    public class A extends JPanel {
+    public class Board extends JPanel {
         @Override
         public void paint(Graphics g) {
 
@@ -118,15 +109,12 @@ public class BoardPanel extends JPanel {
     }
 
     public class MyAgent extends JComponent {
-
         Color c;
         Point2D p;
         World.AgentType type;
 
         public MyAgent(Color c, Point2D p, World.AgentType type) {
             this.c = c;
-            //this.p = p;
-
             this.p = new Point2D(p.getX()*SQUARESIZE,p.getY()*SQUARESIZE);
 
             this.type = type;
@@ -145,17 +133,12 @@ public class BoardPanel extends JPanel {
             Graphics2D g2d = (Graphics2D)g;
 
             AffineTransform old = g2d.getTransform();
-            //g2d.setTransform(at);
-
             g2d.transform(at);
-
             g2d.setColor(this.c);
             //g.fillRect((int)p.getX()*SQUARESIZE,(int)p.getY()*SQUARESIZE,SQUARESIZE,SQUARESIZE);
             //g2d.fillOval((int) p.getX() * SQUARESIZE, (int) p.getY() * SQUARESIZE, SQUARESIZE, SQUARESIZE);
 
             g2d.fillOval((int) p.getX(), (int) p.getY(), SQUARESIZE, SQUARESIZE);
-
-            //TODO I think images should be stored somewhere, and here we should use them to draw, but for now it works
             try {
                 BufferedImage image;
                 if (!images.stream().anyMatch(p -> p.getKey().equals(type))) {
@@ -164,9 +147,6 @@ public class BoardPanel extends JPanel {
                 } else {
                     image = ((Pair< World.AgentType,BufferedImage>)images.stream().filter( p -> p.getKey().equals(type)).toArray()[0]).getValue();
                 }
-                //BufferedImage image = ImageIO.read(new File(type.getValue()));
-
-                //g2d.drawImage(image, (int) p.getX() * SQUARESIZE, (int) p.getY() * SQUARESIZE, null);
                 g2d.drawImage(image,(int)p.getX(),(int)p.getY(),null);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -176,4 +156,5 @@ public class BoardPanel extends JPanel {
         }
 
     }
+
 } 

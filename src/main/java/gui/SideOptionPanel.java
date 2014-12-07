@@ -1,9 +1,7 @@
 package main.java.gui;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
 import java.awt.*;
 
 /**
@@ -31,22 +29,12 @@ public class SideOptionPanel extends JPanel {
         agentsSlider = new JSlider();
         agentsSlider.setValue(20);
         
-        /*agentsSlider.addChangeListener(new ChangeListener() {
-			
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				sliderMoved();
-				
-			}
-		});*/
-        
         agentsNumber.setValue(20);
         agentsSliderPanel.add(agentsSlider);
-
     }
     
     public void sliderMoved() {
-    	agentsNumber.setValue((int) agentsSlider.getValue() );
+    	agentsNumber.setValue(agentsSlider.getValue());
     }
 
     public void setSliderChangeListener(ChangeListener listener) {

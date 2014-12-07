@@ -11,10 +11,7 @@ import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
-import main.java.utils.AgentBuilder;
-import main.java.utils.Director;
-import main.java.utils.KdTree;
-import main.java.utils.WarriorBuilder;
+import main.java.utils.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,17 +24,101 @@ import java.util.concurrent.Semaphore;
  */
 public class World {
 
-    private final KDTree<AgentInTree> agents2 = new KDTree<AgentInTree>(2);
+    public enum AgentsSides {Blues, Reds}
+
+    public enum AgentType {
+        WARRIOR("res" + File.separator + "warrior.png"), ARCHER("res" + File.separator + "archer.png");
+        private String value;
+
+        private AgentType(String pathToImage) {
+            value = pathToImage;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    private final KDTree<AgentInTree> agentsTree = new KDTree<>(2);
     private int boardCenterX;
 
     private Semaphore cleared = new Semaphore(0);
 
-    public KDTree<AgentInTree> getAgents2() {
-        return agents2;
+    public KDTree<AgentInTree> getAgentsTree() {
+        return agentsTree;
     }
 
     public ArrayList<AID> bluesAgents = new ArrayList<>();
     public ArrayList<AID> redsAgents = new ArrayList<>();
+
+    public ServerAgent server;
+
+    public World(ServerAgent server, int bluesAgentsNumber, int redsAgentsNumber) {
+
+        this.server = server;
+        this.boardCenterX = (int) server.getFrame().getOptionsPanel().getBoardWidth().getValue();
+
+        PlatformController container = server.getContainerController();
+
+        try {
+            AgentBuilder warrior = new WarriorBuilder(server.getAID(), BerserkBehaviour.class, this);
+            Director generator = new Director();
+            generator.setAgentBuilder(warrior);
+            generator.setPlatform(container);
+
+            for (int i = 0; i < bluesAgentsNumber; i++) {
+                String agentName = "agentBlue_" + i;
+
+                AgentInTree ait = new AgentInTree("", AgentsSides.Blues, new Point2D(2, i), AgentType.WARRIOR);
+                warrior.setAgentName(agentName);
+                warrior.setPosition(ait);
+                generator.constructAgent();
+
+                AgentController agent = generator.getAgent();
+                ait.setAgentName(agent.getName());
+
+                agent.start();
+
+                bluesAgents.add(new AID(agent.getName(), true));
+
+                double[] key = {ait.p.getX(), ait.p.getY()};
+
+                try {
+                    agentsTree.insert(key, ait);
+                } catch (KeySizeException | KeyDuplicateException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            for (int i = 0; i < redsAgentsNumber; i++) {
+                String agentName = "agentRed_" + i;
+                AgentInTree ait = new AgentInTree("", AgentsSides.Reds, new Point2D(10, i), AgentType.WARRIOR);
+
+                warrior.setAgentName(agentName);
+                warrior.setPosition(ait);
+                generator.constructAgent();
+
+                AgentController agent = generator.getAgent();
+
+                ait.setAgentName(agent.getName());
+                agent.start();
+                redsAgents.add(new AID(agent.getName(), true));
+
+                double[] key = {ait.p.getX(), ait.p.getY()};
+
+                try {
+                    agentsTree.insert(key, ait);
+                } catch (KeySizeException | KeyDuplicateException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        } catch (ControllerException e) { // finally i have found exceptions useful :D:D
+            e.printStackTrace();
+
+        }
+    }
+
 
     public void clean() {
         if ((bluesAgents.size() | redsAgents.size()) != 0) {
@@ -55,23 +136,21 @@ public class World {
         }
     }
 
-    public void removeAgent(CannonFodder cannonFodder) {
-        if (!cannonFodder.position.isDead) {
-            double[] agentKey = {cannonFodder.position.p.getX(), cannonFodder.position.p.getY()};
+    public void removeAgent(AgentWithPosition agent) {
+        if (!agent.position.isDead) {
+            double[] agentKey = {agent.position.p.getX(), agent.position.p.getY()};
             try {
-                agents2.delete(agentKey);
-            } catch (KeySizeException e) {
-                e.printStackTrace();
-            } catch (KeyMissingException e) {
+                agentsTree.delete(agentKey);
+            } catch (KeySizeException | KeyMissingException e) {
                 e.printStackTrace();
             }
             //agents.rmPoint(cannonFodder.getPosition());
-            switch (cannonFodder.side) {
+            switch (agent.position.side) {
                 case Blues:
-                    bluesAgents.remove(cannonFodder.getAID());
+                    bluesAgents.remove(agent.getAID());
                     break;
                 case Reds:
-                    redsAgents.remove(cannonFodder.getAID());
+                    redsAgents.remove(agent.getAID());
                     break;
             }
         }
@@ -81,159 +160,10 @@ public class World {
         //server.updateState();
     }
 
-    public enum AgentsSides {Blues, Reds}
-
-    public enum AgentType {
-        WARRIOR("res" + File.separator + "warrior.png"), ARCHER("res" + File.separator + "archer.png");
-        private String value;
-
-        private AgentType(String pathToImage) {
-            value = pathToImage;
-        }
-
-        public String getValue() {
-            return value;
-        }
-    }
-
-    public class AgentInTree implements KdTree.Placed {
-
-        Point2D p;
-        public AgentsSides side;
-        String agentName;
-        public boolean isDead = false;
-
-        public AgentType type;
-
-        public AgentInTree(String agentName,AgentsSides side, Point2D position, AgentType type) {
-            this.agentName = agentName;
-            this.side = side;
-            p = position;
-            this.type = type;
-        }
-
-        public String getAgentName() {
-            return agentName;
-        }
-
-        public void setAgentName(String name) {
-            agentName = name;
-        }
-
-        @Override
-        public Point2D pos() {
-            return p;
-        }
-
-        public void setPosition(Point2D p) {
-            this.p = p;
-        }
-    }
-
-    public ServerAgent server;
-
-    public World(ServerAgent server, int bluesAgentsNumber, int redsAgentsNumber) {
-
-        this.server = server;
-        this.boardCenterX = (int)server.getFrame().getOptionsPanel().getBoardWidth().getValue();
-
-        PlatformController container = server.getContainerController();
-
-        try {
-            List<KdTree.Placed> l = new ArrayList<>(bluesAgentsNumber + redsAgentsNumber);
-
-            AgentBuilder warrior = new WarriorBuilder(server.getAID(), BerserkBehaviour.class,AgentsSides.Blues,this);
-            Director generator = new Director();
-            generator.setAgentBuilder(warrior);
-            generator.setPlatform(container);
-
-            /* Maybye problem with returning position out of border is here?
-               I've added some code in moveAgent, but it won't help. Now program crashes while initializing agents
-               Agent in tree returns the beggining position, so there may be some problem
-             */
-            for (int i = 0; i < bluesAgentsNumber; i++) {
-                String agentName = "agentBlue_" + i;
-                /*
-                Why i + 1?
-                AgentInTree ait = new AgentInTree("", AgentsSides.Blues, new Point2D(2, i + 1));
-                 */
-
-                AgentInTree ait = new AgentInTree("", AgentsSides.Blues, new Point2D(2, i),AgentType.WARRIOR);
-                warrior.setAgentName(agentName);
-                warrior.setPosition(ait);
-                generator.constructAgent();
-
-                AgentController agent = generator.getAgent();
-                ait.setAgentName(agent.getName());
-
-                l.add(ait);
-
-                agent.start();
-
-                bluesAgents.add(new AID(agent.getName(), true));
-
-                double[] key = {ait.p.getX(),ait.p.getY()};
-
-                try {
-                    agents2.insert(key,ait);
-                } catch (KeySizeException e) {
-                    e.printStackTrace();
-                } catch (KeyDuplicateException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            warrior.setSide(AgentsSides.Reds);
-
-            for (int i = 0; i < redsAgentsNumber; i++) {
-                String agentName = "agentRed_" + i;
-                AgentInTree ait = new AgentInTree("", AgentsSides.Reds, new Point2D(10, i),AgentType.WARRIOR);
-
-                warrior.setAgentName(agentName);
-                warrior.setPosition(ait);
-                generator.constructAgent();
-
-                AgentController agent = generator.getAgent();
-
-                ait.setAgentName(agent.getName());
-                l.add(ait);
-
-
-                agent.start();
-
-                redsAgents.add(new AID(agent.getName(), true));
-
-                double[] key = {ait.p.getX(),ait.p.getY()};
-
-                try {
-                    agents2.insert(key,ait);
-                } catch (KeySizeException e) {
-                    e.printStackTrace();
-                } catch (KeyDuplicateException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        } catch (ControllerException e) { // finally i have found exceptions useful :D:D
-            e.printStackTrace();
-
-        }
-    }
-
     public AgentInTree getNearestEnemy(AgentWithPosition agent) {
-        /*HashSet<AgentsSides> set = new HashSet<>();
-        for (AgentsSides side : AgentsSides.values()) {
-            if (side != agent.getAgentSide()) {
-                set.add(side);
-            }
-        }*/
-
-        //int side = agent.side==AgentsSides.Blues ? -1 : 1;
-
-        //return (AgentInTree) agents.nearestNeighbour(agent.getPosition(), new AgentComparator.AgentSpace(set));
-        double[] key = {agent.position.p.getX(),agent.position.p.getY()};
+        double[] key = {agent.position.p.getX(), agent.position.p.getY()};
         try {
-            List<AgentInTree> t = agents2.nearest(key,1, v -> v.side!=agent.side);
+            List<AgentInTree> t = agentsTree.nearest(key, 1, v -> v.side != agent.position.side);
             if (t != null)
                 if (!t.isEmpty())
                     return t.get(0);
@@ -244,46 +174,25 @@ public class World {
     }
 
     public synchronized boolean moveAgent(CannonFodder agent, Point2D destination) {
-        /*Pair borderSize = server.m_frame.getOptionsPanel().getBoardSize();
-        if (destination.getX() >= (int)borderSize.getKey() || destination.getX() < 0
-                || destination.getY() >= (int)borderSize.getValue() || destination.getY() < 0
-                || agents.isOccupied(new AgentInTree("",AgentsSides.Blues,destination)))
-            return false;
-        else {
-            AgentInTree position = agent.getPosition();
-            AgentInTree newPosition = new AgentInTree(position.getAgentName(),position.side,new Point2D(destination.getX(),destination.getY()));
-            agents.rmPoint(position);
-            //position.setPosition(destination);
-            agents.addPoint(position);
-            return true;
-        }*/
-
         Pair borderSize = server.m_frame.getOptionsPanel().getBoardSize();
-        double[] key = {destination.getX(),destination.getY()};
+        double[] key = {destination.getX(), destination.getY()};
         try {
-        if (destination.getX() >= (int)borderSize.getKey() || destination.getX() < 0
-                || destination.getY() >= (int)borderSize.getValue() || destination.getY() < 0
-                || agents2.search(key) != null)
-            return false;
+            if (destination.getX() >= (int) borderSize.getKey() || destination.getX() < 0
+                    || destination.getY() >= (int) borderSize.getValue() || destination.getY() < 0
+                    || agentsTree.search(key) != null)
+                return false;
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
 
-            AgentInTree position = agent.getPosition();
-        double[] newPos = {destination.getX(),destination.getY()};
-        double[] oldPos = {position.p.getX(),position.p.getY()};
-            //AgentInTree newPosition = new AgentInTree(position.getAgentName(), position.side, new Point2D(destination.getX(), destination.getY()));
-            //agents.rmPoint(position);
-            position.setPosition(destination);
-            //agents.addPoint(position);
+        AgentInTree position = agent.getPosition();
+        double[] newPos = {destination.getX(), destination.getY()};
+        double[] oldPos = {position.p.getX(), position.p.getY()};
+        position.setPosition(destination);
         try {
-            agents2.delete(oldPos);
-            agents2.insert(newPos,position);
-        } catch (KeySizeException e) {
-            e.printStackTrace();
-        } catch (KeyMissingException e) {
-            e.printStackTrace();
-        } catch (KeyDuplicateException e) {
+            agentsTree.delete(oldPos);
+            agentsTree.insert(newPos, position);
+        } catch (KeySizeException | KeyDuplicateException | KeyMissingException e) {
             e.printStackTrace();
         }
         agent.position = position;
@@ -291,19 +200,19 @@ public class World {
 
     }
 
-    public synchronized int[] countFriendFoe(AgentWithPosition agent, AgentsSides friendlySide, AgentsSides enemySide){
+    public synchronized int[] countFriendFoe(AgentWithPosition agent) {
 
-        double[] key = {agent.position.p.getX(),agent.position.p.getY()};
+        double[] key = {agent.position.p.getX(), agent.position.p.getY()};
         int vec[] = new int[2];
 
         try {
-            vec[0] = (int) agents2.nearestEuclidean(key,agent.fieldOfView).stream().filter(a -> agent.side==a.side).count();
+            vec[0] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.position.side == a.side).count();
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
 
         try {
-            vec[1] = (int) agents2.nearestEuclidean(key,agent.fieldOfView).stream().filter(a -> agent.side!=a.side).count();
+            vec[1] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.position.side != a.side).count();
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
@@ -311,11 +220,11 @@ public class World {
         return vec;
     }
 
-    public List getNeighborFriends(AgentWithPosition agent, AgentsSides friendlySide){
+    public List getNeighborFriends(AgentWithPosition agent, AgentsSides friendlySide) {
         List<AgentInTree> friendlyNeighbors = new ArrayList<>();
-        double[] key = {agent.position.p.getX(),agent.position.p.getY()};
+        double[] key = {agent.position.p.getX(), agent.position.p.getY()};
         try {
-            agents2.nearestEuclidean(key,agent.fieldOfView).stream().filter(a -> a.side==friendlySide).forEach(friendlyNeighbors::add);
+            agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> a.side == friendlySide).forEach(friendlyNeighbors::add);
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
@@ -324,18 +233,16 @@ public class World {
     }
 
     public void killAgent(AgentWithPosition agent) {
-        agent.position.isDead=true;
+        agent.position.isDead = true;
 
         //agents.rmPoint(agent.getPosition());
 
         try {
-            double[] agentKey = {agent.position.p.getX(),agent.position.p.getY()};
-            if (agents2.search(agentKey) != null) {
-                agents2.delete(agentKey);
+            double[] agentKey = {agent.position.p.getX(), agent.position.p.getY()};
+            if (agentsTree.search(agentKey) != null) {
+                agentsTree.delete(agentKey);
             }
-        } catch (KeySizeException e) {
-            e.printStackTrace();
-        } catch (KeyMissingException e) {
+        } catch (KeySizeException | KeyMissingException e) {
             e.printStackTrace();
         }
         if (bluesAgents.contains(agent.getAID()))
@@ -345,81 +252,12 @@ public class World {
 
     }
 
-    /*public static class AgentComparator extends KdTree.CircleComparator<AgentComparator.AgentSpace> {
-        @Override
-        public boolean contains(AgentSpace area, KdTree.Placed point) {
-            AgentInTree agent = (AgentInTree) point;
-            return area.getAgentSide().contains(agent.side) && super.contains(area, point);
-        }
-
-        @Override
-        public boolean contains(AgentSpace area, ArrayList<KdTree.Placed> points) {
-            for (KdTree.Placed p : points) {
-                AgentInTree f = (AgentInTree) p;
-                if (!area.getAgentSide().contains(f.side)) return false;
-            }
-
-            return super.contains(area, points);
-        }
-
-        @Override
-        public boolean intersects(AgentSpace area, ArrayList<KdTree.Placed> points, ArrayList<Boolean> ascending) {
-            boolean intersect = false;
-            for (KdTree.Placed p : points) {
-                AgentInTree f = (AgentInTree) p;
-                if (intersect = area.getAgentSide().contains(f.side)) {
-                    break;
-                }
-            }
-            return intersect && super.intersects(area, points, ascending);
-        }
-
-        @Override
-        public double distance(KdTree.Placed a, KdTree.Placed b) {
-            return super.distance(a, b);
-        }
-
-        @Override
-        public double distance(KdTree.Placed a, KdTree.Placed b, int dimension) {
-            return super.distance(a, b, dimension);
-        }
-
-        @Override
-        public boolean lower(KdTree.Placed a, KdTree.Placed b, int dimension) {
-            return super.lower(a, b, dimension);
-        }
-
-        public static class AgentSpace extends Circle {
-            private HashSet<AgentsSides> agentSides;
-            boolean covered = false;
-
-            @Override
-            public boolean contains(Point2D localPoint) {
-                return covered || super.contains(localPoint);
-            }
-
-            public AgentSpace(HashSet<AgentsSides> agentSides) {
-                this.agentSides = agentSides;
-                covered = true;
-            }
-
-            public AgentSpace(HashSet<AgentsSides> agentSides, Circle searchArea) {
-                super(searchArea.getCenterX(), searchArea.getCenterY(), searchArea.getRadius());
-                this.agentSides = agentSides;
-            }
-
-            public HashSet<AgentsSides> getAgentSide() {
-                return agentSides;
-            }
-        }
-    }*/
-
-    public double computeBoardCenter(Point2D position){
+    public double computeBoardCenter(Point2D position) {
         double X = position.getX();
         double returnVal;
-        returnVal = (boardCenterX/2 - X);
-        if(returnVal != 0)
-            returnVal = returnVal/Math.abs(returnVal) ;
+        returnVal = (boardCenterX / 2 - X);
+        if (returnVal != 0)
+            returnVal = returnVal / Math.abs(returnVal);
         return returnVal;
     }
 }

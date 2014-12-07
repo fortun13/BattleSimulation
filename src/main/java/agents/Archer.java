@@ -2,6 +2,7 @@ package main.java.agents;
 
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
+import main.java.utils.AgentInTree;
 
 /**
  * Created by Jakub Fortunka on 19.11.14.
@@ -20,13 +21,11 @@ public class Archer extends CannonFodder {
         this.strength = (int) parameters[2];
         this.speed = (int) parameters[3];
         this.accuracy  = (int) parameters[4];
-        this.side = (World.AgentsSides) parameters[5];
-        this.world = (World) parameters[6];
-        this.position = (World.AgentInTree) parameters[7];
-        this.attackRange = (int) parameters[8];
+        this.world = (World) parameters[5];
+        this.position = (AgentInTree) parameters[6];
+        this.attackRange = (int) parameters[7];
 
     }
-
 
     protected void takeDown() {
 
@@ -47,8 +46,13 @@ public class Archer extends CannonFodder {
     }
 
     @Override
-    public boolean enemyInRangeOfAttack(World.AgentInTree enemy) {
+    public boolean enemyInRangeOfAttack(AgentInTree enemy) {
         return getPosition().pos().distance(enemy.pos()) < (2+getAttackRange());
+    }
+
+    @Override
+    protected void gotoEnemy(AgentInTree enemy) {
+
     }
 
     @Override

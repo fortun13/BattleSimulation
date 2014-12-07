@@ -17,9 +17,8 @@ import java.util.Arrays;
  */
 public class ArcherBuilder extends AgentBuilder {
 
-    public ArcherBuilder(AID serverAID, Class<? extends ReactiveBehaviour> b, World.AgentsSides s, World w) {
+    public ArcherBuilder(AID serverAID, Class<? extends ReactiveBehaviour> b, World w) {
         super(serverAID);
-        side = s;
         behaviourClass = b;
         world = w;
     }
@@ -50,18 +49,13 @@ public class ArcherBuilder extends AgentBuilder {
     }
 
     @Override
-    public void buildSide() {
-        parameters[5] = side;
-    }
-
-    @Override
     public void buildPosition() {
-        parameters[7] = position;
+        parameters[6] = position;
     }
 
     @Override
     public void buildWorld() {
-        parameters[6] = world;
+        parameters[5] = world;
     }
 
     @Override
@@ -83,22 +77,17 @@ public class ArcherBuilder extends AgentBuilder {
     }
 
     @Override
-    public void setSide(World.AgentsSides side) {
-        this.side = side;
-    }
-
-    @Override
     public void setAgentName(String agentName) {
         this.agentName = agentName;
     }
 
     @Override
-    public void setPosition(World.AgentInTree position) {
+    public void setPosition(AgentInTree position) {
         this.position = position;
     }
 
     public void buildAttackRange() {
-        parameters[8] = 5;
+        parameters[7] = 5;
     }
 
     @Override
