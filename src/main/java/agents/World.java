@@ -11,10 +11,7 @@ import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
-import main.java.utils.AgentBuilder;
-import main.java.utils.AgentInTree;
-import main.java.utils.Director;
-import main.java.utils.WarriorBuilder;
+import main.java.utils.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -42,10 +39,9 @@ public class World {
         public String getValue() {
             return value;
         }
-
     }
-    private final KDTree<AgentInTree> agentsTree = new KDTree<>(2);
 
+    private final KDTree<AgentInTree> agentsTree = new KDTree<>(2);
     private int boardCenterX;
 
     public KDTree<AgentInTree> getAgentsTree() {
@@ -67,16 +63,20 @@ public class World {
 
         try {
             AgentBuilder warrior = new WarriorBuilder(server.getAID(), BerserkBehaviour.class, this);
+            AgentBuilder archer = new ArcherBuilder(server.getAID(),BerserkBehaviour.class, this);
             Director generator = new Director();
-            generator.setAgentBuilder(warrior);
+            //generator.setAgentBuilder(warrior);
+            generator.setAgentBuilder(archer);
             generator.setPlatform(container);
 
             for (int i = 0; i < bluesAgentsNumber; i++) {
                 String agentName = "agentBlue_" + (i + offset);
 
-                AgentInTree ait = new AgentInTree("", AgentsSides.Blues, new Point2D(2, i), AgentType.WARRIOR);
-                warrior.setAgentName(agentName);
-                warrior.setPosition(ait);
+                AgentInTree ait = new AgentInTree("", AgentsSides.Blues, new Point2D(2, i), AgentType.ARCHER);
+                archer.setAgentName(agentName);
+                archer.setPosition(ait);
+                //warrior.setAgentName(agentName);
+                //warrior.setPosition(ait);
                 generator.constructAgent();
 
                 AgentController agent = generator.getAgent();
@@ -97,6 +97,8 @@ public class World {
 
             offset += bluesAgentsNumber;
 
+            generator.setAgentBuilder(warrior);
+            generator.setPlatform(container);
             for (int i = 0; i < redsAgentsNumber; i++) {
                 String agentName = "agentRed_" + i + offset;
                 AgentInTree ait = new AgentInTree("", AgentsSides.Reds, new Point2D(10, i), AgentType.WARRIOR);

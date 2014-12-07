@@ -16,19 +16,19 @@ public class Commander extends CannonFodder {
 		attractionForce = (int)p[8];
 	}
 
-	@Override
-	protected void attack(AID enemy) {
-		if (Math.random() * 100 <= getAccuracy()) {
-			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-			msg.setConversationId("attack");
-			String msgContent = getCondition() + ":" + getStrength() + ":" + getSpeed() + ":" + getAccuracy();
-			msg.setContent(msgContent);
-			msg.addReplyTo(getAID());
-			msg.addReceiver(enemy);
-			msg.setSender(getAID());
-			send(msg);
-		}
-	}
+    @Override
+    protected void attack(AID enemy, AgentInTree position) {
+        if (Math.random() * 100 <= accuracy) {
+            ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+            msg.setConversationId("attack");
+            String msgContent = condition + ":" + strength + ":" + speed + ":" + accuracy;
+            msg.setContent(msgContent);
+            msg.addReplyTo(getAID());
+            msg.addReceiver(enemy);
+            msg.setSender(getAID());
+            send(msg);
+        }
+    }
 
 	@Override
 	protected boolean enemyInRangeOfAttack(AgentInTree enemy) {
