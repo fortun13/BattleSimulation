@@ -5,16 +5,12 @@ import jade.lang.acl.ACLMessage;
 
 /**
  * Created by Fortun on 2014-12-03.
+ *
  */
 public class CommanderMinionBehaviour extends ReactiveBehaviour {
 
     AID commander;
     boolean stance = false;
-
-    public CommanderMinionBehaviour(AID serverAID, AID commander) {
-        super(serverAID);
-        this.commander = commander;
-    }
 
     @Override
     public void handleMessage(ACLMessage msg) {

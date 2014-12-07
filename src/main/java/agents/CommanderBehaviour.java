@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 /**
  * Created by fortun on 03.12.14.
+ *
  */
 public class CommanderBehaviour extends Behaviour {
 

@@ -41,12 +41,6 @@ public abstract class CannonFodder extends AgentWithPosition {
     }
 
     @Override
-    protected void takeDown() {
-        world.removeAgent(this);
-        super.takeDown();
-    }
-
-    @Override
     protected AgentInTree getNearestEnemy() {
         return world.getNearestEnemy(this);
     }

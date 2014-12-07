@@ -12,21 +12,17 @@ import main.java.utils.AgentInTree;
 public abstract class ReactiveBehaviour extends Behaviour {
 
     public static final String DELETE = "DELETE";
+    private static final int WAITN = 3;
     protected int state = 0;
     protected AgentInTree enemyPosition;
     protected AID enemy;
-    protected AID serverAID;
-
-    protected ReactiveBehaviour(AID serverAID) {
-        this.serverAID = serverAID;
-    }
 
     @Override
     public void action() {
         ACLMessage msg = myAgent.receive();
         if (msg != null) {
             // probably can do it with msg.getPrformative and some ACL static fields, but for now let it be string
-            switch(msg.getConversationId()) {
+            switch (msg.getConversationId()) {
                 case "enemy-dead":
                     enemy = null;
                     enemyPosition = null;
@@ -35,21 +31,19 @@ public abstract class ReactiveBehaviour extends Behaviour {
                     //System.out.println("Next turn!! : " + myAgent.getName());
                     if (((AgentWithPosition)myAgent).position.isDead) ;
                         //state = 2;
-                    else if (((AgentWithPosition)myAgent).isMotivated()) {
+                    else if (((AgentWithPosition) myAgent).isMotivated()) {
                         decideOnNextStep();
                     } else {
-                        ACLMessage deathMsg = new ACLMessage(ACLMessage.INFORM);
-                        deathMsg.addReceiver(serverAID);
-                        ((AgentWithPosition)myAgent).killYourself(deathMsg);
+                        ((AgentWithPosition)myAgent).killYourself(msg.createReply());
                     }
-                    computationEnded();
+                    computationEnded(msg);
                     break;
                 case "battle-ended":
                     System.out.println("WE WON!!");
-                    state = 2;
+                    state = WAITN;
                     break;
                 case "attack":
-                    ((CannonFodder)myAgent).reactToAttack(msg);
+                    ((CannonFodder) myAgent).reactToAttack(msg);
                     break;
                 case DELETE:
                     myAgent.doDelete();
@@ -62,9 +56,8 @@ public abstract class ReactiveBehaviour extends Behaviour {
         }
     }
 
-    protected void computationEnded() {
-        ACLMessage m = new ACLMessage(ACLMessage.INFORM);
-        m.addReceiver(serverAID);
+    protected void computationEnded(ACLMessage msg) {
+        ACLMessage m = msg.createReply();
         m.setConversationId("ended-computation");
         myAgent.send(m);
     }

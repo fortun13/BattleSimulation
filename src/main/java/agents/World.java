@@ -11,7 +11,10 @@ import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
-import main.java.utils.*;
+import main.java.utils.AgentBuilder;
+import main.java.utils.AgentInTree;
+import main.java.utils.Director;
+import main.java.utils.WarriorBuilder;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,12 +27,14 @@ import java.util.concurrent.Semaphore;
  */
 public class World {
 
-    public enum AgentsSides {Blues, Reds}
 
+    private static int offset = 0;
+
+    public enum AgentsSides {Blues, Reds}
     public enum AgentType {
         WARRIOR("res" + File.separator + "warrior.png"), ARCHER("res" + File.separator + "archer.png");
-        private String value;
 
+        private String value;
         private AgentType(String pathToImage) {
             value = pathToImage;
         }
@@ -37,17 +42,17 @@ public class World {
         public String getValue() {
             return value;
         }
+
     }
-
     private final KDTree<AgentInTree> agentsTree = new KDTree<>(2);
-    private int boardCenterX;
 
-    private Semaphore cleared = new Semaphore(0);
+    private int boardCenterX;
 
     public KDTree<AgentInTree> getAgentsTree() {
         return agentsTree;
     }
 
+    private ArrayList<AID> corpses = new ArrayList<>();
     public ArrayList<AID> bluesAgents = new ArrayList<>();
     public ArrayList<AID> redsAgents = new ArrayList<>();
 
@@ -67,7 +72,7 @@ public class World {
             generator.setPlatform(container);
 
             for (int i = 0; i < bluesAgentsNumber; i++) {
-                String agentName = "agentBlue_" + i;
+                String agentName = "agentBlue_" + (i + offset);
 
                 AgentInTree ait = new AgentInTree("", AgentsSides.Blues, new Point2D(2, i), AgentType.WARRIOR);
                 warrior.setAgentName(agentName);
@@ -90,8 +95,10 @@ public class World {
                 }
             }
 
+            offset += bluesAgentsNumber;
+
             for (int i = 0; i < redsAgentsNumber; i++) {
-                String agentName = "agentRed_" + i;
+                String agentName = "agentRed_" + i + offset;
                 AgentInTree ait = new AgentInTree("", AgentsSides.Reds, new Point2D(10, i), AgentType.WARRIOR);
 
                 warrior.setAgentName(agentName);
@@ -112,6 +119,7 @@ public class World {
                     e.printStackTrace();
                 }
             }
+            offset += redsAgentsNumber;
 
         } catch (ControllerException e) { // finally i have found exceptions useful :D:D
             e.printStackTrace();
@@ -126,13 +134,8 @@ public class World {
             m.setConversationId(ReactiveBehaviour.DELETE);
             bluesAgents.forEach(m::addReceiver);
             redsAgents.forEach(m::addReceiver);
+            corpses.forEach(m::addReceiver);
             server.send(m);
-
-            try {
-                cleared.acquire();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -153,9 +156,6 @@ public class World {
                     redsAgents.remove(agent.getAID());
                     break;
             }
-        }
-        if ((bluesAgents.size() | redsAgents.size()) == 0) {
-            cleared.release();
         }
         //server.updateState();
     }
@@ -220,7 +220,7 @@ public class World {
         return vec;
     }
 
-    public List getNeighborFriends(AgentWithPosition agent, AgentsSides friendlySide) {
+    public List<AgentInTree> getNeighborFriends(AgentWithPosition agent, AgentsSides friendlySide) {
         List<AgentInTree> friendlyNeighbors = new ArrayList<>();
         double[] key = {agent.position.p.getX(), agent.position.p.getY()};
         try {
@@ -250,6 +250,7 @@ public class World {
         else if (redsAgents.contains(agent.getAID()))
             redsAgents.remove(agent.getAID());
 
+        corpses.add(agent.getAID());
     }
 
     public double computeBoardCenter(Point2D position) {

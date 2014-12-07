@@ -56,7 +56,7 @@ public class OptionsPanel extends JPanel {
 		boardHeight = new JSpinner();
 		boardHeight.setValue(20);
 		boardHeightPanel.add(boardHeight);
-		
+
 		generateBoard = new JButton("Generate Board");
 		generalPanel.add(generateBoard);
 

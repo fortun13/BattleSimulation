@@ -8,17 +8,12 @@ import jade.lang.acl.ACLMessage;
  * Behaviour presented in a frenzy of battle
  */
 public class BerserkBehaviour extends ReactiveBehaviour {
-
-    public BerserkBehaviour(AID serverAID) {
-        super(serverAID);
-    }
-
     @Override
     public void handleMessage(ACLMessage msg) {
         switch (msg.getConversationId()) {
             case "commander-init":
                 //TODO probably will have to check if this turn message was send to server (boolean?)
-                myAgent.addBehaviour(new CommanderMinionBehaviour(serverAID, new AID(msg.getContent(), false)));
+                myAgent.addBehaviour(new CommanderMinionBehaviour());
                 state = 2;
                 break;
         }

@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * Created by Jakub Fortunka on 08.11.14.
+ *
  */
 public class MainFrame extends JFrame {
 
@@ -32,7 +33,7 @@ public class MainFrame extends JFrame {
         setTitle("Battle!");
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
+        
         setSize(FRAMEWIDTH, FRAMEHEIGHT);
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
         
