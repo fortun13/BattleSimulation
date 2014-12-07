@@ -6,6 +6,7 @@ import main.java.utils.AgentInTree;
 
 /**
  * Created by Jakub Fortunka on 19.11.14.
+ *
  */
 public class Archer extends CannonFodder {
 

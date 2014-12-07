@@ -6,11 +6,6 @@ import jade.wrapper.ControllerException;
 import main.java.agents.ReactiveBehaviour;
 import main.java.agents.World;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-
 /**
  * Created by Jakub Fortunka on 21.11.14.
  *
@@ -60,18 +55,9 @@ public class ArcherBuilder extends AgentBuilder {
 
     @Override
     public void buildBehaviour() {
-        //parameters[0] = behaviour;
         try {
-            Type[] args = {AID.class};
-            for (Constructor<?> constructor : behaviourClass.getDeclaredConstructors()) {
-                if (Arrays.equals(constructor.getParameterTypes(), args)) {
-                    constructor.setAccessible(true);
-                    parameters[0] = constructor.newInstance(serverAID);
-                    return;
-                }
-            }
-            throw new RuntimeException("no constructor found with parameters: " + Arrays.toString(args));
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            parameters[0] = behaviourClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
