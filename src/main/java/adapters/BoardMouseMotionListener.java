@@ -50,7 +50,7 @@ public class BoardMouseMotionListener extends MouseMotionAdapter {
         Point2D p = new Point2D(e.getX(),e.getY());
         if (!board.getMyAgents().isEmpty()) {
             //System.out.println("Not empty");
-            if ((board.getMyAgents().stream().anyMatch( a -> a.getPoint().distance(p)<board.SQUARESIZE))) {
+            if ((board.getMyAgents().stream().anyMatch( a -> a.getPoint().distance(p)<board.SQUARESIZE-1))) {
                 //System.out.println("Found");
                 board.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
             } else {
