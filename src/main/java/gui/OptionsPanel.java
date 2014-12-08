@@ -15,6 +15,9 @@ public class OptionsPanel extends JPanel {
 	private JSpinner boardWidth;
 	private JSpinner boardHeight;
 
+	private JFileChooser fileChooser = new JFileChooser();
+	private JButton openFile;
+
     private SideOptionPanel bluePanel;
     private SideOptionPanel redPanel;
 
@@ -60,6 +63,9 @@ public class OptionsPanel extends JPanel {
 		generateBoard = new JButton("Generate Board");
 		generalPanel.add(generateBoard);
 
+		openFile = new JButton("Choose File");
+		generalPanel.add(openFile);
+
         spawnAgents = new JButton("Spawn Agents");
         btnStartSimulation = new JButton("Start simulation");
 
@@ -71,6 +77,14 @@ public class OptionsPanel extends JPanel {
 	
 	public void generateButtonAddActionListener(ActionListener listener) {
 		generateBoard.addActionListener(listener);
+	}
+
+	public void openFileAddActionListener(ActionListener listener) {
+		openFile.addActionListener(listener);
+	}
+
+	public JFileChooser getFileChooser() {
+		return fileChooser;
 	}
 
     public void spawnAgentsAddActionListener(ActionListener listener) {

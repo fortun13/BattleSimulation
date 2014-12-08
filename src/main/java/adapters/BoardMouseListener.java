@@ -30,7 +30,6 @@ public class BoardMouseListener extends MouseAdapter {
         if (board.clickedAgent != null)
             while(!ifCollisionMove(board.clickedAgent));
 
-
         /*if (board.getMyAgents().stream().anyMatch(a -> (a.getPoint().distance(board.clickedAgent.getPoint()) < board.SQUARESIZE) && (!a.equals(board.clickedAgent)))) {
             List<BoardPanel.MyAgent> lst = board.getMyAgents()
                     .stream()

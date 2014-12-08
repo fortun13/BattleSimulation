@@ -42,6 +42,10 @@ public abstract class AgentBuilder {
     public abstract void setAgentName(String agentName);
     public abstract void setPosition(AgentInTree position);
 
+    public void setBehaviourClass(Class<? extends ReactiveBehaviour> behaviourClass) {
+        this.behaviourClass = behaviourClass;
+    }
+
     public void constructAgent() {
         buildBehaviour();
         buildCondition();

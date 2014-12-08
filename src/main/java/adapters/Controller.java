@@ -1,24 +1,34 @@
 package main.java.adapters;
 
 import javafx.util.Pair;
+import main.java.agents.ServerAgent;
 import main.java.gui.MainFrame;
 import main.java.gui.SideOptionPanel;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
 
 public class Controller {
 	
 	private final MainFrame frame;
-    //private final ServerAgent server;
+    private final ServerAgent server;
 
     private BoardMouseMotionListener motionListener;
     private BoardMouseListener mouseListener;
 	
-	public Controller(MainFrame f) {
+	public Controller(MainFrame f, ServerAgent s) {
 		frame = f;
+        server = s;
 
         motionListener = new BoardMouseMotionListener(frame.getBoardPanel());
         mouseListener = new BoardMouseListener(frame.getBoardPanel());
@@ -45,6 +55,51 @@ public class Controller {
                 frame.server.doDelete();
                 super.windowClosing(e);
             }
+        });
+
+        frame.getOptionsPanel().openFileAddActionListener(e -> {
+            int returnVal = frame.getOptionsPanel().getFileChooser().showOpenDialog(frame);
+
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File file = frame.getOptionsPanel().getFileChooser().getSelectedFile();
+                //This is where a real application would open the file.
+                String content = "";
+                Scanner scanner = null;
+                try {
+                    scanner = new Scanner(new FileInputStream(file));
+                } catch (FileNotFoundException e1) {
+                    e1.printStackTrace();
+                }
+                while (scanner.hasNext())
+                    content += scanner.nextLine();
+
+                scanner.close();
+                JSONObject obj = new JSONObject(content);
+                JSONArray agents = obj.getJSONArray("agents");
+
+                HashMap<String,ArrayList<JSONObject>> map = new HashMap<>();
+
+                for (int i=0;i<agents.length();i++) {
+                    JSONObject agent = agents.getJSONObject(i);
+
+                    if (map.containsKey(agent.get("type").toString()))
+                        map.get(agent.get("type")).add(agent);
+                    else {
+                        ArrayList<JSONObject> lst = new ArrayList<>();
+                        lst.add(agent);
+                        map.put(agent.get("type").toString(),lst);
+                    }
+                }
+
+
+                frame.getBoardPanel().generateBoard(obj.getInt("boardHeight"), obj.getInt("boardWidth"));
+                frame.getBoardPanel().innerBoard.addMouseMotionListener(motionListener);
+                frame.getBoardPanel().innerBoard.addMouseListener(mouseListener);
+                server.prepareSimulation(map, obj.getInt("boardWidth"));
+            } else {
+                //file not been choosen do nothing
+            }
+
         });
 
         frame.getOptionsPanel().setSidePanelsSliderListener(e -> {
