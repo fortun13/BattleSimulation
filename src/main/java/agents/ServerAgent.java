@@ -37,9 +37,6 @@ public class ServerAgent extends Agent {
                     if (world.redsAgents.size() == 0 || world.bluesAgents.size() == 0) {
                         state = 2;
                         System.out.println("Turn: " + stepsCounter);
-                        //System.out.println("Blues: " + world.bluesAgents.size());
-                        //System.out.println("Reds: " + world.redsAgents.size());
-                        //System.out.println("State: " + agentsNumber);
                         ACLMessage endBattle = new ACLMessage(ACLMessage.INFORM);
                         world.redsAgents.forEach(endBattle::addReceiver);
                         world.bluesAgents.forEach(endBattle::addReceiver);
@@ -48,14 +45,10 @@ public class ServerAgent extends Agent {
                         m_frame.redrawBoard(world.getAgentsTree());
                         break;
                     }
-
                     send(newTurn);
                     time = System.currentTimeMillis();
                     state = 1;
                     System.out.println("Turn: " + stepsCounter);
-                    //System.out.println("Blues: " + world.bluesAgents.size());
-                    //System.out.println("Reds: " + world.redsAgents.size());
-                    //System.out.println("State: " + agentsNumber);
                     break;
                 case 1:
                     ACLMessage msg = receive();

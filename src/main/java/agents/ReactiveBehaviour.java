@@ -28,13 +28,14 @@ public abstract class ReactiveBehaviour extends Behaviour {
                     enemyPosition = null;
                     break;
                 case "new-turn":
-                    //System.out.println("Next turn!! : " + myAgent.getName());
-                    if (((AgentWithPosition)myAgent).position.isDead) ;
+                    AgentWithPosition agentWithPosition = (AgentWithPosition) myAgent;
+
+                    if (agentWithPosition.position.isDead) ;
                         //state = 2;
-                    else if (((AgentWithPosition) myAgent).isMotivated()) {
+                    else if (agentWithPosition.isMotivated()) {
                         decideOnNextStep();
                     } else {
-                        ((AgentWithPosition)myAgent).killYourself(msg.createReply());
+                        agentWithPosition.killYourself(msg.createReply());
                     }
                     computationEnded(msg);
                     break;

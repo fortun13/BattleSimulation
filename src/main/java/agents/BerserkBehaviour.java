@@ -8,6 +8,9 @@ import jade.lang.acl.ACLMessage;
  * Behaviour presented in a frenzy of battle
  */
 public class BerserkBehaviour extends ReactiveBehaviour {
+    private static final int FOLLOWIN = 1;
+    private static final int BORED = 0;
+
     @Override
     public void handleMessage(ACLMessage msg) {
         switch (msg.getConversationId()) {
@@ -21,51 +24,35 @@ public class BerserkBehaviour extends ReactiveBehaviour {
 
     @Override
     public void decideOnNextStep() {
-        if (((CannonFodder)myAgent).condition <= 0) {
+        CannonFodder agent = (CannonFodder) myAgent;
+
+        if (agent.condition <= 0) {
             return ;
         }
+        if (enemyPosition == null || enemyPosition.isDead) {
+            state = BORED;
+        }
         switch(state) {
-            case 0:
-                //findEnemy, if enemyFound goto state 2
-                enemyPosition = ((AgentWithPosition)myAgent).getNearestEnemy();
+            case BORED:
+                enemyPosition = agent.getNearestEnemy();
                 if (enemyPosition != null) {
-                    //System.out.println("Found enemy!" + myAgent.getName());
                     enemy = new AID(enemyPosition.getAgentName(),true);
-                    ((AgentWithPosition)myAgent).gotoEnemy(enemyPosition);
-                    state++;
+                    agent.gotoEnemy(enemyPosition);
+                    state = FOLLOWIN;
                 }
                 else {
                     //moveSomewhere
-                    ((AgentWithPosition)myAgent).keepPosition();
+                    agent.keepPosition();
                 }
                 break;
-            case 1:
-                // I assume that "world" will kill agent, so, when enemy will die, Agent enemy will become null (not sure if it's good thinking though)
-                if (enemy == null) {
-                    enemyPosition = ((AgentWithPosition)myAgent).getNearestEnemy();
-                    if (enemyPosition == null) {
-                        state--;
-                        return ;
-                    } else {
-                        enemy = new AID(enemyPosition.getAgentName(),true);
-                    }
+            case FOLLOWIN:
+                if (agent.enemyInRangeOfAttack(enemyPosition)) {
+                    agent.setSpeedVector(0, 0);
+                    agent.attack(enemy, enemyPosition);
                 }
-                if (((AgentWithPosition)myAgent).enemyInRangeOfAttack(enemyPosition))
-                    doAction(() -> ((CannonFodder) myAgent).attack(enemy, enemyPosition));
                 else
-                    doAction(() -> ((CannonFodder)myAgent).gotoEnemy(enemyPosition));
+                    agent.gotoEnemy(enemyPosition);
                 break;
         }
     }
-
-    private void doAction(Runnable action) {
-        if (enemyPosition.isDead) {
-            enemyPosition = null;
-            enemy = null;
-            state--;
-            return ;
-        }
-        action.run();
-    }
-
 }

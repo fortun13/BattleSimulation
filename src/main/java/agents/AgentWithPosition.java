@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 /**
  * Created by Jakub Fortunka on 20.11.14.
+ *
  */
 public abstract class AgentWithPosition extends Agent {
     //protected Point2D position;
@@ -26,6 +27,7 @@ public abstract class AgentWithPosition extends Agent {
     protected World world;
 
     protected AgentInTree position;
+    private double[] speed = new double[2];
 
     public int getFieldOfView() { return fieldOfView; }
 
@@ -80,5 +82,27 @@ public abstract class AgentWithPosition extends Agent {
     }
 
     protected abstract void killYourself(ACLMessage msgToSend);
+
+
+    public double[] getSpeedHV() {
+        double angle = speed[0], r = speed[1];
+        return new double[]{r * Math.cos(angle), r * Math.sin(angle)};
+    }
+
+    public void setSpeedHV(double hSpeed, double vSpeed) {
+        double size = 1;
+        setSpeedVector(Math.atan2(vSpeed, hSpeed), Math.sqrt(hSpeed*hSpeed + vSpeed*vSpeed) - 2* size);
+    }
+
+    public void setSpeedVector(double angle, double radius) {
+        speed[0] = angle;
+        speed[1] = radius;
+    }
+
+    protected Point2D gesDestination() {
+        Point2D pos = position.pos();
+        double[] s = getSpeedHV();
+        return new Point2D(pos.getX() + s[0], pos.getY() + s[1]);
+    }
 
 }

@@ -16,7 +16,6 @@ import main.java.utils.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
 /**
  * Created by Marek on 2014-11-15.
@@ -26,6 +25,21 @@ public class World {
 
 
     private static int offset = 0;
+    private KDTree<Pair<AgentWithPosition, Point2D>> destinations = new KDTree<>(2);
+
+    public boolean setDestination(AgentWithPosition agent, Point2D destination) {
+        try {
+            destinations.insert(
+                    new double[]{destination.getX(), destination.getY()},
+                    new Pair<>(agent, destination)
+            );
+        } catch (KeySizeException e) {
+            throw new RuntimeException(e);
+        } catch (KeyDuplicateException e) {
+            return false;
+        }
+        return true;
+    }
 
     public enum AgentsSides {Blues, Reds}
     public enum AgentType {
@@ -101,7 +115,7 @@ public class World {
             generator.setPlatform(container);
             for (int i = 0; i < redsAgentsNumber; i++) {
                 String agentName = "agentRed_" + i + offset;
-                AgentInTree ait = new AgentInTree("", AgentsSides.Reds, new Point2D(10, i), AgentType.WARRIOR);
+                AgentInTree ait = new AgentInTree("", AgentsSides.Reds, new Point2D(100, i), AgentType.WARRIOR);
 
                 warrior.setAgentName(agentName);
                 warrior.setPosition(ait);
@@ -179,9 +193,9 @@ public class World {
         Pair borderSize = server.m_frame.getOptionsPanel().getBoardSize();
         double[] key = {destination.getX(), destination.getY()};
         try {
-            if (destination.getX() >= (int) borderSize.getKey() || destination.getX() < 0
-                    || destination.getY() >= (int) borderSize.getValue() || destination.getY() < 0
-                    || agentsTree.search(key) != null)
+            if (/*destination.getX() >= (Integer) borderSize.getKey() || destination.getX() < 0
+                    || destination.getY() >= (Integer) borderSize.getValue() || destination.getY() < 0
+                    || */agentsTree.search(key) != null)
                 return false;
         } catch (KeySizeException e) {
             e.printStackTrace();

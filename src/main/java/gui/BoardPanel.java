@@ -18,11 +18,9 @@ import java.util.ArrayList;
 
 /**
  * Created by Jakub Fortunka on 08.11.14.
+ *
  */
 public class BoardPanel extends JPanel {
-
-    private final int WIDTH = 800;
-    private final int HEIGHT = 400;
 
     public final int SQUARESIZE = 20;
     public Cursor cursor;
@@ -39,11 +37,13 @@ public class BoardPanel extends JPanel {
         super();
         setBackground(Color.WHITE);
 
-        setPreferredSize(new Dimension(WIDTH,HEIGHT));
+        int WIDTH = 800;
+        int HEIGHT = 400;
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
         innerBoard = new Board();
 
-        at.scale(1,1);
+        at.scale(0.2,0.2);
     }
 
     public void generateBoard(int height, int width) {

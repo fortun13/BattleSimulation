@@ -47,29 +47,11 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     @Override
     protected void gotoEnemy(AgentInTree enemy) {
-        // Vector between agent and spotted enemy
+        Point2D mp = position.pos();
+        Point2D ep = enemy.pos();
+        setSpeedHV(ep.getX() - mp.getX(), ep.getY() - mp.getY());
 
-        Point2D thisPosition = position.pos();
-        Point2D enemyPosition = enemy.pos();
-        int vec[] = new int[] {(int)enemyPosition.getX() - (int)thisPosition.getX(),
-                                (int)enemyPosition.getY() - (int)thisPosition.getY()};
-        /* Compute movement vector, for example: [4, -7] => [4/|4|, -7/|-7|] => [1, -1] */
-        if (vec[0] != 0) vec[0] = vec[0]/Math.abs(vec[0]);
-        if (vec[1] != 0) vec[1] = vec[1]/Math.abs(vec[1]);
-        Point2D destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getY() + vec[1]);
-        // Check if agent can move diagonally
-        if(!world.moveAgent(this,destination)) {
-            // Check if agent can move horizontally
-            destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getX());
-            if (!world.moveAgent(this,destination)) {
-                // Check if agent can move vertically
-                destination = new Point2D(thisPosition.getX(), thisPosition.getX() + vec[1]);
-                world.moveAgent(this,destination);
-                /*if(!world.moveAgent(this,destination)) {
-                    //TODO should we program this situation?
-                }*/
-            }
-        }
+        world.moveAgent(this, gesDestination());
     }
 
     protected void keepPosition() {
@@ -107,4 +89,8 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     protected abstract void attack(AID enemy, AgentInTree position);
 
+    @Override
+    public void setSpeedVector(double angle, double radius) {
+        super.setSpeedVector(angle, Math.min(radius, speed));
+    }
 }
