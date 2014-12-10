@@ -29,7 +29,7 @@ public class ServerAgent extends Agent {
 
         long time;
 
-        long interval = 300;
+        long interval = 100;
         private ACLMessage newTurn;
 
         @Override
@@ -105,8 +105,6 @@ public class ServerAgent extends Agent {
         }
     };
 
-
-
     public ServerAgent() {
         super();
     }
@@ -119,10 +117,6 @@ public class ServerAgent extends Agent {
         System.out.println( getLocalName() + " setting up");
         setupUI();
     }
-
-
-    // Internal implementation methods
-    //////////////////////////////////
 
     /**
      * Setup the UI, which means creating and showing the main frame.
@@ -151,11 +145,7 @@ public class ServerAgent extends Agent {
 
     public void startSimulation() {
         System.out.println("Simulation started");
-
-        //m_frame.redrawBoard(world.getAgents());
-
         updateState();
-
         addBehaviour(serverBehaviour);
     }
 

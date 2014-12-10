@@ -33,7 +33,19 @@ public class MainFrame extends JFrame {
 
     public MainFrame(ServerAgent s) {
 
-        setTitle("Battle!");
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+
+        setTitle(Messages.getString("MainFrame.this.title")); //$NON-NLS-1$
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         
@@ -57,12 +69,12 @@ public class MainFrame extends JFrame {
 
         JPanel oneButtonPanel = new JPanel();
 
-        btnStartSimulation = new JButton("Start simulation");
+        btnStartSimulation = new JButton(Messages.getString("MainFrame.btnStartSimulation.text")); //$NON-NLS-1$
         oneButtonPanel.add(btnStartSimulation);
 
         boardTabPanel.add(oneButtonPanel,BorderLayout.SOUTH);
 
-        tabs.addTab("Simulation",null, boardTabPanel,"Board with agents");
+        tabs.addTab(Messages.getString("MainFrame.tab1.tabName"),null, boardTabPanel,Messages.getString("MainFrame.tab1.tabTooltip"));
 
 
         //splitPane.setLeftComponent(scrollPane);
@@ -70,7 +82,7 @@ public class MainFrame extends JFrame {
         optionsPanel = new OptionsPanel();
         //splitPane.setRightComponent(optionsPanel);
 
-        tabs.addTab("Options",null,optionsPanel,"Options");
+        tabs.addTab(Messages.getString("MainFrame.tab2.tabName"),null,optionsPanel,Messages.getString("MainFrame.tab2.tabTooltip"));
 
         getContentPane().add(tabs);
         

@@ -26,27 +26,27 @@ public class OptionsPanel extends JPanel {
     public OptionsPanel() {
 		setLayout(new GridLayout(1, 0, 0, 0));
 
-        bluePanel = new SideOptionPanel("Blues");
-        redPanel = new SideOptionPanel("Reds");
+        bluePanel = new SideOptionPanel(Messages.getString("OptionsPanel.bluePanelBorderTitle"));
+        redPanel = new SideOptionPanel(Messages.getString("OptionsPanel.redPanelBorderTitle"));
 
         add(bluePanel);
         add(redPanel);
 		
 		JPanel generalPanel = new JPanel();
-		generalPanel.setBorder(BorderFactory.createTitledBorder("General"));
+		generalPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("OptionsPanel.generalBorderTitle")));
 		add(generalPanel);
 		generalPanel.setLayout(new GridLayout(0, 1, 5, 5));
 		//generalPanel.setLayout(new BoxLayout(generalPanel,BoxLayout.Y_AXIS));
 		
 		JPanel generalBoardSize = new JPanel();
-		generalBoardSize.setBorder(BorderFactory.createTitledBorder("Board size"));
+		generalBoardSize.setBorder(BorderFactory.createTitledBorder(Messages.getString("OptionsPanel.boardSizeBorderTitle")));
 		generalPanel.add(generalBoardSize);
 		generalBoardSize.setLayout(new GridLayout(1, 2, 0, 0));
 		
 		JPanel boardWidthPanel = new JPanel();
 		generalBoardSize.add(boardWidthPanel);
 		
-		JLabel lblWidth = new JLabel("Width");
+		JLabel lblWidth = new JLabel(Messages.getString("OptionsPanel.lblWidth.text")); //$NON-NLS-1$
 		boardWidthPanel.add(lblWidth);
 		
 		boardWidth = new JSpinner();
@@ -56,7 +56,7 @@ public class OptionsPanel extends JPanel {
 		JPanel boardHeightPanel = new JPanel();
 		generalBoardSize.add(boardHeightPanel);
 		
-		JLabel lblHeight = new JLabel("Height");
+		JLabel lblHeight = new JLabel(Messages.getString("OptionsPanel.lblHeight.text")); //$NON-NLS-1$
 		boardHeightPanel.add(lblHeight);
 		
 		boardHeight = new JSpinner();
@@ -66,19 +66,19 @@ public class OptionsPanel extends JPanel {
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons,BoxLayout.Y_AXIS));
 
-		generateBoard = new JButton("Generate Board");
+		generateBoard = new JButton(Messages.getString("OptionsPanel.generateBoard.text")); //$NON-NLS-1$
 		buttons.add(generateBoard);
 		generateBoard.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		buttons.add(Box.createRigidArea(new Dimension(0,10)));
 
-		openFile = new JButton("Choose File");
+		openFile = new JButton(Messages.getString("OptionsPanel.openFile.text")); //$NON-NLS-1$
 		buttons.add(openFile);
 		openFile.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		buttons.add(Box.createRigidArea(new Dimension(0,10)));
 
-        spawnAgents = new JButton("Spawn Agents");
+        spawnAgents = new JButton(Messages.getString("OptionsPanel.spawnAgents.text")); //$NON-NLS-1$
 		spawnAgents.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         buttons.add(spawnAgents);

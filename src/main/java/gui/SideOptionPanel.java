@@ -22,7 +22,7 @@ public class SideOptionPanel extends JPanel {
         setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 
         JPanel warriorsSliderPanel = new JPanel();
-        warriorsSliderPanel.setBorder(BorderFactory.createTitledBorder("No. of Warriors"));
+        warriorsSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.warriorsBorderTitle")));
         add(warriorsSliderPanel);
 
         warriorsNumber = new JSpinner();
@@ -36,7 +36,7 @@ public class SideOptionPanel extends JPanel {
         warriorsSliderPanel.add(warriorsSlider);
 
         JPanel archersSliderPanel = new JPanel();
-        archersSliderPanel.setBorder(BorderFactory.createTitledBorder("No. of Archers"));
+        archersSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.archersBorderTitle")));
         add(archersSliderPanel);
 
         archersNumber = new JSpinner();
