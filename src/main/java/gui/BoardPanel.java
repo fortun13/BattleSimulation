@@ -50,6 +50,9 @@ public class BoardPanel extends JPanel {
     	//setPreferredSize(new Dimension(WIDTH,HEIGHT));
     	innerBoard.removeAll();
 
+        at = new AffineTransform();
+        at.scale(1,1);
+
     	setPreferredSize(new Dimension(width*(SQUARESIZE)+10, height*(SQUARESIZE)+10));
 
         innerBoard.setPreferredSize(new Dimension(width*(SQUARESIZE)+1, height*(SQUARESIZE)+1));

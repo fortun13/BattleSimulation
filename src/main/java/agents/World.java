@@ -12,9 +12,11 @@ import jade.wrapper.PlatformController;
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
 import main.java.utils.*;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -47,8 +49,45 @@ public class World {
         return true;
     }
 
-    public KDTree<AgentInTree> getAgentsTree() {
-        return agentsTree;
+    public enum AgentsSides {Blues, Reds}
+    public enum AgentType {
+        WARRIOR("res" + File.separator + "warrior.png"), ARCHER("res" + File.separator + "archer.png");
+    public World(ServerAgent server, HashMap<String,ArrayList<JSONObject>> map, int boardWidth) {
+
+        int counter = 0;
+
+        this.server = server;
+
+        boardCenterX = boardWidth;
+
+        PlatformController container = server.getContainerController();
+        Director generator = new Director();
+
+        for (String type : map.keySet()) {
+            ArrayList<JSONObject> list = map.get(type);
+            switch (type.toLowerCase()) {
+                case "warrior":
+                    AgentBuilder warrior = new WarriorBuilder(server.getAID(), null, this);
+                    generator.setAgentBuilder(warrior);
+                    generator.setPlatform(container);
+                    for (JSONObject agent : list) {
+                        addAgentToWorld(agent,warrior,AgentType.WARRIOR,generator,counter);
+                        counter++;
+                    }
+                    break;
+                case "archer":
+                    AgentBuilder archer = new ArcherBuilder(server.getAID(), null, this);
+                    generator.setAgentBuilder(archer);
+                    generator.setPlatform(container);
+                    for (JSONObject agent : list) {
+                        addAgentToWorld(agent,archer,AgentType.ARCHER,generator,counter);
+                        counter++;
+                    }
+                    break;
+            }
+        }
+
+        offset += counter+1;
     }
 
     public World(ServerAgent server, int bluesAgentsNumber, int redsAgentsNumber) {
@@ -72,8 +111,6 @@ public class World {
                 AgentInTree ait = new AgentInTree("", AgentsSides.Blues, new Point2D(2, i), AgentType.ARCHER);
                 archer.setAgentName(agentName);
                 archer.setPosition(ait);
-                //warrior.setAgentName(agentName);
-                //warrior.setPosition(ait);
                 generator.constructAgent();
 
                 AgentController agent = generator.getAgent();
@@ -126,6 +163,62 @@ public class World {
         }
     }
 
+    public KDTree<AgentInTree> getAgentsTree() {
+        return agentsTree;
+    }
+
+    private void addAgentToWorld(JSONObject agent, AgentBuilder builder, AgentType type, Director generator, int counter) {
+
+        setBehaviourByFile(builder, agent.get("behaviour").toString());
+
+        AgentsSides side;
+        switch (agent.get("side").toString().toLowerCase()) {
+            case "blues":
+                side = AgentsSides.Blues;
+                break;
+            default:
+                side = AgentsSides.Reds;
+        }
+        String name = "agent_" + (counter + offset);
+
+        AgentInTree ait = new AgentInTree("", side, new Point2D(agent.getInt("x"), agent.getInt("y")), type);
+        builder.setAgentName(name);
+        builder.setPosition(ait);
+
+        generator.constructAgent();
+
+        try {
+            AgentController a = generator.getAgent();
+
+            ait.setAgentName(a.getName());
+            a.start();
+            if (side == AgentsSides.Blues)
+                bluesAgents.add(new AID(a.getName(), true));
+            else
+                redsAgents.add(new AID(a.getName(), true));
+
+            double[] key = {ait.p.getX(), ait.p.getY()};
+            try {
+                agentsTree.insert(key, ait);
+            } catch (KeySizeException | KeyDuplicateException e) {
+                e.printStackTrace();
+            }
+        } catch (ControllerException e) {
+            e.printStackTrace();
+        }
+        //offset++;
+
+    }
+
+    private void setBehaviourByFile(AgentBuilder b, String behaviour) {
+        switch (behaviour.toLowerCase()) {
+            case "berserk":
+                b.setBehaviourClass(BerserkBehaviour.class);
+                break;
+            case "aaa":
+                break;
+        }
+    }
 
     public void clean() {
         if ((bluesAgents.size() | redsAgents.size()) != 0) {
@@ -262,6 +355,7 @@ public class World {
     }
 
     public enum AgentsSides {Blues, Reds}
+
     public enum AgentType {
         WARRIOR("res" + File.separator + "warrior.png"), ARCHER("res" + File.separator + "archer.png");
 

@@ -52,7 +52,9 @@ public class MainFrame extends JFrame {
         setVisible( true );
         validate();
 
-        controller = new Controller(this);
+        server = s;
+
+        controller = new Controller(this,server);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -61,7 +63,7 @@ public class MainFrame extends JFrame {
 
         });
 
-        server = s;
+
     }
 
     public void redrawBoard(KDTree<AgentInTree> agents) {

@@ -4,6 +4,10 @@ import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import main.java.gui.MainFrame;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Jakub Fortunka on 08.11.14.
@@ -69,20 +73,8 @@ public class ServerAgent extends Agent {
                                 break;
                             }
                         } else if (msg.getConversationId().equals("agent-dead")) {
-                            //AID sender = msg.getSender();
-                            //newTurn.removeReceiver(msg.getSender());
-                                /*if (world.bluesAgents.contains(sender)) {
-                                    world.bluesAgents.remove(sender);
-                                    newTurn.removeReceiver(sender);
-                                } else if (world.redsAgents.contains(sender)) {
-                                    world.redsAgents.remove(sender);
-                                    newTurn.removeReceiver(sender);
-                                }*/
-                            //updateState();
-
                             while (System.currentTimeMillis() - time < interval)
                                 block(interval - (System.currentTimeMillis() - time));
-
                         }
                     } else {
                         block();
@@ -147,6 +139,19 @@ public class ServerAgent extends Agent {
 
         m_frame.redrawBoard(world.getAgentsTree());
 
+    }
+
+    public void prepareSimulation(HashMap<String,ArrayList<JSONObject>> map, int boardWidth) {
+        if (world != null)
+            world.clean();
+        world = new World(this,map, boardWidth);
+        serverBehaviour.reset();
+
+        m_frame.redrawBoard(world.getAgentsTree());
+    }
+
+    private World generateWorld(int bluesAgentsNumber, int redsAgentsNumber) {
+        return new World(this,bluesAgentsNumber,redsAgentsNumber);
     }
     
     public void startSimulation() {
