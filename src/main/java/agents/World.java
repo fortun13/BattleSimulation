@@ -23,8 +23,14 @@ import java.util.List;
  */
 public class World {
 
-
     private static int offset = 0;
+    private final KDTree<AgentInTree> agentsTree = new KDTree<>(2);
+    public ArrayList<AID> bluesAgents = new ArrayList<>();
+    public ArrayList<AID> redsAgents = new ArrayList<>();
+    public ServerAgent server;
+    private int boardCenterX;
+    private ArrayList<AID> corpses = new ArrayList<>();
+
     private KDTree<Pair<AgentWithPosition, Point2D>> destinations = new KDTree<>(2);
 
     public boolean setDestination(AgentWithPosition agent, Point2D destination) {
@@ -41,32 +47,9 @@ public class World {
         return true;
     }
 
-    public enum AgentsSides {Blues, Reds}
-    public enum AgentType {
-        WARRIOR("res" + File.separator + "warrior.png"), ARCHER("res" + File.separator + "archer.png");
-
-        private String value;
-        private AgentType(String pathToImage) {
-            value = pathToImage;
-        }
-
-        public String getValue() {
-            return value;
-        }
-    }
-
-    private final KDTree<AgentInTree> agentsTree = new KDTree<>(2);
-    private int boardCenterX;
-
     public KDTree<AgentInTree> getAgentsTree() {
         return agentsTree;
     }
-
-    private ArrayList<AID> corpses = new ArrayList<>();
-    public ArrayList<AID> bluesAgents = new ArrayList<>();
-    public ArrayList<AID> redsAgents = new ArrayList<>();
-
-    public ServerAgent server;
 
     public World(ServerAgent server, int bluesAgentsNumber, int redsAgentsNumber) {
 
@@ -276,5 +259,19 @@ public class World {
         if (returnVal != 0)
             returnVal = returnVal / Math.abs(returnVal);
         return returnVal;
+    }
+
+    public enum AgentsSides {Blues, Reds}
+    public enum AgentType {
+        WARRIOR("res" + File.separator + "warrior.png"), ARCHER("res" + File.separator + "archer.png");
+
+        private String value;
+        private AgentType(String pathToImage) {
+            value = pathToImage;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 }
