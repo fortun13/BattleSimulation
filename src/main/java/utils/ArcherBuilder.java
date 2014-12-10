@@ -73,7 +73,7 @@ public class ArcherBuilder extends AgentBuilder {
     }
 
     public void buildAttackRange() {
-        parameters[7] = 5;
+        parameters[7] = 10;
     }
 
     @Override

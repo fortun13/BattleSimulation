@@ -40,14 +40,22 @@ public class Controller {
             frame.getBoardPanel().innerBoard.addMouseMotionListener(motionListener);
             frame.getBoardPanel().innerBoard.addMouseListener(mouseListener);
         });
-        
-        frame.getOptionsPanel().startSimulationButtonAddActionListener(e -> {
+
+        frame.startSimulationButtonAddActionListener(e -> {
             setMouseWheelListenerForBoard();
             frame.getBoardPanel().innerBoard.removeMouseMotionListener(motionListener);
             frame.getBoardPanel().innerBoard.removeMouseListener(mouseListener);
 
             frame.server.startSimulation();
         });
+        
+        /*frame.getOptionsPanel().startSimulationButtonAddActionListener(e -> {
+            setMouseWheelListenerForBoard();
+            frame.getBoardPanel().innerBoard.removeMouseMotionListener(motionListener);
+            frame.getBoardPanel().innerBoard.removeMouseListener(mouseListener);
+
+            frame.server.startSimulation();
+        });*/
 
         frame.addWindowListener(new WindowAdapter() {
             @Override

@@ -43,7 +43,9 @@ public class BoardPanel extends JPanel {
 
         innerBoard = new Board();
 
-        at.scale(0.2,0.2);
+        //at.scale(0.2,0.2);
+
+        at.scale(1,1);
     }
 
     public void generateBoard(int height, int width) {
@@ -51,7 +53,9 @@ public class BoardPanel extends JPanel {
     	innerBoard.removeAll();
 
         at = new AffineTransform();
-        at.scale(0.19, 0.19);
+        //at.scale(0.19, 0.19);
+
+        at.scale(1,1);
 
     	setPreferredSize(new Dimension(width*(SQUARESIZE)+10, height*(SQUARESIZE)+10));
 
@@ -140,6 +144,8 @@ public class BoardPanel extends JPanel {
             g2d.setColor(this.c);
             //g.fillRect((int)p.getX()*SQUARESIZE,(int)p.getY()*SQUARESIZE,SQUARESIZE,SQUARESIZE);
             //g2d.fillOval((int) p.getX() * SQUARESIZE, (int) p.getY() * SQUARESIZE, SQUARESIZE, SQUARESIZE);
+
+            //g2d.fillRect((int)p.getX(),(int)p.getY(),SQUARESIZE,SQUARESIZE);
 
             g2d.fillOval((int) p.getX(), (int) p.getY(), SQUARESIZE, SQUARESIZE);
             try {

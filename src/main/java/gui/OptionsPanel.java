@@ -11,7 +11,7 @@ public class OptionsPanel extends JPanel {
 	
 	private JButton generateBoard;
     private JButton spawnAgents;
-	private JButton btnStartSimulation;
+	//private JButton btnStartSimulation;
 	private JSpinner boardWidth;
 	private JSpinner boardHeight;
 
@@ -33,12 +33,13 @@ public class OptionsPanel extends JPanel {
 		JPanel generalPanel = new JPanel();
 		generalPanel.setBorder(BorderFactory.createTitledBorder("General"));
 		add(generalPanel);
-		generalPanel.setLayout(new GridLayout(0, 1, 0, 0));
+		generalPanel.setLayout(new GridLayout(0, 1, 5, 5));
+		//generalPanel.setLayout(new BoxLayout(generalPanel,BoxLayout.Y_AXIS));
 		
 		JPanel generalBoardSize = new JPanel();
 		generalBoardSize.setBorder(BorderFactory.createTitledBorder("Board size"));
 		generalPanel.add(generalBoardSize);
-		generalBoardSize.setLayout(new GridLayout(0, 2, 0, 0));
+		generalBoardSize.setLayout(new GridLayout(1, 2, 0, 0));
 		
 		JPanel boardWidthPanel = new JPanel();
 		generalBoardSize.add(boardWidthPanel);
@@ -60,19 +61,27 @@ public class OptionsPanel extends JPanel {
 		boardHeight.setValue(20);
 		boardHeightPanel.add(boardHeight);
 
+		JPanel buttons = new JPanel();
+		buttons.setLayout(new BoxLayout(buttons,BoxLayout.Y_AXIS));
+
 		generateBoard = new JButton("Generate Board");
-		generalPanel.add(generateBoard);
+		buttons.add(generateBoard);
+		generateBoard.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		buttons.add(Box.createRigidArea(new Dimension(0,10)));
 
 		openFile = new JButton("Choose File");
-		generalPanel.add(openFile);
+		buttons.add(openFile);
+		openFile.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		buttons.add(Box.createRigidArea(new Dimension(0,10)));
 
         spawnAgents = new JButton("Spawn Agents");
-        btnStartSimulation = new JButton("Start simulation");
+		spawnAgents.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JPanel test = new JPanel();
-        test.add(spawnAgents);
-        test.add(btnStartSimulation);
-        generalPanel.add(test);
+        buttons.add(spawnAgents);
+        //test.add(btnStartSimulation);
+        generalPanel.add(buttons);
 	}
 	
 	public void generateButtonAddActionListener(ActionListener listener) {
@@ -91,9 +100,9 @@ public class OptionsPanel extends JPanel {
         spawnAgents.addActionListener(listener);
     }
 	
-	public void startSimulationButtonAddActionListener(ActionListener listener) {
+	/*public void startSimulationButtonAddActionListener(ActionListener listener) {
 		btnStartSimulation.addActionListener(listener);
-	}
+	}*/
 	
 	public Pair<Integer, Integer> getBoardSize() {
 		return new Pair<>((Integer)boardHeight.getValue(),(Integer)boardWidth.getValue());

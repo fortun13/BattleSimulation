@@ -28,7 +28,7 @@ public class ServerAgent extends Agent {
 
         long time;
 
-        long interval = 50;
+        long interval = 300;
         private ACLMessage newTurn;
 
         @Override

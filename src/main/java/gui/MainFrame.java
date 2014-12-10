@@ -7,6 +7,8 @@ import main.java.agents.ServerAgent;
 import main.java.utils.AgentInTree;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -20,6 +22,7 @@ public class MainFrame extends JFrame {
     private final int FRAMEHEIGHT = 700;
 
 	private final int FRAMEWIDTH = 900;
+    private final JButton btnStartSimulation;
 
     private BoardPanel boardPanel;
 	private OptionsPanel optionsPanel;
@@ -36,18 +39,40 @@ public class MainFrame extends JFrame {
         
         setSize(FRAMEWIDTH, FRAMEHEIGHT);
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
-        
-        JSplitPane splitPane = new JSplitPane();
-        splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        getContentPane().add(splitPane);
+
+        JTabbedPane tabs = new JTabbedPane();
+
+        //JSplitPane splitPane = new JSplitPane();
+        //splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        //getContentPane().add(splitPane);
         
         boardPanel = new BoardPanel();
         JScrollPane scrollPane = new JScrollPane(boardPanel);
 
-        splitPane.setLeftComponent(scrollPane);
+        JPanel boardTabPanel = new JPanel();
+
+        boardTabPanel.setLayout(new BorderLayout());
+
+        boardTabPanel.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel oneButtonPanel = new JPanel();
+
+        btnStartSimulation = new JButton("Start simulation");
+        oneButtonPanel.add(btnStartSimulation);
+
+        boardTabPanel.add(oneButtonPanel,BorderLayout.SOUTH);
+
+        tabs.addTab("Simulation",null, boardTabPanel,"Board with agents");
+
+
+        //splitPane.setLeftComponent(scrollPane);
         
         optionsPanel = new OptionsPanel();
-        splitPane.setRightComponent(optionsPanel);
+        //splitPane.setRightComponent(optionsPanel);
+
+        tabs.addTab("Options",null,optionsPanel,"Options");
+
+        getContentPane().add(tabs);
         
         setVisible( true );
         validate();
@@ -85,5 +110,8 @@ public class MainFrame extends JFrame {
     public OptionsPanel getOptionsPanel() {
         return optionsPanel;
     }
-    
+
+    public void startSimulationButtonAddActionListener(ActionListener listener) {
+        btnStartSimulation.addActionListener(listener);
+    }
 }
