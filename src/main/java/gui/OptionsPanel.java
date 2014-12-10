@@ -1,11 +1,13 @@
 package main.java.gui;
 
 import javafx.util.Pair;
+import main.java.agents.World;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class OptionsPanel extends JPanel {
 	
@@ -48,7 +50,7 @@ public class OptionsPanel extends JPanel {
 		boardWidthPanel.add(lblWidth);
 		
 		boardWidth = new JSpinner();
-		boardWidth.setValue(20);
+		boardWidth.setValue(50);
 		boardWidthPanel.add(boardWidth);
 		
 		JPanel boardHeightPanel = new JPanel();
@@ -58,7 +60,7 @@ public class OptionsPanel extends JPanel {
 		boardHeightPanel.add(lblHeight);
 		
 		boardHeight = new JSpinner();
-		boardHeight.setValue(20);
+		boardHeight.setValue(50);
 		boardHeightPanel.add(boardHeight);
 
 		JPanel buttons = new JPanel();
@@ -109,11 +111,26 @@ public class OptionsPanel extends JPanel {
 	}
 	
 	public int getBluesAgentsNumber() {
-		return bluePanel.getAgentsNumber();
+		return bluePanel.getWarriorsNumber();
+	}
+
+	private ArrayList<Pair<World.AgentType,Integer>> getListWithNumberOfAgentsByType(SideOptionPanel panel) {
+		ArrayList<Pair<World.AgentType,Integer>> list = new ArrayList<>();
+		list.add(new Pair<>(World.AgentType.WARRIOR,panel.getWarriorsNumber()));
+		list.add(new Pair<>(World.AgentType.ARCHER,panel.getArchersNumber()));
+		return list;
+	}
+
+	public ArrayList<Pair<World.AgentType,Integer>> getBluesAgents() {
+		return getListWithNumberOfAgentsByType(bluePanel);
+	}
+
+	public ArrayList<Pair<World.AgentType,Integer>> getRedsAgents() {
+		return getListWithNumberOfAgentsByType(redPanel);
 	}
 	
 	public int getRedsAgentsNumber() {
-		return redPanel.getAgentsNumber();
+		return redPanel.getWarriorsNumber();
 	}
 
     public void setSidePanelsSliderListener(ChangeListener listener) {

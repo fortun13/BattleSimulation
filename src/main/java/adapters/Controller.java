@@ -2,6 +2,7 @@ package main.java.adapters;
 
 import javafx.util.Pair;
 import main.java.agents.ServerAgent;
+import main.java.agents.World;
 import main.java.gui.MainFrame;
 import main.java.gui.SideOptionPanel;
 import org.json.JSONArray;
@@ -118,7 +119,11 @@ public class Controller {
             p.sliderMoved();
         });
 
-        frame.getOptionsPanel().spawnAgentsAddActionListener((e) -> frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgentsNumber(),frame.getOptionsPanel().getRedsAgentsNumber()));
+        //frame.getOptionsPanel().spawnAgentsAddActionListener((e) -> frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgentsNumber(),frame.getOptionsPanel().getRedsAgentsNumber()));
+
+        ArrayList<Pair<World.AgentType,Integer>> list = new ArrayList<>();
+
+        frame.getOptionsPanel().spawnAgentsAddActionListener((e) -> frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgents(),frame.getOptionsPanel().getRedsAgents()));
     }
 
     public static <T extends Container> T findParent(Component comp, Class<T> clazz)  {

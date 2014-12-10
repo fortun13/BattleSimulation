@@ -26,7 +26,7 @@ public class WarriorBuilder extends AgentBuilder {
 
     @Override
     public void buildStrength() {
-        parameters[2] = 5;
+        parameters[2] = 6;
     }
 
     @Override

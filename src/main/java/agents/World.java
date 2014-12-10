@@ -35,6 +35,70 @@ public class World {
 
     private KDTree<Pair<AgentWithPosition, Point2D>> destinations = new KDTree<>(2);
 
+    public World(ServerAgent serverAgent, ArrayList<Pair<AgentType, Integer>> blues, ArrayList<Pair<AgentType, Integer>> reds) {
+        this.server = serverAgent;
+        this.boardCenterX = (int) server.getFrame().getOptionsPanel().getBoardWidth().getValue();
+
+        Director generator = new Director();
+
+        iterateOverAgentsList("agentBlue_", blues, generator,2, AgentsSides.Blues);
+        iterateOverAgentsList("agentRed_",reds,generator,40, AgentsSides.Reds);
+    }
+
+    private void iterateOverAgentsList(String agentPrefix, ArrayList<Pair<AgentType,Integer>> list, Director generator, int xPosition, AgentsSides agentSide) {
+        int counter = 0;
+        for (Pair<AgentType, Integer> p : list) {
+            AgentBuilder builder;
+            switch (p.getKey()) {
+                case WARRIOR:
+                    builder = new WarriorBuilder(server.getAID(),BerserkBehaviour.class,this);
+                    break;
+                default:
+                    builder = new ArcherBuilder(server.getAID(),BerserkBehaviour.class,this);
+            }
+            PlatformController container = server.getContainerController();
+            generator.setAgentBuilder(builder);
+            generator.setPlatform(container);
+            for (int i=0;i<p.getValue();i++) {
+                addAgentsToWorld(builder,p.getKey(),agentSide,generator,counter,agentPrefix, xPosition);
+                counter++;
+            }
+        }
+        offset += counter;
+    }
+
+    private void addAgentsToWorld(AgentBuilder builder, AgentType type, AgentsSides agentSide, Director generator, int counter, String agentPrefix, int xPosition) {
+        String agentName = agentPrefix + (counter + offset);
+        AgentInTree ait = new AgentInTree("", agentSide, new Point2D(xPosition, counter), type);
+        builder.setAgentName(agentName);
+        builder.setPosition(ait);
+        generator.constructAgent();
+        AgentController agent = null;
+        try {
+            agent = generator.getAgent();
+            ait.setAgentName(agent.getName());
+
+            agent.start();
+
+            switch (agentSide) {
+                case Blues:
+                    bluesAgents.add(new AID(agent.getName(), true));
+                    break;
+                default:
+                    redsAgents.add(new AID(agent.getName(), true));
+            }
+            double[] key = {ait.p.getX(), ait.p.getY()};
+            try {
+                agentsTree.insert(key, ait);
+            } catch (KeySizeException | KeyDuplicateException e) {
+                e.printStackTrace();
+            }
+        } catch (ControllerException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public boolean setDestination(AgentWithPosition agent, Point2D destination) {
         try {
             destinations.insert(
@@ -50,21 +114,18 @@ public class World {
     }
 
     public World(ServerAgent server, HashMap<String,ArrayList<JSONObject>> map, int boardWidth) {
-
         int counter = 0;
-
         this.server = server;
-
         boardCenterX = boardWidth;
-
         PlatformController container = server.getContainerController();
         Director generator = new Director();
+        AgentBuilder warrior = new WarriorBuilder(server.getAID(), null, this);
+        AgentBuilder archer = new ArcherBuilder(server.getAID(), null, this);
 
         for (String type : map.keySet()) {
             ArrayList<JSONObject> list = map.get(type);
             switch (type.toLowerCase()) {
                 case "warrior":
-                    AgentBuilder warrior = new WarriorBuilder(server.getAID(), null, this);
                     generator.setAgentBuilder(warrior);
                     generator.setPlatform(container);
                     for (JSONObject agent : list) {
@@ -73,7 +134,6 @@ public class World {
                     }
                     break;
                 case "archer":
-                    AgentBuilder archer = new ArcherBuilder(server.getAID(), null, this);
                     generator.setAgentBuilder(archer);
                     generator.setPlatform(container);
                     for (JSONObject agent : list) {
@@ -87,85 +147,11 @@ public class World {
         offset += counter+1;
     }
 
-    public World(ServerAgent server, int bluesAgentsNumber, int redsAgentsNumber) {
-
-        this.server = server;
-        this.boardCenterX = (int) server.getFrame().getOptionsPanel().getBoardWidth().getValue();
-
-        PlatformController container = server.getContainerController();
-
-        try {
-            AgentBuilder warrior = new WarriorBuilder(server.getAID(), BerserkBehaviour.class, this);
-            AgentBuilder archer = new ArcherBuilder(server.getAID(),BerserkBehaviour.class, this);
-            Director generator = new Director();
-            //generator.setAgentBuilder(warrior);
-            generator.setAgentBuilder(archer);
-            generator.setPlatform(container);
-
-            for (int i = 0; i < bluesAgentsNumber; i++) {
-                String agentName = "agentBlue_" + (i + offset);
-
-                AgentInTree ait = new AgentInTree("", AgentsSides.Blues, new Point2D(2, i), AgentType.ARCHER);
-                archer.setAgentName(agentName);
-                archer.setPosition(ait);
-                generator.constructAgent();
-
-                AgentController agent = generator.getAgent();
-                ait.setAgentName(agent.getName());
-
-                agent.start();
-
-                bluesAgents.add(new AID(agent.getName(), true));
-
-                double[] key = {ait.p.getX(), ait.p.getY()};
-
-                try {
-                    agentsTree.insert(key, ait);
-                } catch (KeySizeException | KeyDuplicateException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            offset += bluesAgentsNumber;
-
-            generator.setAgentBuilder(warrior);
-            generator.setPlatform(container);
-            for (int i = 0; i < redsAgentsNumber; i++) {
-                String agentName = "agentRed_" + i + offset;
-                AgentInTree ait = new AgentInTree("", AgentsSides.Reds, new Point2D(100, i), AgentType.WARRIOR);
-
-                warrior.setAgentName(agentName);
-                warrior.setPosition(ait);
-                generator.constructAgent();
-
-                AgentController agent = generator.getAgent();
-
-                ait.setAgentName(agent.getName());
-                agent.start();
-                redsAgents.add(new AID(agent.getName(), true));
-
-                double[] key = {ait.p.getX(), ait.p.getY()};
-
-                try {
-                    agentsTree.insert(key, ait);
-                } catch (KeySizeException | KeyDuplicateException e) {
-                    e.printStackTrace();
-                }
-            }
-            offset += redsAgentsNumber;
-
-        } catch (ControllerException e) { // finally i have found exceptions useful :D:D
-            e.printStackTrace();
-
-        }
-    }
-
     public KDTree<AgentInTree> getAgentsTree() {
         return agentsTree;
     }
 
     private void addAgentToWorld(JSONObject agent, AgentBuilder builder, AgentType type, Director generator, int counter) {
-
         setBehaviourByFile(builder, agent.get("behaviour").toString());
 
         AgentsSides side;

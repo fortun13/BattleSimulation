@@ -3,6 +3,7 @@ package main.java.agents;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
+import javafx.util.Pair;
 import main.java.gui.MainFrame;
 import org.json.JSONObject;
 
@@ -130,15 +131,13 @@ public class ServerAgent extends Agent {
         m_frame = new MainFrame(this);
     }
 
-    public void prepareSimulation(int bluesAgentsNumber, int redsAgentsNumber) {
-        if (world != null) {
+    public void prepareSimulation(ArrayList<Pair<World.AgentType,Integer>> blues, ArrayList<Pair<World.AgentType,Integer>> reds) {
+        if (world != null)
             world.clean();
-        }
-        world = new World(this, bluesAgentsNumber, redsAgentsNumber);
+        world = new World(this,blues,reds);
         serverBehaviour.reset();
 
         m_frame.redrawBoard(world.getAgentsTree());
-
     }
 
     public void prepareSimulation(HashMap<String,ArrayList<JSONObject>> map, int boardWidth) {
@@ -150,10 +149,6 @@ public class ServerAgent extends Agent {
         m_frame.redrawBoard(world.getAgentsTree());
     }
 
-    private World generateWorld(int bluesAgentsNumber, int redsAgentsNumber) {
-        return new World(this,bluesAgentsNumber,redsAgentsNumber);
-    }
-    
     public void startSimulation() {
         System.out.println("Simulation started");
 

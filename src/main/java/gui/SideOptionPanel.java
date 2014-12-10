@@ -2,7 +2,6 @@ package main.java.gui;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
 
 /**
  * Created by Jakub Fortunka on 12.11.14.
@@ -10,43 +9,67 @@ import java.awt.*;
 
 public class SideOptionPanel extends JPanel {
 
-    private JSpinner agentsNumber;
-    private JSlider agentsSlider;
+    private JSpinner warriorsNumber;
+    private JSlider warriorsSlider;
+
+    private JSpinner archersNumber;
+    private JSlider archersSlider;
 
     public SideOptionPanel(String identifier) {
         setBorder(BorderFactory.createTitledBorder(identifier));
         //add(bluePanel);
-        setLayout(new GridLayout(1, 0, 0, 0));
+        //setLayout(new GridLayout(0, 1, 0, 0));
+        setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 
-        JPanel agentsSliderPanel = new JPanel();
-        agentsSliderPanel.setBorder(BorderFactory.createTitledBorder("No. Agents"));
-        add(agentsSliderPanel);
+        JPanel warriorsSliderPanel = new JPanel();
+        warriorsSliderPanel.setBorder(BorderFactory.createTitledBorder("No. of Warriors"));
+        add(warriorsSliderPanel);
 
-        agentsNumber= new JSpinner();
+        warriorsNumber = new JSpinner();
 
-        agentsSliderPanel.add(agentsNumber);
+        warriorsSliderPanel.add(warriorsNumber);
 
-        agentsSlider = new JSlider();
-        agentsSlider.setValue(20);
+        warriorsSlider = new JSlider();
+        warriorsSlider.setValue(10);
         
-        agentsNumber.setValue(20);
-        agentsSliderPanel.add(agentsSlider);
+        warriorsNumber.setValue(10);
+        warriorsSliderPanel.add(warriorsSlider);
+
+        JPanel archersSliderPanel = new JPanel();
+        archersSliderPanel.setBorder(BorderFactory.createTitledBorder("No. of Archers"));
+        add(archersSliderPanel);
+
+        archersNumber = new JSpinner();
+
+        archersSliderPanel.add(archersNumber);
+
+        archersSlider = new JSlider();
+        archersSlider.setValue(10);
+
+        archersNumber.setValue(10);
+        archersSliderPanel.add(archersSlider);
     }
     
     public void sliderMoved() {
-    	agentsNumber.setValue(agentsSlider.getValue());
+    	warriorsNumber.setValue(warriorsSlider.getValue());
+        archersNumber.setValue(archersSlider.getValue());
     }
 
     public void setSliderChangeListener(ChangeListener listener) {
-        agentsSlider.addChangeListener(listener);
+        warriorsSlider.addChangeListener(listener);
+        archersSlider.addChangeListener(listener);
     }
 
     public JSpinner getAgentsNumberSpinner() {
-        return agentsNumber;
+        return warriorsNumber;
     }
 
-    public int getAgentsNumber() {
-        return (int) agentsNumber.getValue();
+    public int getWarriorsNumber() {
+        return (int) warriorsNumber.getValue();
+    }
+
+    public int getArchersNumber() {
+        return (int) archersNumber.getValue();
     }
     
 }

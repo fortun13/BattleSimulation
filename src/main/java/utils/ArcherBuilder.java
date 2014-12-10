@@ -25,7 +25,7 @@ public class ArcherBuilder extends AgentBuilder {
 
     @Override
     public void buildCondition() {
-        parameters[1] = 35;
+        parameters[1] = 30;
     }
 
     @Override
