@@ -49,9 +49,6 @@ public class World {
         return true;
     }
 
-    public enum AgentsSides {Blues, Reds}
-    public enum AgentType {
-        WARRIOR("res" + File.separator + "warrior.png"), ARCHER("res" + File.separator + "archer.png");
     public World(ServerAgent server, HashMap<String,ArrayList<JSONObject>> map, int boardWidth) {
 
         int counter = 0;
@@ -266,12 +263,9 @@ public class World {
     }
 
     public synchronized boolean moveAgent(CannonFodder agent, Point2D destination) {
-        Pair borderSize = server.m_frame.getOptionsPanel().getBoardSize();
         double[] key = {destination.getX(), destination.getY()};
         try {
-            if (/*destination.getX() >= (Integer) borderSize.getKey() || destination.getX() < 0
-                    || destination.getY() >= (Integer) borderSize.getValue() || destination.getY() < 0
-                    || */agentsTree.search(key) != null)
+            if (agentsTree.search(key) != null)
                 return false;
         } catch (KeySizeException e) {
             e.printStackTrace();

@@ -8,6 +8,7 @@ import main.java.utils.AgentInTree;
  * Created by Marek on 2014-11-11.
  * Represents an Warrior
  */
+@SuppressWarnings("UnusedDeclaration")
 public class Warrior extends CannonFodder {
 
     /*public Warrior() {
@@ -55,7 +56,7 @@ public class Warrior extends CannonFodder {
 
     @Override
     public boolean enemyInRangeOfAttack(AgentInTree enemy) {
-        return position.pos().distance(enemy.pos()) < 2;
+        return position.pos().distance(enemy.pos()) < 3;
     }
 
     @Override

@@ -51,7 +51,7 @@ public class BoardPanel extends JPanel {
     	innerBoard.removeAll();
 
         at = new AffineTransform();
-        at.scale(1,1);
+        at.scale(0.19, 0.19);
 
     	setPreferredSize(new Dimension(width*(SQUARESIZE)+10, height*(SQUARESIZE)+10));
 
@@ -148,7 +148,7 @@ public class BoardPanel extends JPanel {
                     image = ImageIO.read(new File(type.getValue()));
                     images.add(new Pair<>(type,image));
                 } else {
-                    image = ((Pair< World.AgentType,BufferedImage>)images.stream().filter( p -> p.getKey().equals(type)).toArray()[0]).getValue();
+                    image = images.stream().filter( p -> p.getKey().equals(type)).findFirst().get().getValue();
                 }
                 g2d.drawImage(image,(int)p.getX(),(int)p.getY(),null);
             } catch (IOException e) {
