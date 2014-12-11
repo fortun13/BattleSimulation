@@ -71,8 +71,6 @@ public class BoardPanel extends JPanel {
         agentsList.clear();
         for (AgentInTree agent : agents) {
             Color c;
-            Point2D p = agent.pos();
-
                 if (agent.side == World.AgentsSides.Blues) {
                     if (agent.isDead)
                         c = new Color(0, 4, 78);
@@ -86,7 +84,7 @@ public class BoardPanel extends JPanel {
                     else
                         c = new Color(221, 3, 0);
                 }
-            agentsList.add(new MyAgent(c, p,agent.type));
+            agentsList.add(new MyAgent(c,agent));
         }
 
         innerBoard.revalidate();
@@ -116,24 +114,42 @@ public class BoardPanel extends JPanel {
     }
 
     public class MyAgent extends JComponent {
-        Color c;
-        Point2D p;
-        World.AgentType type;
+        private Color c;
+        private AgentInTree agent;
 
-        public MyAgent(Color c, Point2D p, World.AgentType type) {
+        private Point2D pointBuffer = null;
+
+        private Point2D pointOnBoard;
+
+        public MyAgent(Color c, AgentInTree agent) {
             this.c = c;
-            this.p = new Point2D(p.getX()*SQUARESIZE,p.getY()*SQUARESIZE);
 
-            this.type = type;
+            this.agent = agent;
+
+            pointOnBoard = new Point2D(agent.p.getX()*SQUARESIZE,agent.p.getY()*SQUARESIZE);
+        }
+
+        public AgentInTree getAgent() {
+            return agent;
         }
 
         public Point2D getPoint() {
-            return p;
+            //return agent.p;
+            return pointOnBoard;
         }
 
         public void setPoint(Point2D point) {
-            this.p = point;
+            //pointBuffer = point;
+            pointOnBoard = point;
         }
+
+        /*public Point2D getPoint() {
+            return p;
+        }*/
+
+        /*public void setPoint(Point2D point) {
+            this.p = point;
+        }*/
 
         public void paint(Graphics g) {
 
@@ -143,20 +159,23 @@ public class BoardPanel extends JPanel {
             g2d.transform(at);
             g2d.setColor(this.c);
             //g.fillRect((int)p.getX()*SQUARESIZE,(int)p.getY()*SQUARESIZE,SQUARESIZE,SQUARESIZE);
-            //g2d.fillOval((int) p.getX() * SQUARESIZE, (int) p.getY() * SQUARESIZE, SQUARESIZE, SQUARESIZE);
+            //g2d.fillOval((int) agent.p.getX() * SQUARESIZE, (int) agent.p.getY() * SQUARESIZE, SQUARESIZE, SQUARESIZE);
 
             //g2d.fillRect((int)p.getX(),(int)p.getY(),SQUARESIZE,SQUARESIZE);
 
-            g2d.fillOval((int) p.getX(), (int) p.getY(), SQUARESIZE, SQUARESIZE);
+            g2d.fillOval((int)pointOnBoard.getX(),(int)pointOnBoard.getY(),SQUARESIZE,SQUARESIZE);
+            //g2d.fillOval((int) agent.p.getX(), (int) agent.p.getY(), SQUARESIZE, SQUARESIZE);
             try {
                 BufferedImage image;
-                if (!images.stream().anyMatch(p -> p.getKey().equals(type))) {
-                    image = ImageIO.read(new File(type.getValue()));
-                    images.add(new Pair<>(type,image));
+                if (!images.stream().anyMatch(p -> p.getKey().equals(agent.type))) {
+                    image = ImageIO.read(new File(agent.type.getValue()));
+                    images.add(new Pair<>(agent.type,image));
                 } else {
-                    image = images.stream().filter( p -> p.getKey().equals(type)).findFirst().get().getValue();
+                    image = images.stream().filter( p -> p.getKey().equals(agent.type)).findFirst().get().getValue();
                 }
-                g2d.drawImage(image,(int)p.getX(),(int)p.getY(),null);
+                //g2d.drawImage(image,(int)agent.p.getX(),(int)agent.p.getY(),null);
+                //g2d.drawImage(image,(int)agent.p.getX()*SQUARESIZE,(int)agent.p.getY()*SQUARESIZE,null);
+                g2d.drawImage(image,(int)pointOnBoard.getX(),(int)pointOnBoard.getY(),null);
             } catch (IOException e) {
                 e.printStackTrace();
             }

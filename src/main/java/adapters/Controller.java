@@ -123,7 +123,9 @@ public class Controller {
 
         ArrayList<Pair<World.AgentType,Integer>> list = new ArrayList<>();
 
-        frame.getOptionsPanel().spawnAgentsAddActionListener((e) -> frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgents(),frame.getOptionsPanel().getRedsAgents()));
+        frame.spawnAgentsAddActionListener((e) -> frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgents(),frame.getOptionsPanel().getRedsAgents()));
+
+        //frame.getOptionsPanel().spawnAgentsAddActionListener((e) -> frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgents(),frame.getOptionsPanel().getRedsAgents()));
     }
 
     public static <T extends Container> T findParent(Component comp, Class<T> clazz)  {

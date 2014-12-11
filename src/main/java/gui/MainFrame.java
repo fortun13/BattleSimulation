@@ -31,6 +31,8 @@ public class MainFrame extends JFrame {
 
     public ServerAgent server;
 
+    private JButton spawnAgents;
+
     public MainFrame(ServerAgent s) {
 
         try {
@@ -71,6 +73,11 @@ public class MainFrame extends JFrame {
 
         btnStartSimulation = new JButton(Messages.getString("MainFrame.btnStartSimulation.text")); //$NON-NLS-1$
         oneButtonPanel.add(btnStartSimulation);
+
+        spawnAgents = new JButton(Messages.getString("OptionsPanel.spawnAgents.text")); //$NON-NLS-1$
+        spawnAgents.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        oneButtonPanel.add(spawnAgents);
 
         boardTabPanel.add(oneButtonPanel,BorderLayout.SOUTH);
 
@@ -113,6 +120,10 @@ public class MainFrame extends JFrame {
             e.printStackTrace();
         }
         boardPanel.drawAgents(lst);
+    }
+
+    public void spawnAgentsAddActionListener(ActionListener listener) {
+        spawnAgents.addActionListener(listener);
     }
 
     public BoardPanel getBoardPanel() {

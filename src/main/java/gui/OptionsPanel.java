@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class OptionsPanel extends JPanel {
 	
 	private JButton generateBoard;
-    private JButton spawnAgents;
+    //private JButton spawnAgents;
 	//private JButton btnStartSimulation;
 	private JSpinner boardWidth;
 	private JSpinner boardHeight;
@@ -78,10 +78,10 @@ public class OptionsPanel extends JPanel {
 
 		buttons.add(Box.createRigidArea(new Dimension(0,10)));
 
-        spawnAgents = new JButton(Messages.getString("OptionsPanel.spawnAgents.text")); //$NON-NLS-1$
-		spawnAgents.setAlignmentX(Component.CENTER_ALIGNMENT);
+        //spawnAgents = new JButton(Messages.getString("OptionsPanel.spawnAgents.text")); //$NON-NLS-1$
+		//spawnAgents.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        buttons.add(spawnAgents);
+        //buttons.add(spawnAgents);
         //test.add(btnStartSimulation);
         generalPanel.add(buttons);
 	}
@@ -98,9 +98,9 @@ public class OptionsPanel extends JPanel {
 		return fileChooser;
 	}
 
-    public void spawnAgentsAddActionListener(ActionListener listener) {
+    /*public void spawnAgentsAddActionListener(ActionListener listener) {
         spawnAgents.addActionListener(listener);
-    }
+    }*/
 	
 	/*public void startSimulationButtonAddActionListener(ActionListener listener) {
 		btnStartSimulation.addActionListener(listener);
