@@ -31,7 +31,7 @@ public class World {
     public ArrayList<AID> redsAgents = new ArrayList<>();
     public ServerAgent server;
     private int boardCenterX;
-    private ArrayList<AID> corpses = new ArrayList<>();
+    public ArrayList<AID> corpses = new ArrayList<>();
 
     private KDTree<Pair<AgentWithPosition, Point2D>> destinations = new KDTree<>(2);
 
@@ -41,8 +41,12 @@ public class World {
 
         Director generator = new Director();
 
+        int tmp = offset;
+
         iterateOverAgentsList("agentBlue_", blues, generator,2, AgentsSides.Blues);
+        offset = tmp;
         iterateOverAgentsList("agentRed_",reds,generator,40, AgentsSides.Reds);
+        offset=0;
     }
 
     private void iterateOverAgentsList(String agentPrefix, ArrayList<Pair<AgentType,Integer>> list, Director generator, int xPosition, AgentsSides agentSide) {
@@ -69,7 +73,7 @@ public class World {
 
     private void addAgentsToWorld(AgentBuilder builder, AgentType type, AgentsSides agentSide, Director generator, int counter, String agentPrefix, int xPosition) {
         String agentName = agentPrefix + (counter + offset);
-        AgentInTree ait = new AgentInTree("", agentSide, new Point2D(xPosition, counter), type);
+        AgentInTree ait = new AgentInTree("", agentSide, new Point2D(xPosition*type.getSize(), counter*type.getSize()), type);
         builder.setAgentName(agentName);
         builder.setPosition(ait);
         generator.constructAgent();
@@ -204,14 +208,17 @@ public class World {
     }
 
     public void clean() {
-        if ((bluesAgents.size() | redsAgents.size()) != 0) {
+        //if ((bluesAgents.size() | redsAgents.size()) != 0) {
             ACLMessage m = new ACLMessage(ACLMessage.REQUEST);
             m.setConversationId(ReactiveBehaviour.DELETE);
             bluesAgents.forEach(m::addReceiver);
             redsAgents.forEach(m::addReceiver);
             corpses.forEach(m::addReceiver);
             server.send(m);
-        }
+            bluesAgents.clear();
+            redsAgents.clear();
+            corpses.clear();
+        //}
     }
 
     public void removeAgent(AgentWithPosition agent) {
@@ -222,7 +229,6 @@ public class World {
             } catch (KeySizeException | KeyMissingException e) {
                 e.printStackTrace();
             }
-            //agents.rmPoint(cannonFodder.getPosition());
             switch (agent.position.side) {
                 case Blues:
                     bluesAgents.remove(agent.getAID());
@@ -249,17 +255,19 @@ public class World {
     }
 
     public synchronized boolean moveAgent(CannonFodder agent, Point2D destination) {
-        double[] key = {destination.getX(), destination.getY()};
+        AgentInTree position = agent.getPosition();
+        double[] oldPos = {position.p.getX(), position.p.getY()};
+        double[] newPos = {destination.getX(), destination.getY()};
+
         try {
-            if (agentsTree.search(key) != null)
+            //if (agentsTree.nearestEuclidean(oldPos,agent.position.type.getSize()-15).size() > 1)
+            //    return false;
+            //System.out.println("Move");
+            if (agentsTree.search(newPos) != null)
                 return false;
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
-
-        AgentInTree position = agent.getPosition();
-        double[] newPos = {destination.getX(), destination.getY()};
-        double[] oldPos = {position.p.getX(), position.p.getY()};
         position.setPosition(destination);
         try {
             agentsTree.delete(oldPos);
@@ -292,11 +300,11 @@ public class World {
         return vec;
     }
 
-    public List<AgentInTree> getNeighborFriends(AgentWithPosition agent, AgentsSides friendlySide) {
+    public List<AgentInTree> getNeighborFriends(AgentWithPosition agent) {
         List<AgentInTree> friendlyNeighbors = new ArrayList<>();
         double[] key = {agent.position.p.getX(), agent.position.p.getY()};
         try {
-            agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> a.side == friendlySide).forEach(friendlyNeighbors::add);
+            agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> a.side == agent.position.side).forEach(friendlyNeighbors::add);
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
@@ -337,15 +345,21 @@ public class World {
     public enum AgentsSides {Blues, Reds}
 
     public enum AgentType {
-        WARRIOR("res" + File.separator + "warrior.png"), ARCHER("res" + File.separator + "archer.png");
+        WARRIOR("res" + File.separator + "warrior.png",20), ARCHER("res" + File.separator + "archer.png",20);
 
         private String value;
-        private AgentType(String pathToImage) {
+        private int size;
+        private AgentType(String pathToImage, int size) {
             value = pathToImage;
+            this.size = size;
         }
 
         public String getValue() {
             return value;
+        }
+
+        public int getSize() {
+            return size;
         }
     }
 }

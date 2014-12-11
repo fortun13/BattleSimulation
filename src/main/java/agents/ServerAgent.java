@@ -1,14 +1,21 @@
 package main.java.agents;
 
+import edu.wlu.cs.levy.CG.KeyDuplicateException;
+import edu.wlu.cs.levy.CG.KeyMissingException;
+import edu.wlu.cs.levy.CG.KeySizeException;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import javafx.util.Pair;
+import main.java.gui.BoardPanel;
 import main.java.gui.MainFrame;
+import main.java.utils.AgentInTree;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Jakub Fortunka on 08.11.14.
@@ -126,8 +133,13 @@ public class ServerAgent extends Agent {
     }
 
     public void prepareSimulation(ArrayList<Pair<World.AgentType,Integer>> blues, ArrayList<Pair<World.AgentType,Integer>> reds) {
-        if (world != null)
+        if (world != null) {
             world.clean();
+            while((world.redsAgents.size() | world.bluesAgents.size() | world.corpses.size()) != 0) {
+                doWait(100);
+                System.out.println(world.redsAgents.size() + " " + world.bluesAgents.size() + " " + world.corpses.size() + " ");
+            }
+        }
         world = new World(this,blues,reds);
         serverBehaviour.reset();
 
@@ -144,9 +156,33 @@ public class ServerAgent extends Agent {
     }
 
     public void startSimulation() {
+        updateTree();
         System.out.println("Simulation started");
         updateState();
         addBehaviour(serverBehaviour);
+    }
+
+    private void updateTree() {
+        List<BoardPanel.MyAgent> changed = m_frame
+                .getBoardPanel()
+                .getMyAgents()
+                .parallelStream()
+                .filter(e -> !e.getAgent().p.equals(e.getPoint()))
+                .collect(Collectors.toList());
+
+        for (BoardPanel.MyAgent a : changed) {
+            AgentInTree position = a.getAgent();
+            double[] oldPos = {position.p.getX(), position.p.getY()};
+            double[] newPos = {a.getPoint().getX(), a.getPoint().getY()};
+
+            position.setPosition(a.getPoint());
+            try {
+                world.getAgentsTree().delete(oldPos);
+                world.getAgentsTree().insert(newPos, position);
+            } catch (KeySizeException | KeyDuplicateException | KeyMissingException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     protected void updateState() {

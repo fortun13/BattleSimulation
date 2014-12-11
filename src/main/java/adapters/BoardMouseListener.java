@@ -29,28 +29,18 @@ public class BoardMouseListener extends MouseAdapter {
     public void mouseReleased(MouseEvent e) {
         if (board.clickedAgent != null)
             while(!ifCollisionMove(board.clickedAgent));
-
-        /*if (board.getMyAgents().stream().anyMatch(a -> (a.getPoint().distance(board.clickedAgent.getPoint()) < board.SQUARESIZE) && (!a.equals(board.clickedAgent)))) {
-            List<BoardPanel.MyAgent> lst = board.getMyAgents()
-                    .stream()
-                    .filter(l -> l.getPoint().distance(board.clickedAgent.getPoint()) < board.SQUARESIZE && !l.equals(board.clickedAgent))
-                    .collect(Collectors.toList());
-
-            //System.out.println(lst.get(0).getPoint());
-
-            //System.out.println("Collision!");
-        }
-        board.clickedAgent = null;*/
     }
 
     private boolean ifCollisionMove(BoardPanel.MyAgent position) {
         if (board.getMyAgents()
                 .stream()
-                .anyMatch(a -> (a.getPoint().distance(position.getPoint()) < board.SQUARESIZE) && (!a.equals(position)))) {
+                .anyMatch(a -> (a.getPoint().distance(position.getPoint()) < position.getAgent().type.getSize()) && (!a.equals(position)))) {
+            int size = position.getAgent().type.getSize();
             List<BoardPanel.MyAgent> lst = board.getMyAgents()
                     .stream()
-                    .filter(l -> l.getPoint().distance(board.clickedAgent.getPoint()) < board.SQUARESIZE && !l.equals(board.clickedAgent))
+                    .filter(l -> l.getPoint().distance(board.clickedAgent.getPoint()) < size && !l.equals(board.clickedAgent))
                     .collect(Collectors.toList());
+
             ArrayList<Integer[]> vectors = new ArrayList<>();
             Point2D oldPos = position.getPoint();
             Random rnd = new Random();
@@ -60,13 +50,13 @@ public class BoardMouseListener extends MouseAdapter {
                 //System.out.println("x: " + x + " y: " + y);
                 Integer[] vec = new Integer[2];
                 if (x<0)
-                    vec[0] = -(board.SQUARESIZE + x);
+                    vec[0] = -(size + x);
                 else
-                    vec[0] = board.SQUARESIZE - x;
+                    vec[0] = size - x;
                 if (y<0)
-                    vec[1] = -(board.SQUARESIZE + y);
+                    vec[1] = -(size + y);
                 else
-                    vec[1] = board.SQUARESIZE - y;
+                    vec[1] = size - y;
 
                 vec[0] = (rnd.nextInt(3)-1);
                 vec[1] = (rnd.nextInt(3)-1);

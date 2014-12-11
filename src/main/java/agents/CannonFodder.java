@@ -58,7 +58,7 @@ public abstract class CannonFodder extends AgentWithPosition {
         //List<KdTree.Placed> friendlyNeighbors;
         List<AgentInTree> friendlyNeighbors;
 
-        friendlyNeighbors = world.getNeighborFriends(this, this.position.side);
+        friendlyNeighbors = world.getNeighborFriends(this);
 
         Point2D thisPosition = position.pos();
         double vec[] = {0, 0};

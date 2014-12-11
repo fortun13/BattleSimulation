@@ -119,14 +119,11 @@ public class BoardPanel extends JPanel {
 
         private Point2D pointBuffer = null;
 
-        private Point2D pointOnBoard;
-
         public MyAgent(Color c, AgentInTree agent) {
             this.c = c;
 
             this.agent = agent;
 
-            pointOnBoard = new Point2D(agent.p.getX()*SQUARESIZE,agent.p.getY()*SQUARESIZE);
         }
 
         public AgentInTree getAgent() {
@@ -134,22 +131,15 @@ public class BoardPanel extends JPanel {
         }
 
         public Point2D getPoint() {
+            return pointBuffer==null ? agent.p : pointBuffer;
             //return agent.p;
-            return pointOnBoard;
+            //return pointOnBoard;
         }
 
         public void setPoint(Point2D point) {
-            //pointBuffer = point;
-            pointOnBoard = point;
+            pointBuffer = point;
+            //pointOnBoard = point;
         }
-
-        /*public Point2D getPoint() {
-            return p;
-        }*/
-
-        /*public void setPoint(Point2D point) {
-            this.p = point;
-        }*/
 
         public void paint(Graphics g) {
 
@@ -158,13 +148,9 @@ public class BoardPanel extends JPanel {
             AffineTransform old = g2d.getTransform();
             g2d.transform(at);
             g2d.setColor(this.c);
-            //g.fillRect((int)p.getX()*SQUARESIZE,(int)p.getY()*SQUARESIZE,SQUARESIZE,SQUARESIZE);
-            //g2d.fillOval((int) agent.p.getX() * SQUARESIZE, (int) agent.p.getY() * SQUARESIZE, SQUARESIZE, SQUARESIZE);
 
-            //g2d.fillRect((int)p.getX(),(int)p.getY(),SQUARESIZE,SQUARESIZE);
+            //g2d.fillOval((int)pointOnBoard.getX(),(int)pointOnBoard.getY(),agent.type.getSize(),agent.type.getSize());
 
-            g2d.fillOval((int)pointOnBoard.getX(),(int)pointOnBoard.getY(),SQUARESIZE,SQUARESIZE);
-            //g2d.fillOval((int) agent.p.getX(), (int) agent.p.getY(), SQUARESIZE, SQUARESIZE);
             try {
                 BufferedImage image;
                 if (!images.stream().anyMatch(p -> p.getKey().equals(agent.type))) {
@@ -173,9 +159,15 @@ public class BoardPanel extends JPanel {
                 } else {
                     image = images.stream().filter( p -> p.getKey().equals(agent.type)).findFirst().get().getValue();
                 }
-                //g2d.drawImage(image,(int)agent.p.getX(),(int)agent.p.getY(),null);
+                if (pointBuffer == null) {
+                    g2d.fillOval((int) agent.p.getX(), (int) agent.p.getY(), agent.type.getSize(), agent.type.getSize());
+                    g2d.drawImage(image, (int) agent.p.getX(), (int) agent.p.getY(), null);
+                } else {
+                    g2d.fillOval((int) pointBuffer.getX(), (int) pointBuffer.getY(), agent.type.getSize(), agent.type.getSize());
+                    g2d.drawImage(image, (int) pointBuffer.getX(), (int) pointBuffer.getY(), null);
+                }
                 //g2d.drawImage(image,(int)agent.p.getX()*SQUARESIZE,(int)agent.p.getY()*SQUARESIZE,null);
-                g2d.drawImage(image,(int)pointOnBoard.getX(),(int)pointOnBoard.getY(),null);
+                //g2d.drawImage(image,(int)pointOnBoard.getX(),(int)pointOnBoard.getY(),null);
             } catch (IOException e) {
                 e.printStackTrace();
             }

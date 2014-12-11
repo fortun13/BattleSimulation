@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public abstract class AgentWithPosition extends Agent {
     //protected Point2D position;
 
-    protected int fieldOfView = 20;
+    protected int fieldOfView = 1000;
 
     protected double morale = 50;
 
@@ -27,11 +27,8 @@ public abstract class AgentWithPosition extends Agent {
     protected World world;
 
     protected AgentInTree position;
+
     private double[] speed = new double[2];
-
-    public int getFieldOfView() { return fieldOfView; }
-
-    public void setFieldOfView(int fov) { fieldOfView = fov; }
 
     protected abstract boolean enemyInRangeOfAttack(AgentInTree enemy);
 
