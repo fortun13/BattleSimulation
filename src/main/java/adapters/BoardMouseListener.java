@@ -2,6 +2,7 @@ package main.java.adapters;
 
 import javafx.geometry.Point2D;
 import main.java.gui.BoardPanel;
+import main.java.gui.MainFrame;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -28,10 +29,11 @@ public class BoardMouseListener extends MouseAdapter {
         board.x1 = e.getX();
         board.y1 = e.getY();
     }
+
     public void mouseReleased(MouseEvent e) {
         if (simulationStarted)
             return;
-        ifCollisionMove(board.clickedAgent);
+        ifCollisionMove(board.selectedAgent);
     }
 
     private void ifCollisionMove(BoardPanel.MyAgent position) {
@@ -42,7 +44,7 @@ public class BoardMouseListener extends MouseAdapter {
                 int size = position.getAgent().type.getSize();
                 List<BoardPanel.MyAgent> lst = board.getMyAgents()
                         .stream()
-                        .filter(l -> l.getPoint().distance(board.clickedAgent.getPoint()) < size && !l.equals(board.clickedAgent))
+                        .filter(l -> l.getPoint().distance(board.selectedAgent.getPoint()) < size && !l.equals(board.selectedAgent))
                         .collect(Collectors.toList());
 
                 ArrayList<Integer[]> vectors = new ArrayList<>();
@@ -76,7 +78,7 @@ public class BoardMouseListener extends MouseAdapter {
                 //board.innerBoard.repaint();
 
             } else {
-                board.clickedAgent = null;
+                board.selectedAgent = null;
                 board.innerBoard.repaint();
                 break;
                 //no collision
@@ -86,6 +88,27 @@ public class BoardMouseListener extends MouseAdapter {
     }
 
     public void mouseClicked(MouseEvent e) {
+        Point2D p = new Point2D(e.getX(),e.getY());
+        Point2D tmp = new Point2D(0,0);
+        if (cursorOnAgent(tmp,p)) {
+            BoardPanel.MyAgent agent = (BoardPanel.MyAgent) board.getMyAgents()
+                    .stream()
+                    .filter(l -> (tmp.add(
+                            l.getPoint().getX()+l.getAgent().type.getSize()/2,
+                            l.getPoint().getY()+l.getAgent().type.getSize()/2))
+                            .distance(p) < l.getAgent().type.getSize()/2)
+                    .toArray()[0];
+            ((MainFrame)board.getTopLevelAncestor()).updateStatistics(agent);
+        } else {
+            ((MainFrame)board.getTopLevelAncestor()).cleanStatistics();
 
+        }
+    }
+
+    private boolean cursorOnAgent(Point2D tmp, Point2D p) {
+        return board.getMyAgents().stream().anyMatch( a -> (tmp.add(
+                a.getPoint().getX()+a.getAgent().type.getSize()/2,
+                a.getPoint().getY()+a.getAgent().type.getSize()/2))
+                .distance(p) < (a.getAgent().type.getSize()/2));
     }
 }

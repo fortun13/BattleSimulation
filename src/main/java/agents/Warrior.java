@@ -30,7 +30,7 @@ public class Warrior extends CannonFodder {
         if (Math.random() * 100 <= accuracy) {
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setConversationId("attack");
-            String msgContent = condition + ":" + strength + ":" + speed + ":" + accuracy;
+            String msgContent = position.condition + ":" + strength + ":" + speed + ":" + accuracy;
             msg.setContent(msgContent);
             msg.addReplyTo(getAID());
             msg.addReceiver(enemy);
@@ -73,9 +73,9 @@ public class Warrior extends CannonFodder {
         int spe = Integer.valueOf(el[2]);
         int acc = Integer.valueOf(el[3]);
         //simplest version - if i got the message - then i will get hit
-        if (condition <= str) {
+        if (position.condition <= str) {
             //I am dead
-            condition-=str;
+            position.condition-=str;
             //ACLMessage toServer = new ACLMessage(ACLMessage.INFORM);
             //toServer.addReceiver(world.server.getAID());
             //toServer.setConversationId("agent-dead");
@@ -84,7 +84,7 @@ public class Warrior extends CannonFodder {
             killYourself(msg.createReply());
         } else {
             // I'm still alive
-            condition = condition-str;
+            position.condition = position.condition-str;
         }
     }
 }

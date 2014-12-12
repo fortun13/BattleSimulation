@@ -27,7 +27,7 @@ public class BoardPanel extends JPanel {
     public AffineTransform at = new AffineTransform();
     private ArrayList<Pair<World.AgentType,BufferedImage>> images = new ArrayList<>();
     public int x1, y1, x2, y2;
-    public MyAgent clickedAgent = null;
+    public MyAgent selectedAgent = null;
 
 	public JPanel innerBoard;
 

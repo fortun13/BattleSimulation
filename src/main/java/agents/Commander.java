@@ -21,7 +21,7 @@ public class Commander extends CannonFodder {
         if (Math.random() * 100 <= accuracy) {
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setConversationId("attack");
-            String msgContent = condition + ":" + strength + ":" + speed + ":" + accuracy;
+            String msgContent = position.condition + ":" + strength + ":" + speed + ":" + accuracy;
             msg.setContent(msgContent);
             msg.addReplyTo(getAID());
             msg.addReceiver(enemy);
@@ -44,9 +44,9 @@ public class Commander extends CannonFodder {
 		int spe = Integer.valueOf(el[2]);
 		int acc = Integer.valueOf(el[3]);
 		//simplest version - if i got the message - then i will get hit
-		if (condition <= str) {
+		if (position.condition <= str) {
 			//I am dead
-			condition-=str;
+			position.condition-=str;
 			System.out.println("I'm dead :( " + getLocalName());
 			ACLMessage msgAboutDeath = msg.createReply();
 			msgAboutDeath.setConversationId("enemy-dead");
@@ -54,7 +54,7 @@ public class Commander extends CannonFodder {
 			world.killAgent(this);
 		} else {
 			// I'm still alive
-			condition = condition-str;
+			position.condition = position.condition-str;
 		}
 		
 	}

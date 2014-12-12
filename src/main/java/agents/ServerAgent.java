@@ -76,6 +76,7 @@ public class ServerAgent extends Agent {
                                 stepsCounter++;
 
                                 m_frame.redrawBoard(world.getAgentsTree());
+                                m_frame.updateStatistics();
                                 while (System.currentTimeMillis() - time < interval)
                                     block(interval - (System.currentTimeMillis() - time));
 
