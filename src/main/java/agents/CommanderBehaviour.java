@@ -3,6 +3,7 @@ package main.java.agents;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
+import javafx.geometry.Point2D;
 import main.java.utils.AgentInTree;
 
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ public class CommanderBehaviour extends Behaviour {
     }
 
     protected void decideOnAction() {
+        CannonFodder agent = (CannonFodder) myAgent;
         switch (state) {
             case 0:
                 //TODO - get some limit for controlled minions
@@ -69,13 +71,25 @@ public class CommanderBehaviour extends Behaviour {
                 enemyPosition = ((CannonFodder)myAgent).getNearestEnemy();
                 ACLMessage fightingStance = new ACLMessage(ACLMessage.REQUEST);
                 minions.forEach(fightingStance::addReceiver);
-                if (enemyPosition != null)
+                if (enemyPosition != null) {
                     fightingStance.setConversationId("stance-fight");
-                else
+                    AID enemy = new AID(enemyPosition.getAgentName(), true);
+                    agent.gotoEnemy(enemyPosition);
+                    if (agent.enemyInRangeOfAttack(enemyPosition)) {
+                        agent.setSpeedVector(0, 0);
+                        agent.attack(enemy, enemyPosition);
+                    }
+                }
+                else {
                     fightingStance.setConversationId("stance-march");
+                    double speedVec = agent.world.computeBoardCenter(agent.position.pos());
+                    fightingStance.addUserDefinedParameter("speedVecXVal", String.valueOf(speedVec));
+                    Point2D thisPosition = agent.getPosition().pos();
+                    Point2D destination = new Point2D(thisPosition.getX() + speedVec, thisPosition.getY());
+                    agent.world.moveAgent(agent, destination);
+                }
                 state--;
                 break;
-
         }
     }
 

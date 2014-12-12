@@ -2,6 +2,7 @@ package main.java.agents;
 
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
+import javafx.geometry.Point2D;
 
 /**
  * Created by Fortun on 2014-12-03.
@@ -11,6 +12,7 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
 
     AID commander;
     boolean stance = false;
+    double speedVec;
 
     @Override
     public void handleMessage(ACLMessage msg) {
@@ -21,27 +23,25 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                 break;
             case "stance-march":
                 stance = false;
+                speedVec = Double.parseDouble(msg.getUserDefinedParameter("speedVecXVal"));
                 break;
         }
     }
 
     @Override
     public void decideOnNextStep() {
-        switch (state) {
-            case 0:
-                if (enemyPosition != null)
-                    state++;
-                break;
-            case 1:
-                if (enemyPosition != null) {
-                    if (((CannonFodder)myAgent).enemyInRangeOfAttack(enemyPosition))
-                        doAction(() -> ((CannonFodder) myAgent).attack(enemy,enemyPosition));
-                    else
-                        doAction(() -> ((CannonFodder)myAgent).gotoEnemy(enemyPosition));
-                } else {
-                    state--;
-                }
-                break;
+        CannonFodder agent = (CannonFodder) myAgent;
+        if(stance) {
+            enemyPosition = ((CannonFodder) myAgent).getNearestEnemy();
+            if (((CannonFodder) myAgent).enemyInRangeOfAttack(enemyPosition))
+                doAction(() -> ((CannonFodder) myAgent).attack(enemy, enemyPosition));
+            else
+                doAction(() -> ((CannonFodder) myAgent).gotoEnemy(enemyPosition));
+        }
+        else {
+            Point2D thisPosition = agent.getPosition().pos();
+            Point2D destination = new Point2D(thisPosition.getX() + speedVec, thisPosition.getY());
+            agent.world.moveAgent(agent, destination);
         }
     }
 
