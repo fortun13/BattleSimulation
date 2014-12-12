@@ -94,7 +94,7 @@ public class Controller {
                     frame.getBoardPanel().generateBoard(obj.getInt("boardHeight"), obj.getInt("boardWidth"));
                     frame.getBoardPanel().innerBoard.addMouseMotionListener(motionListener);
                     frame.getBoardPanel().innerBoard.addMouseListener(mouseListener);
-                    server.prepareSimulation(map, obj.getInt("boardWidth"));
+                    server.prepareSimulation(null,null,map, obj.getInt("boardWidth"),frame.getOptionsPanel().getTimeStep());
                 } catch (FileNotFoundException e1) {
                     e1.printStackTrace();
                 }
@@ -110,6 +110,9 @@ public class Controller {
         });
 
         frame.spawnAgentsAddActionListener((e) -> {
+            if (mouseWheelListener != null) {
+                mouseWheelListener.simulationStarted = false;
+            }
             if (motionListener == null) {
                 motionListener = new BoardMouseMotionListener(frame.getBoardPanel());
                 mouseListener = new BoardMouseListener(frame.getBoardPanel());
@@ -118,13 +121,12 @@ public class Controller {
             } else {
                 motionListener.simulationStarted = false;
                 mouseListener.simulationStarted = false;
-                mouseWheelListener.simulationStarted = false;
+
                 Pair<Integer, Integer> size = frame.getOptionsPanel().getBoardSize();
-                //System.out.println(size);
                 frame.getBoardPanel().generateBoard(size.getKey(), size.getValue());
-                //frame.getBoardPanel().resetScale();
+                frame.getBoardPanel().resetScale();
             }
-            frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgents(),frame.getOptionsPanel().getRedsAgents());
+            frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgents(),frame.getOptionsPanel().getRedsAgents(),null,-1,frame.getOptionsPanel().getTimeStep());
         });
 
     }

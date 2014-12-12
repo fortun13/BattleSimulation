@@ -10,7 +10,8 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class OptionsPanel extends JPanel {
-	
+
+	private JSpinner timeStepSpinner;
 	private JButton generateBoard;
     //private JButton spawnAgents;
 	//private JButton btnStartSimulation;
@@ -63,6 +64,13 @@ public class OptionsPanel extends JPanel {
 		boardHeight.setValue(50);
 		boardHeightPanel.add(boardHeight);
 
+		JPanel timeStepPanel = new JPanel();
+		timeStepPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("OptionsPanel.timeStepBorderTitle")));
+		timeStepSpinner = new JSpinner();
+		timeStepSpinner.setValue(40);
+		timeStepPanel.add(timeStepSpinner);
+		generalPanel.add(timeStepPanel);
+
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons,BoxLayout.Y_AXIS));
 
@@ -77,12 +85,6 @@ public class OptionsPanel extends JPanel {
 		openFile.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		buttons.add(Box.createRigidArea(new Dimension(0,10)));
-
-        //spawnAgents = new JButton(Messages.getString("OptionsPanel.spawnAgents.text")); //$NON-NLS-1$
-		//spawnAgents.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        //buttons.add(spawnAgents);
-        //test.add(btnStartSimulation);
         generalPanel.add(buttons);
 	}
 	
@@ -98,20 +100,13 @@ public class OptionsPanel extends JPanel {
 		return fileChooser;
 	}
 
-    /*public void spawnAgentsAddActionListener(ActionListener listener) {
-        spawnAgents.addActionListener(listener);
-    }*/
-	
-	/*public void startSimulationButtonAddActionListener(ActionListener listener) {
-		btnStartSimulation.addActionListener(listener);
-	}*/
-	
+	/**
+	 * Method returns board size set by user
+	 *
+	 * @return Pair of (Height,Width)
+	 */
 	public Pair<Integer, Integer> getBoardSize() {
 		return new Pair<>((Integer)boardHeight.getValue(),(Integer)boardWidth.getValue());
-	}
-	
-	public int getBluesAgentsNumber() {
-		return bluePanel.getWarriorsNumber();
 	}
 
 	private ArrayList<Pair<World.AgentType,Integer>> getListWithNumberOfAgentsByType(SideOptionPanel panel) {
@@ -128,15 +123,15 @@ public class OptionsPanel extends JPanel {
 	public ArrayList<Pair<World.AgentType,Integer>> getRedsAgents() {
 		return getListWithNumberOfAgentsByType(redPanel);
 	}
-	
-	public int getRedsAgentsNumber() {
-		return redPanel.getWarriorsNumber();
-	}
 
     public void setSidePanelsSliderListener(ChangeListener listener) {
         redPanel.setSliderChangeListener(listener);
         bluePanel.setSliderChangeListener(listener);
     }
+
+	public int getTimeStep() {
+		return (int)timeStepSpinner.getValue();
+	}
 
     public JSpinner getBoardWidth() {
         return boardWidth;

@@ -52,28 +52,32 @@ public class World {
     private void iterateOverAgentsList(String agentPrefix, ArrayList<Pair<AgentType,Integer>> list, Director generator, int xPosition, AgentsSides agentSide) {
         int counter = 1;
         for (Pair<AgentType, Integer> p : list) {
-            AgentBuilder builder;
-            switch (p.getKey()) {
-                case WARRIOR:
-                    builder = new WarriorBuilder(server.getAID(),BerserkBehaviour.class,this);
-                    break;
-                default:
-                    builder = new ArcherBuilder(server.getAID(),BerserkBehaviour.class,this);
-            }
+            AgentBuilder builder = chooseBuilder(p.getKey());
             PlatformController container = server.getContainerController();
             generator.setAgentBuilder(builder);
             generator.setPlatform(container);
             for (int i=0;i<p.getValue();i++) {
-                addAgentsToWorld(builder,p.getKey(),agentSide,generator,counter*p.getKey().getSize(),agentPrefix, xPosition*p.getKey().getSize());
+                addAgentsToWorld(builder,p.getKey(),agentSide,generator,counter,agentPrefix, xPosition*p.getKey().getSize());
                 counter++;
             }
         }
         offset += counter;
     }
 
+    private AgentBuilder chooseBuilder(AgentType type) {
+        switch(type) {
+            case WARRIOR:
+                return new WarriorBuilder(server.getAID(),BerserkBehaviour.class,this);
+            case ARCHER:
+                return new ArcherBuilder(server.getAID(),BerserkBehaviour.class,this);
+            default:
+                return new WarriorBuilder(server.getAID(),BerserkBehaviour.class,this);
+        }
+    }
+
     private void addAgentsToWorld(AgentBuilder builder, AgentType type, AgentsSides agentSide, Director generator, int counter, String agentPrefix, int xPosition) {
         String agentName = agentPrefix + (counter + offset);
-        AgentInTree ait = new AgentInTree("", agentSide, new Point2D(xPosition, counter), type);
+        AgentInTree ait = new AgentInTree("", agentSide, new Point2D(xPosition, counter*type.getSize()), type);
         builder.setAgentName(agentName);
         builder.setPosition(ait);
         generator.constructAgent();

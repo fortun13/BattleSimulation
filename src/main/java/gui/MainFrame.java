@@ -2,6 +2,7 @@ package main.java.gui;
 
 import edu.wlu.cs.levy.CG.KDTree;
 import edu.wlu.cs.levy.CG.KeySizeException;
+import javafx.util.Pair;
 import main.java.adapters.Controller;
 import main.java.agents.ServerAgent;
 import main.java.utils.AgentInTree;
@@ -41,7 +42,7 @@ public class MainFrame extends JFrame {
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        int FRAME_WIDTH = 900;
+        int FRAME_WIDTH = 1000;
         int FRAME_HEIGHT = 700;
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
@@ -104,7 +105,8 @@ public class MainFrame extends JFrame {
 
     public void redrawBoard(KDTree<AgentInTree> agents) {
         double[] testKey = {0,0};
-        double[] upperKey = {1000,1000};
+        Pair<Integer,Integer> bsize = optionsPanel.getBoardSize();
+        double[] upperKey = {bsize.getValue()*boardPanel.SQUARESIZE,bsize.getKey()*boardPanel.SQUARESIZE};
         List<AgentInTree> lst = null;
         try {
             lst = agents.range(testKey,upperKey);
