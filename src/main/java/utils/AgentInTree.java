@@ -5,13 +5,23 @@ import main.java.agents.World;
 
 /**
  * Created by Fortun on 2014-12-07.
+ *
  */
 public class AgentInTree implements KdTree.Placed {
 
     public Point2D p;
+    public double[] speed = new double[2];
     public World.AgentsSides side;
     private String agentName;
     public boolean isDead = false;
+
+    public double getAngle() {
+        return speed[0];
+    }
+
+    public double getSpeed() {
+        return speed[1];
+    }
 
     public World.AgentType type;
 

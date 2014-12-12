@@ -1,10 +1,12 @@
 package main.java.agents;
 
+import edu.wlu.cs.levy.CG.KeySizeException;
 import jade.core.AID;
 import javafx.geometry.Point2D;
 import main.java.utils.AgentInTree;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Jakub Fortunka on 18.11.14.
@@ -51,7 +53,44 @@ public abstract class CannonFodder extends AgentWithPosition {
         Point2D ep = enemy.pos();
         setSpeedHV(ep.getX() - mp.getX(), ep.getY() - mp.getY());
 
-        world.moveAgent(this, gesDestination());
+        // zakres widzenia jest kwadratem, zeby nie liczyc niepotrzenie pierwiastka w obliczeniach ponizej
+        final double rayOfView = fieldOfView*fieldOfView;
+        final double angleOfView = Math.toRadians(120 / 2); // po pol na strone
+        final double weight = 0.3;
+        final double temporize = 0.4;
+
+        final double[] key = {mp.getX(), mp.getY()};
+        double angle = position.getAngle();
+        double speed = position.getSpeed();
+        try {
+            final double finalAngle = angle;
+            List<AgentInTree> neighbours = world.getAgentsTree().nearest(key, 20).parallelStream().filter(agentInTree -> {
+                Point2D p2 = agentInTree.pos();
+                if (p2 != mp) if (agentInTree.side == position.side)
+                    if ((p2.getX() - mp.getX()) * (p2.getX() - mp.getX()) + (p2.getY() - mp.getY()) * (p2.getY() - mp.getY()) < rayOfView)
+                        if (Math.abs(Math.atan2(p2.getY() - mp.getY(), p2.getX() - mp.getX()) - finalAngle) < angleOfView)
+                            return true;
+                return false;
+            }).collect(Collectors.toList());
+
+            System.out.println(neighbours.size() == 0 ? "front" : "not");
+            if (neighbours.size() == 0)
+                speed *= temporize + Math.random()*(1-temporize);
+
+            double avgAngle = neighbours.parallelStream().mapToDouble(AgentInTree::getAngle).average().orElse(angle);
+            double avgSpeed = neighbours.parallelStream().mapToDouble(AgentInTree::getSpeed).average().orElse(speed);
+
+            angle = angle + weight * (avgAngle - angle);
+            speed = speed + weight*(avgSpeed - speed);
+            setSpeedVector(angle, speed);
+
+            while (!world.moveAgent(this, gesDestination())) {
+                setSpeedVector(Math.random()*360, speed);
+            }
+        } catch (KeySizeException e) {
+            e.printStackTrace();
+        }
+
     }
 
     protected void keepPosition() {

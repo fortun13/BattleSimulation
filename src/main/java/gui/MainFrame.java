@@ -19,10 +19,8 @@ import java.util.List;
  */
 public class MainFrame extends JFrame {
 
-    private final int FRAMEHEIGHT = 700;
-
-	private final int FRAMEWIDTH = 900;
     private final JButton btnStartSimulation;
+    private final JButton spawnAgents;
 
     private BoardPanel boardPanel;
 	private OptionsPanel optionsPanel;
@@ -31,27 +29,21 @@ public class MainFrame extends JFrame {
 
     public ServerAgent server;
 
-    private JButton spawnAgents;
-
     public MainFrame(ServerAgent s) {
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (UnsupportedLookAndFeelException e) {
+        } catch (ClassNotFoundException | InstantiationException | UnsupportedLookAndFeelException | IllegalAccessException e) {
             e.printStackTrace();
         }
 
         setTitle(Messages.getString("MainFrame.this.title")); //$NON-NLS-1$
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        
-        setSize(FRAMEWIDTH, FRAMEHEIGHT);
+
+        int FRAME_WIDTH = 900;
+        int FRAME_HEIGHT = 700;
+        setSize(FRAME_WIDTH, FRAME_HEIGHT);
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
 
         JTabbedPane tabs = new JTabbedPane();

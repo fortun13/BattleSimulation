@@ -9,6 +9,7 @@ import java.awt.event.MouseMotionAdapter;
 
 /**
  * Created by Fortun on 2014-12-06.
+ *
  */
 public class BoardMouseMotionListener extends MouseMotionAdapter {
 

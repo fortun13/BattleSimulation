@@ -2,7 +2,6 @@ package main.java.adapters;
 
 import javafx.util.Pair;
 import main.java.agents.ServerAgent;
-import main.java.agents.World;
 import main.java.gui.MainFrame;
 import main.java.gui.SideOptionPanel;
 import org.json.JSONArray;
@@ -76,39 +75,36 @@ public class Controller {
                 Scanner scanner = null;
                 try {
                     scanner = new Scanner(new FileInputStream(file));
+                    while (scanner.hasNext())
+                        content += scanner.nextLine();
+
+                    scanner.close();
+                    JSONObject obj = new JSONObject(content);
+                    JSONArray agents = obj.getJSONArray("agents");
+
+                    HashMap<String, ArrayList<JSONObject>> map = new HashMap<>();
+
+                    for (int i = 0; i < agents.length(); i++) {
+                        JSONObject agent = agents.getJSONObject(i);
+
+                        if (map.containsKey(agent.get("type").toString()))
+                            map.get(agent.get("type").toString()).add(agent);
+                        else {
+                            ArrayList<JSONObject> lst = new ArrayList<>();
+                            lst.add(agent);
+                            map.put(agent.get("type").toString(), lst);
+                        }
+                    }
+
+
+                    frame.getBoardPanel().generateBoard(obj.getInt("boardHeight"), obj.getInt("boardWidth"));
+                    frame.getBoardPanel().innerBoard.addMouseMotionListener(motionListener);
+                    frame.getBoardPanel().innerBoard.addMouseListener(mouseListener);
+                    server.prepareSimulation(map, obj.getInt("boardWidth"));
                 } catch (FileNotFoundException e1) {
                     e1.printStackTrace();
                 }
-                while (scanner.hasNext())
-                    content += scanner.nextLine();
-
-                scanner.close();
-                JSONObject obj = new JSONObject(content);
-                JSONArray agents = obj.getJSONArray("agents");
-
-                HashMap<String,ArrayList<JSONObject>> map = new HashMap<>();
-
-                for (int i=0;i<agents.length();i++) {
-                    JSONObject agent = agents.getJSONObject(i);
-
-                    if (map.containsKey(agent.get("type").toString()))
-                        map.get(agent.get("type")).add(agent);
-                    else {
-                        ArrayList<JSONObject> lst = new ArrayList<>();
-                        lst.add(agent);
-                        map.put(agent.get("type").toString(),lst);
-                    }
-                }
-
-
-                frame.getBoardPanel().generateBoard(obj.getInt("boardHeight"), obj.getInt("boardWidth"));
-                frame.getBoardPanel().innerBoard.addMouseMotionListener(motionListener);
-                frame.getBoardPanel().innerBoard.addMouseListener(mouseListener);
-                server.prepareSimulation(map, obj.getInt("boardWidth"));
-            } else {
-                //file not been choosen do nothing
             }
-
         });
 
         frame.getOptionsPanel().setSidePanelsSliderListener(e -> {
@@ -120,8 +116,6 @@ public class Controller {
         });
 
         //frame.getOptionsPanel().spawnAgentsAddActionListener((e) -> frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgentsNumber(),frame.getOptionsPanel().getRedsAgentsNumber()));
-
-        ArrayList<Pair<World.AgentType,Integer>> list = new ArrayList<>();
 
         frame.spawnAgentsAddActionListener((e) -> frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgents(),frame.getOptionsPanel().getRedsAgents()));
 

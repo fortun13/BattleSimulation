@@ -77,7 +77,7 @@ public class World {
         builder.setAgentName(agentName);
         builder.setPosition(ait);
         generator.constructAgent();
-        AgentController agent = null;
+        AgentController agent;
         try {
             agent = generator.getAgent();
             ait.setAgentName(agent.getName());

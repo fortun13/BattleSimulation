@@ -28,8 +28,6 @@ public abstract class AgentWithPosition extends Agent {
 
     protected AgentInTree position;
 
-    private double[] speed = new double[2];
-
     protected abstract boolean enemyInRangeOfAttack(AgentInTree enemy);
 
     protected abstract AgentInTree getNearestEnemy();
@@ -82,7 +80,7 @@ public abstract class AgentWithPosition extends Agent {
 
 
     public double[] getSpeedHV() {
-        double angle = speed[0], r = speed[1];
+        double angle = position.speed[0], r = position.speed[1];
         return new double[]{r * Math.cos(angle), r * Math.sin(angle)};
     }
 
@@ -92,8 +90,8 @@ public abstract class AgentWithPosition extends Agent {
     }
 
     public void setSpeedVector(double angle, double radius) {
-        speed[0] = angle;
-        speed[1] = radius;
+        position.speed[0] = angle;
+        position.speed[1] = radius;
     }
 
     protected Point2D gesDestination() {
