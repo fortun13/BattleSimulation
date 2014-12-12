@@ -28,14 +28,11 @@ public class BoardMouseMotionListener extends MouseMotionAdapter {
         Point2D tmp = new Point2D(0,0);
         Point2D p = new Point2D(e.getX(),e.getY());
 
-        if (board.clickedAgent == null) {
+        if (board.selectedAgent == null) {
 
-            if ((board.getMyAgents().stream().anyMatch( a -> (tmp.add(
-                    a.getPoint().getX()+a.getAgent().type.getSize()/2,
-                    a.getPoint().getY()+a.getAgent().type.getSize()/2))
-                    .distance(p) < (a.getAgent().type.getSize()/2)))) {
+            if (cursorOnAgent(tmp, p)) {
                 //System.out.println("Found");
-                board.clickedAgent = (BoardPanel.MyAgent) board.getMyAgents()
+                board.selectedAgent = (BoardPanel.MyAgent) board.getMyAgents()
                         .stream()
                         .filter(l -> (tmp.add(
                                 l.getPoint().getX()+l.getAgent().type.getSize()/2,
@@ -46,11 +43,11 @@ public class BoardMouseMotionListener extends MouseMotionAdapter {
         } else {
             board.x2 = e.getX();
             board.y2 = e.getY();
-            int x = (int) board.clickedAgent.getPoint().getX() + board.x2 - board.x1;
-            int y = (int) board.clickedAgent.getPoint().getY() + board.y2 - board.y1;
+            int x = (int) board.selectedAgent.getPoint().getX() + board.x2 - board.x1;
+            int y = (int) board.selectedAgent.getPoint().getY() + board.y2 - board.y1;
             board.x1 = board.x2;
             board.y1 = board.y2;
-            board.clickedAgent.setPoint(new Point2D(x, y));
+            board.selectedAgent.setPoint(new Point2D(x, y));
         }
 
         board.innerBoard.repaint();
@@ -66,10 +63,7 @@ public class BoardMouseMotionListener extends MouseMotionAdapter {
         Point2D tmp = new Point2D(0,0);
         if (!board.getMyAgents().isEmpty()) {
             //System.out.println("Not empty");
-            if ((board.getMyAgents().stream().anyMatch( a -> (tmp.add(
-                    a.getPoint().getX()+a.getAgent().type.getSize()/2,
-                    a.getPoint().getY()+a.getAgent().type.getSize()/2))
-                    .distance(p) < (a.getAgent().type.getSize()/2)))) {
+            if (cursorOnAgent(tmp, p)) {
                 //System.out.println("Found");
                 board.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
             } else {
@@ -77,6 +71,13 @@ public class BoardMouseMotionListener extends MouseMotionAdapter {
             }
             board.innerBoard.repaint();
         }
+    }
+
+    private boolean cursorOnAgent(Point2D tmp, Point2D p) {
+        return board.getMyAgents().stream().anyMatch( a -> (tmp.add(
+                a.getPoint().getX()+a.getAgent().type.getSize()/2,
+                a.getPoint().getY()+a.getAgent().type.getSize()/2))
+                .distance(p) < (a.getAgent().type.getSize()/2));
     }
 
 }

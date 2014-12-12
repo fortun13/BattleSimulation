@@ -28,6 +28,9 @@ public class ServerAgent extends Agent {
     protected MainFrame m_frame = null;
     private World world = null;
     private int agentsNumber;
+
+    private long timestep=0;
+
     Behaviour serverBehaviour = new Behaviour() {
 
         int state = 0;
@@ -36,11 +39,12 @@ public class ServerAgent extends Agent {
 
         long time;
 
-        long interval = 100;
+        long interval = 0;
         private ACLMessage newTurn;
 
         @Override
         public void action() {
+
             if (newTurn == null)
                 initMessages();
 
@@ -72,8 +76,7 @@ public class ServerAgent extends Agent {
                                 stepsCounter++;
 
                                 m_frame.redrawBoard(world.getAgentsTree());
-                                //m_frame.redrawBoard(world.getAgents());
-                                //System.out.println("Time: " + time);
+                                m_frame.updateStatistics();
                                 while (System.currentTimeMillis() - time < interval)
                                     block(interval - (System.currentTimeMillis() - time));
 
@@ -99,8 +102,9 @@ public class ServerAgent extends Agent {
             newTurn = new ACLMessage(ACLMessage.INFORM);
             world.bluesAgents.forEach(newTurn::addReceiver);
             world.redsAgents.forEach(newTurn::addReceiver);
-
             newTurn.setConversationId("new-turn");
+            interval = getTimestep();
+            System.out.println("Interval: " + interval);
         }
 
         public void reset() {
@@ -110,6 +114,7 @@ public class ServerAgent extends Agent {
             stepsCounter = 0;
             initMessages();
         }
+
     };
 
     public ServerAgent() {
@@ -132,26 +137,22 @@ public class ServerAgent extends Agent {
         m_frame = new MainFrame(this);
     }
 
-    public void prepareSimulation(ArrayList<Pair<World.AgentType,Integer>> blues, ArrayList<Pair<World.AgentType,Integer>> reds) {
+    public void prepareSimulation(ArrayList<Pair<World.AgentType,Integer>> blues,
+                                  ArrayList<Pair<World.AgentType,Integer>> reds,
+                                  HashMap<String,ArrayList<JSONObject>> map,
+                                  int boardWidth,
+                                  long timestep) {
+        this.timestep = timestep;
         if (world != null) {
             world.clean();
-            //while((world.redsAgents.size() | world.bluesAgents.size() | world.corpses.size()) != 0) {
-                doWait(100);
-                //System.out.println(world.redsAgents.size() + " " + world.bluesAgents.size() + " " + world.corpses.size() + " ");
-            //}
+            doWait(100);
         }
-        world = new World(this,blues,reds);
+        if (map == null)
+            world = new World(this,blues,reds);
+        else
+            world = new World(this,map, boardWidth);
+
         serverBehaviour.reset();
-
-        m_frame.redrawBoard(world.getAgentsTree());
-    }
-
-    public void prepareSimulation(HashMap<String,ArrayList<JSONObject>> map, int boardWidth) {
-        if (world != null)
-            world.clean();
-        world = new World(this,map, boardWidth);
-        serverBehaviour.reset();
-
         m_frame.redrawBoard(world.getAgentsTree());
     }
 
@@ -160,6 +161,10 @@ public class ServerAgent extends Agent {
         System.out.println("Simulation started");
         updateState();
         addBehaviour(serverBehaviour);
+    }
+
+    public long getTimestep() {
+        return timestep;
     }
 
     private void updateTree() {

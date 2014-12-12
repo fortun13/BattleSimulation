@@ -15,15 +15,17 @@ public class Archer extends CannonFodder {
 
     public void setup() {
 
+        super.setup();
+
         Object[] parameters = getArguments();
 
-        addBehaviour((ReactiveBehaviour) parameters[0]);
+        /*addBehaviour((ReactiveBehaviour) parameters[0]);
         this.condition = (int) parameters[1];
         this.strength = (int) parameters[2];
         this.speed = (int) parameters[3];
         this.accuracy  = (int) parameters[4];
         this.world = (World) parameters[5];
-        this.position = (AgentInTree) parameters[6];
+        this.position = (AgentInTree) parameters[6];*/
         this.attackRange = (int) parameters[7];
     }
 
@@ -36,7 +38,7 @@ public class Archer extends CannonFodder {
         if (Math.random() * 100 <= (accuracy - position.p.distance(position.p)*2)) {
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setConversationId("attack");
-            String msgContent = condition + ":" + strength + ":" + speed + ":" + accuracy;
+            String msgContent = position.condition + ":" + strength + ":" + speed + ":" + accuracy;
             msg.setContent(msgContent);
             msg.addReplyTo(getAID());
             msg.addReceiver(enemy);
@@ -64,13 +66,13 @@ public class Archer extends CannonFodder {
         int spe = Integer.valueOf(el[2]);
         int acc = Integer.valueOf(el[3]);
         //simplest version - if i got the message - then i will get hit
-        if (condition <= str) {
+        if (position.condition <= str) {
             //I am dead
-            condition-=str;
+            position.condition-=str;
             killYourself(msg.createReply());
         } else {
             // I'm still alive
-            condition = condition-str;
+            position.condition = position.condition-str;
         }
     }
 

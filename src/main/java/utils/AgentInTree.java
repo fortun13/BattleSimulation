@@ -15,6 +15,8 @@ public class AgentInTree implements KdTree.Placed {
     private String agentName;
     public boolean isDead = false;
 
+    public int condition;
+
     public double getAngle() {
         return speed[0];
     }

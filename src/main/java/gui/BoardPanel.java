@@ -27,7 +27,7 @@ public class BoardPanel extends JPanel {
     public AffineTransform at = new AffineTransform();
     private ArrayList<Pair<World.AgentType,BufferedImage>> images = new ArrayList<>();
     public int x1, y1, x2, y2;
-    public MyAgent clickedAgent = null;
+    public MyAgent selectedAgent = null;
 
 	public JPanel innerBoard;
 
@@ -37,7 +37,7 @@ public class BoardPanel extends JPanel {
         super();
         setBackground(Color.WHITE);
 
-        int WIDTH = 800;
+        int WIDTH = 700;
         int HEIGHT = 400;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
@@ -65,17 +65,12 @@ public class BoardPanel extends JPanel {
     public void resetScale() {
         at = new AffineTransform();
         at.scale(1,1);
-        //setPreferredSize(new Dimension(width*(SQUARESIZE)+10, height*(SQUARESIZE)+10));
-
-        //innerBoard.setPreferredSize(new Dimension(width*(SQUARESIZE)+1, height*(SQUARESIZE)+1));
-        //add(innerBoard);
-
         innerBoard.revalidate();
         innerBoard.repaint();
     }
     
     public void drawAgents(java.util.List<AgentInTree> agents) {
-        innerBoard.removeAll();
+        //innerBoard.removeAll();
         agentsList.clear();
         for (AgentInTree agent : agents) {
             Color c;
@@ -97,8 +92,6 @@ public class BoardPanel extends JPanel {
 
         innerBoard.revalidate();
         innerBoard.repaint();
-
-
     }
 
     public ArrayList<MyAgent> getMyAgents() {
@@ -140,8 +133,6 @@ public class BoardPanel extends JPanel {
 
         public Point2D getPoint() {
             return pointBuffer==null ? agent.p : pointBuffer;
-            //return agent.p;
-            //return pointOnBoard;
         }
 
         public void setPoint(Point2D point) {
@@ -168,6 +159,7 @@ public class BoardPanel extends JPanel {
                     image = images.stream().filter( p -> p.getKey().equals(agent.type)).findFirst().get().getValue();
                 }
                 if (pointBuffer == null) {
+                    //System.out.println("Position: " + agent.p);
                     g2d.fillOval((int) agent.p.getX(), (int) agent.p.getY(), agent.type.getSize(), agent.type.getSize());
                     g2d.drawImage(image, (int) agent.p.getX(), (int) agent.p.getY(), null);
                 } else {

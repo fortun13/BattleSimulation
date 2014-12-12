@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  */
 public abstract class CannonFodder extends AgentWithPosition {
 
-    protected int condition, strength, speed, accuracy;
+    protected int strength, speed, accuracy;
 
     public void setup() {
         // 0 - behaviour
@@ -28,12 +28,13 @@ public abstract class CannonFodder extends AgentWithPosition {
         Object[] parameters = getArguments();
 
         addBehaviour((ReactiveBehaviour) parameters[0]);
-        this.condition = (int) parameters[1];
+        //this.condition = (int) parameters[1];
         this.strength = (int) parameters[2];
         this.speed = (int) parameters[3];
         this.accuracy = (int) parameters[4];
         this.world = (World) parameters[5];
         this.position = (AgentInTree) parameters[6];
+        this.position.condition = (int) parameters[1];
     }
 
     @Override
