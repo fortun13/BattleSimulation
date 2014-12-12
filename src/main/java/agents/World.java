@@ -41,16 +41,16 @@ public class World {
 
         Director generator = new Director();
 
-        int tmp = offset;
+        //int tmp = offset;
 
         iterateOverAgentsList("agentBlue_", blues, generator,2, AgentsSides.Blues);
-        offset = tmp;
+        //offset = tmp;
         iterateOverAgentsList("agentRed_",reds,generator,40, AgentsSides.Reds);
-        offset=0;
+        //offset=0;
     }
 
     private void iterateOverAgentsList(String agentPrefix, ArrayList<Pair<AgentType,Integer>> list, Director generator, int xPosition, AgentsSides agentSide) {
-        int counter = 0;
+        int counter = 1;
         for (Pair<AgentType, Integer> p : list) {
             AgentBuilder builder;
             switch (p.getKey()) {
@@ -64,7 +64,7 @@ public class World {
             generator.setAgentBuilder(builder);
             generator.setPlatform(container);
             for (int i=0;i<p.getValue();i++) {
-                addAgentsToWorld(builder,p.getKey(),agentSide,generator,counter,agentPrefix, xPosition);
+                addAgentsToWorld(builder,p.getKey(),agentSide,generator,counter*p.getKey().getSize(),agentPrefix, xPosition*p.getKey().getSize());
                 counter++;
             }
         }
@@ -73,7 +73,7 @@ public class World {
 
     private void addAgentsToWorld(AgentBuilder builder, AgentType type, AgentsSides agentSide, Director generator, int counter, String agentPrefix, int xPosition) {
         String agentName = agentPrefix + (counter + offset);
-        AgentInTree ait = new AgentInTree("", agentSide, new Point2D(xPosition*type.getSize(), counter*type.getSize()), type);
+        AgentInTree ait = new AgentInTree("", agentSide, new Point2D(xPosition, counter), type);
         builder.setAgentName(agentName);
         builder.setPosition(ait);
         generator.constructAgent();
@@ -215,9 +215,9 @@ public class World {
             redsAgents.forEach(m::addReceiver);
             corpses.forEach(m::addReceiver);
             server.send(m);
-            bluesAgents.clear();
-            redsAgents.clear();
-            corpses.clear();
+            //bluesAgents.clear();
+            //redsAgents.clear();
+            //corpses.clear();
         //}
     }
 

@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class BoardMouseListener extends MouseAdapter {
 
     private BoardPanel board;
+    public boolean simulationStarted;
 
     public BoardMouseListener(BoardPanel b) {
         board = b;
@@ -28,6 +29,8 @@ public class BoardMouseListener extends MouseAdapter {
         board.y1 = e.getY();
     }
     public void mouseReleased(MouseEvent e) {
+        if (simulationStarted)
+            return;
         ifCollisionMove(board.clickedAgent);
     }
 

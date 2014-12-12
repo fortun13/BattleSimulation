@@ -9,8 +9,8 @@ import org.json.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.AffineTransform;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,39 +23,35 @@ public class Controller {
 	private final MainFrame frame;
     private final ServerAgent server;
 
-    private BoardMouseMotionListener motionListener;
-    private BoardMouseListener mouseListener;
+    private BoardMouseMotionListener motionListener = null;
+    private BoardMouseListener mouseListener = null;
+
+    private BoardMouseWheelListener mouseWheelListener = null;
 	
 	public Controller(MainFrame f, ServerAgent s) {
 		frame = f;
         server = s;
 
-        motionListener = new BoardMouseMotionListener(frame.getBoardPanel());
-        mouseListener = new BoardMouseListener(frame.getBoardPanel());
-
         frame.getOptionsPanel().generateButtonAddActionListener((e) -> {
+
             Pair<Integer, Integer> size = frame.getOptionsPanel().getBoardSize();
             //System.out.println(size);
             frame.getBoardPanel().generateBoard(size.getKey(), size.getValue());
-            frame.getBoardPanel().innerBoard.addMouseMotionListener(motionListener);
-            frame.getBoardPanel().innerBoard.addMouseListener(mouseListener);
+
         });
 
         frame.startSimulationButtonAddActionListener(e -> {
-            setMouseWheelListenerForBoard();
-            frame.getBoardPanel().innerBoard.removeMouseMotionListener(motionListener);
-            frame.getBoardPanel().innerBoard.removeMouseListener(mouseListener);
+            if (mouseWheelListener == null) {
+                mouseWheelListener = new BoardMouseWheelListener(frame.getBoardPanel());
+                frame.getBoardPanel().addMouseWheelListener(mouseWheelListener);
+            } else {
+                mouseWheelListener.simulationStarted = true;
+            }
 
+            motionListener.simulationStarted = true;
+            mouseListener.simulationStarted = true;
             frame.server.startSimulation();
         });
-        
-        /*frame.getOptionsPanel().startSimulationButtonAddActionListener(e -> {
-            setMouseWheelListenerForBoard();
-            frame.getBoardPanel().innerBoard.removeMouseMotionListener(motionListener);
-            frame.getBoardPanel().innerBoard.removeMouseListener(mouseListener);
-
-            frame.server.startSimulation();
-        });*/
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -95,8 +91,6 @@ public class Controller {
                             map.put(agent.get("type").toString(), lst);
                         }
                     }
-
-
                     frame.getBoardPanel().generateBoard(obj.getInt("boardHeight"), obj.getInt("boardWidth"));
                     frame.getBoardPanel().innerBoard.addMouseMotionListener(motionListener);
                     frame.getBoardPanel().innerBoard.addMouseListener(mouseListener);
@@ -115,11 +109,24 @@ public class Controller {
             p.sliderMoved();
         });
 
-        //frame.getOptionsPanel().spawnAgentsAddActionListener((e) -> frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgentsNumber(),frame.getOptionsPanel().getRedsAgentsNumber()));
+        frame.spawnAgentsAddActionListener((e) -> {
+            if (motionListener == null) {
+                motionListener = new BoardMouseMotionListener(frame.getBoardPanel());
+                mouseListener = new BoardMouseListener(frame.getBoardPanel());
+                frame.getBoardPanel().innerBoard.addMouseMotionListener(motionListener);
+                frame.getBoardPanel().innerBoard.addMouseListener(mouseListener);
+            } else {
+                motionListener.simulationStarted = false;
+                mouseListener.simulationStarted = false;
+                mouseWheelListener.simulationStarted = false;
+                Pair<Integer, Integer> size = frame.getOptionsPanel().getBoardSize();
+                //System.out.println(size);
+                frame.getBoardPanel().generateBoard(size.getKey(), size.getValue());
+                //frame.getBoardPanel().resetScale();
+            }
+            frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgents(),frame.getOptionsPanel().getRedsAgents());
+        });
 
-        frame.spawnAgentsAddActionListener((e) -> frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgents(),frame.getOptionsPanel().getRedsAgents()));
-
-        //frame.getOptionsPanel().spawnAgentsAddActionListener((e) -> frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgents(),frame.getOptionsPanel().getRedsAgents()));
     }
 
     public static <T extends Container> T findParent(Component comp, Class<T> clazz)  {
@@ -129,35 +136,6 @@ public class Controller {
             return (clazz.cast(comp));
         else
             return findParent(comp.getParent(), clazz);
-    }
-
-    private void setMouseWheelListenerForBoard() {
-        frame.getBoardPanel().innerBoard.addMouseWheelListener(new MouseWheelListener() {
-            private double factor = 0.05;
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                int mask = InputEvent.CTRL_DOWN_MASK;
-
-                if ((e.getModifiersEx() & mask) == mask) {
-                    //System.out.println("event");
-                    Dimension n = frame.getBoardPanel().innerBoard.getPreferredSize();
-                    AffineTransform at2 = new AffineTransform();
-                    if (e.getWheelRotation() < 0) {
-                        n.setSize(((n.width) + (n.width) * factor), ((n.height) + (n.height) * factor));
-                        at2.scale(frame.getBoardPanel().at.getScaleX() + factor, frame.getBoardPanel().at.getScaleY() + factor);
-                    } else {
-                        n.setSize(((n.width)-(n.width)*factor),((n.height)-(n.height)*factor));
-                        at2.scale(frame.getBoardPanel().at.getScaleX() - factor, frame.getBoardPanel().at.getScaleY() - factor);
-                    }
-                    frame.getBoardPanel().innerBoard.setPreferredSize(n);
-                    Dimension tmp = new Dimension(n.width+10,n.height+10);
-                    frame.getBoardPanel().setPreferredSize(tmp);
-                    frame.getBoardPanel().at = at2;
-                    frame.getBoardPanel().innerBoard.revalidate();
-                    frame.getBoardPanel().innerBoard.repaint();
-                }
-            }
-        });
     }
 
 }

@@ -42,15 +42,11 @@ public class BoardPanel extends JPanel {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
         innerBoard = new Board();
-
-        //at.scale(0.2,0.2);
-
-        at.scale(1,1);
     }
 
     public void generateBoard(int height, int width) {
     	//setPreferredSize(new Dimension(WIDTH,HEIGHT));
-    	innerBoard.removeAll();
+    	//innerBoard.removeAll();
 
         at = new AffineTransform();
         //at.scale(0.19, 0.19);
@@ -61,6 +57,18 @@ public class BoardPanel extends JPanel {
 
         innerBoard.setPreferredSize(new Dimension(width*(SQUARESIZE)+1, height*(SQUARESIZE)+1));
         add(innerBoard);
+
+        innerBoard.revalidate();
+        innerBoard.repaint();
+    }
+
+    public void resetScale() {
+        at = new AffineTransform();
+        at.scale(1,1);
+        //setPreferredSize(new Dimension(width*(SQUARESIZE)+10, height*(SQUARESIZE)+10));
+
+        //innerBoard.setPreferredSize(new Dimension(width*(SQUARESIZE)+1, height*(SQUARESIZE)+1));
+        //add(innerBoard);
 
         innerBoard.revalidate();
         innerBoard.repaint();

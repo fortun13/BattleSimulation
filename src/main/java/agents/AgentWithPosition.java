@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public abstract class AgentWithPosition extends Agent {
     //protected Point2D position;
 
-    protected int fieldOfView = 1000;
+    protected int fieldOfView = 50;
 
     protected double morale = 50;
 

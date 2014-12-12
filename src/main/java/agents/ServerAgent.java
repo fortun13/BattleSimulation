@@ -135,10 +135,10 @@ public class ServerAgent extends Agent {
     public void prepareSimulation(ArrayList<Pair<World.AgentType,Integer>> blues, ArrayList<Pair<World.AgentType,Integer>> reds) {
         if (world != null) {
             world.clean();
-            while((world.redsAgents.size() | world.bluesAgents.size() | world.corpses.size()) != 0) {
+            //while((world.redsAgents.size() | world.bluesAgents.size() | world.corpses.size()) != 0) {
                 doWait(100);
-                System.out.println(world.redsAgents.size() + " " + world.bluesAgents.size() + " " + world.corpses.size() + " ");
-            }
+                //System.out.println(world.redsAgents.size() + " " + world.bluesAgents.size() + " " + world.corpses.size() + " ");
+            //}
         }
         world = new World(this,blues,reds);
         serverBehaviour.reset();

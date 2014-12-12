@@ -14,6 +14,7 @@ import java.awt.event.MouseMotionAdapter;
 public class BoardMouseMotionListener extends MouseMotionAdapter {
 
     private BoardPanel board;
+    public boolean simulationStarted = false;
 
     public BoardMouseMotionListener(BoardPanel b) {
         this.board = b;
@@ -21,15 +22,25 @@ public class BoardMouseMotionListener extends MouseMotionAdapter {
 
     public void mouseDragged(MouseEvent e) {
 
+        if (simulationStarted)
+            return;
+
+        Point2D tmp = new Point2D(0,0);
         Point2D p = new Point2D(e.getX(),e.getY());
 
         if (board.clickedAgent == null) {
 
-            if ((board.getMyAgents().stream().anyMatch(a -> a.getPoint().distance(p) < a.getAgent().type.getSize()))) {
+            if ((board.getMyAgents().stream().anyMatch( a -> (tmp.add(
+                    a.getPoint().getX()+a.getAgent().type.getSize()/2,
+                    a.getPoint().getY()+a.getAgent().type.getSize()/2))
+                    .distance(p) < (a.getAgent().type.getSize()/2)))) {
                 //System.out.println("Found");
                 board.clickedAgent = (BoardPanel.MyAgent) board.getMyAgents()
                         .stream()
-                        .filter(l -> l.getPoint().distance(p) < l.getAgent().type.getSize())
+                        .filter(l -> (tmp.add(
+                                l.getPoint().getX()+l.getAgent().type.getSize()/2,
+                                l.getPoint().getY()+l.getAgent().type.getSize()/2))
+                                .distance(p) < l.getAgent().type.getSize()/2)
                         .toArray()[0];
             }
         } else {
@@ -46,12 +57,19 @@ public class BoardMouseMotionListener extends MouseMotionAdapter {
     }
 
     public void mouseMoved(MouseEvent e) {
+
+        if (simulationStarted)
+            return ;
         //System.out.println("Mouse moved");
 
         Point2D p = new Point2D(e.getX(),e.getY());
+        Point2D tmp = new Point2D(0,0);
         if (!board.getMyAgents().isEmpty()) {
             //System.out.println("Not empty");
-            if ((board.getMyAgents().stream().anyMatch( a -> a.getPoint().distance(p)<a.getAgent().type.getSize()))) {
+            if ((board.getMyAgents().stream().anyMatch( a -> (tmp.add(
+                    a.getPoint().getX()+a.getAgent().type.getSize()/2,
+                    a.getPoint().getY()+a.getAgent().type.getSize()/2))
+                    .distance(p) < (a.getAgent().type.getSize()/2)))) {
                 //System.out.println("Found");
                 board.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
             } else {
