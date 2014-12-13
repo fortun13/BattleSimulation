@@ -1,19 +1,19 @@
 package main.java.adapters;
 
+import edu.wlu.cs.levy.CG.KeySizeException;
 import javafx.util.Pair;
-import main.java.agents.ServerAgent;
 import main.java.gui.MainFrame;
 import main.java.gui.SideOptionPanel;
+import main.java.utils.AgentInTree;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONWriter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -21,24 +21,14 @@ import java.util.Scanner;
 public class Controller {
 	
 	private final MainFrame frame;
-    private final ServerAgent server;
 
     private BoardMouseMotionListener motionListener = null;
     private BoardMouseListener mouseListener = null;
 
     private BoardMouseWheelListener mouseWheelListener = null;
 	
-	public Controller(MainFrame f, ServerAgent s) {
+	public Controller(MainFrame f) {
 		frame = f;
-        server = s;
-
-        frame.getOptionsPanel().generateButtonAddActionListener((e) -> {
-
-            Pair<Integer, Integer> size = frame.getOptionsPanel().getBoardSize();
-            //System.out.println(size);
-            frame.getBoardPanel().generateBoard(size.getKey(), size.getValue());
-
-        });
 
         frame.startSimulationButtonAddActionListener(e -> {
             if (mouseWheelListener == null) {
@@ -61,6 +51,44 @@ public class Controller {
             }
         });
 
+        createOpenFileActionListener();
+
+        createSaveToFileActionListener();
+
+        frame.getOptionsPanel().setSidePanelsSliderListener(e -> {
+            JSlider source = (JSlider) e.getSource();
+            SideOptionPanel p = findParent(source, SideOptionPanel.class);
+            //TODO it's very unefficient
+            // ... although - even if I define it inside SideOptionPanel (so no finding parent and so on), it's still eating CPU...
+            p.sliderMoved();
+        });
+
+        frame.spawnAgentsAddActionListener((e) -> {
+            Pair<Integer, Integer> size = frame.getOptionsPanel().getBoardSize();
+            prepareMouseListenersAndBoard(size.getValue(),size.getKey());
+            frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgents(),frame.getOptionsPanel().getRedsAgents(),null,-1,frame.getOptionsPanel().getTimeStep());
+        });
+
+    }
+
+    private void prepareMouseListenersAndBoard(int boardWidth, int boardHeight) {
+        if (mouseWheelListener != null) {
+            mouseWheelListener.simulationStarted = false;
+        }
+        if (motionListener == null) {
+            motionListener = new BoardMouseMotionListener(frame.getBoardPanel());
+            mouseListener = new BoardMouseListener(frame.getBoardPanel());
+            frame.getBoardPanel().innerBoard.addMouseMotionListener(motionListener);
+            frame.getBoardPanel().innerBoard.addMouseListener(mouseListener);
+        } else {
+            motionListener.simulationStarted = false;
+            mouseListener.simulationStarted = false;
+        }
+        frame.getBoardPanel().generateBoard(boardHeight, boardWidth);
+        frame.getBoardPanel().resetScale();
+    }
+
+    private void createOpenFileActionListener() {
         frame.getOptionsPanel().openFileAddActionListener(e -> {
             int returnVal = frame.getOptionsPanel().getFileChooser().showOpenDialog(frame);
 
@@ -91,44 +119,62 @@ public class Controller {
                             map.put(agent.get("type").toString(), lst);
                         }
                     }
-                    frame.getBoardPanel().generateBoard(obj.getInt("boardHeight"), obj.getInt("boardWidth"));
-                    frame.getBoardPanel().innerBoard.addMouseMotionListener(motionListener);
-                    frame.getBoardPanel().innerBoard.addMouseListener(mouseListener);
-                    server.prepareSimulation(null,null,map, obj.getInt("boardWidth"),frame.getOptionsPanel().getTimeStep());
+                    prepareMouseListenersAndBoard(obj.getInt("boardWidth"),obj.getInt("boardHeight"));
+                    frame.server.prepareSimulation(null,null,map, obj.getInt("boardWidth"),frame.getOptionsPanel().getTimeStep());
+                    frame.getOptionsPanel().setBoardSize(obj.getInt("boardWidth"),obj.getInt("boardHeight"));
                 } catch (FileNotFoundException e1) {
                     e1.printStackTrace();
                 }
             }
         });
+    }
 
-        frame.getOptionsPanel().setSidePanelsSliderListener(e -> {
-            JSlider source = (JSlider) e.getSource();
-            SideOptionPanel p = findParent(source, SideOptionPanel.class);
-            //TODO it's very unefficient
-            // ... although - even if I define it inside SideOptionPanel (so no finding parent and so on), it's still eating CPU...
-            p.sliderMoved();
-        });
+    private void createSaveToFileActionListener() {
+        frame.getOptionsPanel().saveToFileAddActionListener(e -> {
+            int returnVal = frame.getOptionsPanel().getFileChooser().showSaveDialog(frame);
 
-        frame.spawnAgentsAddActionListener((e) -> {
-            if (mouseWheelListener != null) {
-                mouseWheelListener.simulationStarted = false;
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File f = frame.getOptionsPanel().getFileChooser().getSelectedFile();
+                try {
+                    FileWriter fw = new FileWriter(f);
+                    Pair<Integer,Integer> size = frame.getOptionsPanel().getBoardSize();
+                    JSONWriter w = new JSONWriter(fw);
+                    w.object();
+                    w.key("boardWidth").value(size.getValue());
+                    w.key("boardHeight").value(size.getKey());
+
+                    frame.server.updateTree();
+
+                    double[] testKey = {0,0};
+                    double[] upperKey = {size.getValue()*frame.getBoardPanel().SQUARESIZE,size.getKey()*frame.getBoardPanel().SQUARESIZE};
+                    try {
+                        java.util.List<AgentInTree> lst = frame.server.getWorld().getAgentsTree().range(testKey, upperKey);
+                        w.key("agents");
+                        w.array();
+                        for (AgentInTree a : lst) {
+                            w.object();
+                            w.key("x").value(a.p.getX());
+                            w.key("y").value(a.p.getY());
+                            w.key("type").value(a.type);
+                            w.key("side").value(a.side);
+                            //TODO how to get behaviour of AgentInTree?
+                            w.key("behaviour").value("Berserk");
+                            w.endObject();
+                        }
+                        w.endArray();
+                        //w.endObject();
+                    } catch (KeySizeException e1) {
+                        e1.printStackTrace();
+                    }
+                    w.endObject();
+                    fw.flush();
+                    fw.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+
             }
-            if (motionListener == null) {
-                motionListener = new BoardMouseMotionListener(frame.getBoardPanel());
-                mouseListener = new BoardMouseListener(frame.getBoardPanel());
-                frame.getBoardPanel().innerBoard.addMouseMotionListener(motionListener);
-                frame.getBoardPanel().innerBoard.addMouseListener(mouseListener);
-            } else {
-                motionListener.simulationStarted = false;
-                mouseListener.simulationStarted = false;
-
-                Pair<Integer, Integer> size = frame.getOptionsPanel().getBoardSize();
-                frame.getBoardPanel().generateBoard(size.getKey(), size.getValue());
-                frame.getBoardPanel().resetScale();
-            }
-            frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgents(),frame.getOptionsPanel().getRedsAgents(),null,-1,frame.getOptionsPanel().getTimeStep());
         });
-
     }
 
     public static <T extends Container> T findParent(Component comp, Class<T> clazz)  {

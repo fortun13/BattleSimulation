@@ -8,12 +8,12 @@ import main.java.agents.ServerAgent;
 import main.java.utils.AgentInTree;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
-import javax.swing.border.TitledBorder;
 
 /**
  * Created by Jakub Fortunka on 08.11.14.
@@ -116,7 +116,7 @@ public class MainFrame extends JFrame {
 
         server = s;
 
-        controller = new Controller(this,server);
+        controller = new Controller(this);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {

@@ -150,7 +150,7 @@ public class ServerAgent extends Agent {
         if (map == null)
             world = new World(this,blues,reds);
         else
-            world = new World(this,map, boardWidth);
+            world = new World(this,map,boardWidth);
 
         serverBehaviour.reset();
         m_frame.redrawBoard(world.getAgentsTree());
@@ -167,7 +167,7 @@ public class ServerAgent extends Agent {
         return timestep;
     }
 
-    private void updateTree() {
+    public void updateTree() {
         List<BoardPanel.MyAgent> changed = m_frame
                 .getBoardPanel()
                 .getMyAgents()
@@ -196,5 +196,9 @@ public class ServerAgent extends Agent {
 
     public MainFrame getFrame() {
         return m_frame;
+    }
+
+    public World getWorld() {
+        return world;
     }
 }

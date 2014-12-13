@@ -31,7 +31,7 @@ public class WarriorBuilder extends AgentBuilder {
 
     @Override
     public void buildSpeed() {
-        parameters[3] = 3;
+        parameters[3] = 7;
     }
 
     @Override

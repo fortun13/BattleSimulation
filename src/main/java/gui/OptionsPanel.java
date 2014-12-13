@@ -11,10 +11,8 @@ import java.util.ArrayList;
 
 public class OptionsPanel extends JPanel {
 
+	private final JButton btnSaveToFile;
 	private JSpinner timeStepSpinner;
-	private JButton generateBoard;
-    //private JButton spawnAgents;
-	//private JButton btnStartSimulation;
 	private JSpinner boardWidth;
 	private JSpinner boardHeight;
 
@@ -74,26 +72,24 @@ public class OptionsPanel extends JPanel {
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons,BoxLayout.Y_AXIS));
 
-		generateBoard = new JButton(Messages.getString("OptionsPanel.generateBoard.text")); //$NON-NLS-1$
-		buttons.add(generateBoard);
-		generateBoard.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		buttons.add(Box.createRigidArea(new Dimension(0,10)));
-
 		openFile = new JButton(Messages.getString("OptionsPanel.openFile.text")); //$NON-NLS-1$
 		buttons.add(openFile);
 		openFile.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		buttons.add(Box.createRigidArea(new Dimension(0,10)));
         generalPanel.add(buttons);
-	}
-	
-	public void generateButtonAddActionListener(ActionListener listener) {
-		generateBoard.addActionListener(listener);
+        
+        btnSaveToFile = new JButton(Messages.getString("OptionsPanel.btnSaveToFile.text")); //$NON-NLS-1$
+        buttons.add(btnSaveToFile);
+		btnSaveToFile.setAlignmentX(Component.CENTER_ALIGNMENT);
 	}
 
 	public void openFileAddActionListener(ActionListener listener) {
 		openFile.addActionListener(listener);
+	}
+
+	public void saveToFileAddActionListener(ActionListener listener) {
+		btnSaveToFile.addActionListener(listener);
 	}
 
 	public JFileChooser getFileChooser() {
@@ -137,4 +133,9 @@ public class OptionsPanel extends JPanel {
     public JSpinner getBoardWidth() {
         return boardWidth;
     }
+
+	public void setBoardSize(int boardWidth, int boardHeight) {
+		this.boardHeight.setValue(boardHeight);
+		this.boardWidth.setValue(boardWidth);
+	}
 }

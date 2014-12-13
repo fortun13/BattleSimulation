@@ -3,46 +3,46 @@
 	"boardHeight": 20,
 	"agents": [
 		{
-			"x": 1,
-			"y": 2,
-			"type": Warrior,
-			"side": Blues,
-			"behaviour": Berserk
+			"x": 40,
+			"y": 40,
+			"type": "Warrior",
+			"side": "Blues",
+			"behaviour": "Berserk"
 		},
 		{
-			"x": 10,
-			"y": 2,
-			"type": Archer,
-			"side": Reds,
-			"behaviour": Berserk
+			"x": 200,
+			"y": 40,
+			"type": "Archer",
+			"side": "Reds",
+			"behaviour": "Berserk"
 		},
 		{
-			"x": 10,
-			"y": 3,
-			"type": Warrior,
-			"side": Reds,
-			"behaviour": Berserk
+			"x": 200,
+			"y": 60,
+			"type": "Warrior",
+			"side": "Reds",
+			"behaviour": "Berserk"
 		},
 		{
-			"x": 10,
-			"y": 4,
-			"type": Archer,
-			"side": Reds,
-			"behaviour": Berserk
+			"x": 200,
+			"y": 80,
+			"type": "Archer",
+			"side": "Reds",
+			"behaviour": "Berserk"
 		},
 		{
-			"x": 1,
-			"y": 3,
-			"type": Archer,
-			"side": Blues,
-			"behaviour": Berserk
+			"x": 40,
+			"y": 60,
+			"type": "Archer",
+			"side": "Blues",
+			"behaviour": "Berserk"
 		},
 		{
-			"x": 1,
-			"y": 4,
-			"type": Archer,
-			"side": Blues,
-			"behaviour": Berserk
+			"x": 40,
+			"y": 80,
+			"type": "Archer",
+			"side": "Blues",
+			"behaviour": "Berserk"
 		}
 	],
 	"obstacles": [
