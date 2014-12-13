@@ -39,7 +39,7 @@ public class ServerAgent extends Agent {
 
         long time;
 
-        long interval = 0;
+        long interval = 300;
         private ACLMessage newTurn;
 
         @Override
