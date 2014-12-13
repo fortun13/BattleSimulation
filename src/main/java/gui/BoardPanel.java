@@ -74,20 +74,20 @@ public class BoardPanel extends JPanel {
         agentsList.clear();
         for (AgentInTree agent : agents) {
             Color c;
-                if (agent.side == World.AgentsSides.Blues) {
-                    if (agent.isDead)
-                        c = new Color(0, 4, 78);
-                    else
-                        c = new Color(4, 3, 228);
-                }
-                else {
-                    if (agent.isDead) {
-                        c = new Color(75, 0, 0);
-                    }
-                    else
-                        c = new Color(221, 3, 0);
-                }
-            agentsList.add(new MyAgent(c,agent));
+            switch (agent.side) {
+                case Blues:
+                    c = new Color(4, 3, 228);
+                    break;
+                case Reds:
+                    c = new Color(221, 3, 0);
+                    break;
+                case Obstacle:
+                    c = new Color(52, 194, 36);
+                    break;
+                default:
+                    c = new Color(255,255,255);
+            }
+            agentsList.add(new MyAgent(c, agent));
         }
 
         innerBoard.revalidate();

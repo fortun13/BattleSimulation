@@ -178,8 +178,12 @@ public class World {
             case "blues":
                 side = AgentsSides.Blues;
                 break;
-            default:
+            case "reds":
                 side = AgentsSides.Reds;
+                break;
+            default:
+                side = AgentsSides.Obstacle;
+                break;
         }
         String name = "agent_" + (counter + offset);
 
@@ -194,11 +198,16 @@ public class World {
 
             ait.setAgentName(a.getName());
             a.start();
-            if (side == AgentsSides.Blues)
-                bluesAgents.add(new AID(a.getName(), true));
-            else
-                redsAgents.add(new AID(a.getName(), true));
-
+            switch (side) {
+                case Blues:
+                    bluesAgents.add(new AID(a.getName(), true));
+                    break;
+                case Reds:
+                    redsAgents.add(new AID(a.getName(), true));
+                    break;
+                default:
+                    break;
+            }
             double[] key = {ait.p.getX(), ait.p.getY()};
             try {
                 agentsTree.insert(key, ait);
@@ -259,7 +268,7 @@ public class World {
     public AgentInTree getNearestEnemy(AgentWithPosition agent) {
         double[] key = {agent.position.p.getX(), agent.position.p.getY()};
         try {
-            List<AgentInTree> t = agentsTree.nearest(key, 1, v -> v.side != agent.position.side);
+            List<AgentInTree> t = agentsTree.nearest(key, 1, v -> v.side != agent.position.side && v.side != AgentsSides.Obstacle);
             if (t != null)
                 if (!t.isEmpty())
                     return t.get(0);
@@ -307,7 +316,7 @@ public class World {
         }
 
         try {
-            vec[1] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.position.side != a.side).count();
+            vec[1] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.position.side != a.side && a.side != AgentsSides.Obstacle).count();
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
@@ -357,7 +366,7 @@ public class World {
         return returnVal;
     }
 
-    public enum AgentsSides {Blues, Reds}
+    public enum AgentsSides {Blues, Reds, Obstacle}
 
     public enum AgentType {
         WARRIOR("res" + File.separator + "warrior.png",20),
