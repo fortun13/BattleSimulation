@@ -54,30 +54,30 @@ public abstract class CannonFodder extends AgentWithPosition {
         Point2D ep = enemy.pos();
         setSpeedHV(ep.getX() - mp.getX(), ep.getY() - mp.getY());
 
-        // zakres widzenia jest kwadratem, zeby nie liczyc niepotrzenie pierwiastka w obliczeniach ponizej
-        final double rayOfView = fieldOfView*fieldOfView;
-        final double angleOfView = Math.toRadians(120 / 2); // po pol na strone
-        final double weight = 0.3;
-        final double temporize = 0.4;
-
         final double[] key = {mp.getX(), mp.getY()};
         double angle = position.getAngle();
         double speed = position.getSpeed();
         try {
+            // agent szuka sąsiadów
+            // zakres widzenia jest kwadratem, zeby nie liczyc niepotrzenie pierwiastka w obliczeniach ponizej
+            final double rayOfView = fieldOfView*fieldOfView;
+            final double angleOfView = Math.toRadians(120 / 2); // po pol na strone
             final double finalAngle = angle;
-            List<AgentInTree> neighbours = world.getAgentsTree().nearest(key, 20).parallelStream().filter(agentInTree -> {
+            List<AgentInTree> neighbours = world.getAgentsTree().nearest(key, 20, agentInTree -> agentInTree.side == position.side).parallelStream().filter(agentInTree -> {
                 Point2D p2 = agentInTree.pos();
-                if (p2 != mp) if (agentInTree.side == position.side)
-                    if ((p2.getX() - mp.getX()) * (p2.getX() - mp.getX()) + (p2.getY() - mp.getY()) * (p2.getY() - mp.getY()) < rayOfView)
-                        if (Math.abs(Math.atan2(p2.getY() - mp.getY(), p2.getX() - mp.getX()) - finalAngle) < angleOfView)
-                            return true;
+                if (p2 != mp) if (sqrDst(mp, p2) < rayOfView)
+                    if (Math.abs(Math.atan2(p2.getY() - mp.getY(), p2.getX() - mp.getX()) - finalAngle) < angleOfView)
+                        return true;
                 return false;
             }).collect(Collectors.toList());
 
-            System.out.println(neighbours.size() == 0 ? "front" : "not");
+            // agent stara się nie wychodzić przed szereg:
+            final double temporize = 0.4;
             if (neighbours.size() == 0)
                 speed *= temporize + Math.random()*(1-temporize);
 
+            // agent dostosowuje prędkość i kierunek do innych
+            final double weight = 0.3;
             double avgAngle = neighbours.parallelStream().mapToDouble(AgentInTree::getAngle).average().orElse(angle);
             double avgSpeed = neighbours.parallelStream().mapToDouble(AgentInTree::getSpeed).average().orElse(speed);
 
@@ -85,13 +85,33 @@ public abstract class CannonFodder extends AgentWithPosition {
             speed = speed + weight*(avgSpeed - speed);
             setSpeedVector(angle, speed);
 
-            while (!world.moveAgent(this, gesDestination())) {
-                setSpeedVector(Math.random()*360, speed);
+            // agent stara się być w środku grupy
+            final double COMweight = 0.3;
+            double[] HVSpeed = getSpeedHV();
+            double meanDst = Math.sqrt(neighbours.parallelStream().mapToDouble(a -> sqrDst(mp, a.pos())).average().orElse(0));
+            neighbours.forEach(n -> {
+                double dst = sqrDst(mp, n.pos());
+                dst = Math.sqrt(dst);
+                HVSpeed[0] += COMweight * (n.pos().getX() - mp.getX()) * (dst - meanDst) / dst;
+                HVSpeed[1] += COMweight * (n.pos().getY() - mp.getY()) * (dst - meanDst) / dst;
+            });
+            setSpeedHV(HVSpeed[0], HVSpeed[1]);
+
+//            while (!world.moveAgent(this, gesDestination())) {
+//                setSpeedVector(Math.random()*360, speed);
+//            }
+            // jeśli ruch jest nie dozwolony przez świat, to agent się zatrzymuje
+            if (!world.moveAgent(this, gesDestination())) {
+                setSpeedVector(angle, 0);
             }
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
 
+    }
+
+    private double sqrDst(Point2D mp, Point2D p2) {
+        return (p2.getX() - mp.getX()) * (p2.getX() - mp.getX()) + (p2.getY() - mp.getY()) * (p2.getY() - mp.getY());
     }
 
     protected void keepPosition() {
