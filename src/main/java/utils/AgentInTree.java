@@ -1,6 +1,7 @@
 package main.java.utils;
 
 import javafx.geometry.Point2D;
+import main.java.agents.ReactiveBehaviour;
 import main.java.agents.World;
 
 /**
@@ -15,6 +16,8 @@ public class AgentInTree implements KdTree.Placed {
     private String agentName;
     public boolean isDead = false;
 
+    public Class<? extends ReactiveBehaviour> behaviourClass;
+
     public int condition;
 
     public double getAngle() {
@@ -27,11 +30,12 @@ public class AgentInTree implements KdTree.Placed {
 
     public World.AgentType type;
 
-    public AgentInTree(String agentName,World.AgentsSides side, Point2D position, World.AgentType type) {
+    public AgentInTree(String agentName,World.AgentsSides side, Point2D position, World.AgentType type, Class<? extends ReactiveBehaviour> behaviourClass) {
         this.agentName = agentName;
         this.side = side;
         p = position;
         this.type = type;
+        this.behaviourClass = behaviourClass;
     }
 
     public String getAgentName() {

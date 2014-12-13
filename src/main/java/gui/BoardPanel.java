@@ -73,21 +73,24 @@ public class BoardPanel extends JPanel {
         //innerBoard.removeAll();
         agentsList.clear();
         for (AgentInTree agent : agents) {
-            Color c;
+            //Color c;
             switch (agent.side) {
                 case Blues:
-                    c = new Color(4, 3, 228);
+                    //c = new Color(4, 3, 228);
+                    agentsList.add(new MyAgent(Color.BLUE, agent));
                     break;
                 case Reds:
-                    c = new Color(221, 3, 0);
+                    //c = new Color(221, 3, 0);
+                    agentsList.add(new MyAgent(Color.RED, agent));
                     break;
                 case Obstacle:
-                    c = new Color(52, 194, 36);
+                    //c = new Color(52, 194, 36);
+                    agentsList.add(new MyAgent(Color.GREEN, agent));
                     break;
                 default:
-                    c = new Color(255,255,255);
+                    //c = new Color(255,255,255);
             }
-            agentsList.add(new MyAgent(c, agent));
+            //agentsList.add(new MyAgent(c, agent));
         }
 
         innerBoard.revalidate();

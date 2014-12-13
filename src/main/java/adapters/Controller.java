@@ -157,8 +157,12 @@ public class Controller {
                             w.key("y").value(a.p.getY());
                             w.key("type").value(a.type);
                             w.key("side").value(a.side);
-                            //TODO how to get behaviour of AgentInTree?
-                            w.key("behaviour").value("Berserk");
+                            if (a.behaviourClass != null) {
+                                String b = a.behaviourClass.getName();
+                                w.key("behaviour").value(b.substring(b.lastIndexOf('.')+1));
+                            }
+                            else
+                                w.key("behaviour").value("");
                             w.endObject();
                         }
                         w.endArray();

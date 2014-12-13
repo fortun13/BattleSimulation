@@ -79,7 +79,7 @@ public class World {
 
     private void addAgentsToWorld(AgentBuilder builder, AgentType type, AgentsSides agentSide, Director generator, int counter, String agentPrefix, int xPosition) {
         String agentName = agentPrefix + (counter + offset);
-        AgentInTree ait = new AgentInTree("", agentSide, new Point2D(xPosition, counter*type.getSize()), type);
+        AgentInTree ait = new AgentInTree("", agentSide, new Point2D(xPosition, counter*type.getSize()), type, builder.getBehaviour());
         builder.setAgentName(agentName);
         builder.setPosition(ait);
         generator.constructAgent();
@@ -140,7 +140,7 @@ public class World {
                     generator.setAgentBuilder(warrior);
                     generator.setPlatform(container);
                     for (JSONObject agent : list) {
-                        addAgentToWorld(agent,warrior,AgentType.WARRIOR,generator,counter);
+                        addAgentToWorld(agent, warrior, AgentType.WARRIOR, generator, counter);
                         counter++;
                     }
                     break;
@@ -148,7 +148,7 @@ public class World {
                     generator.setAgentBuilder(archer);
                     generator.setPlatform(container);
                     for (JSONObject agent : list) {
-                        addAgentToWorld(agent,archer,AgentType.ARCHER,generator,counter);
+                        addAgentToWorld(agent, archer, AgentType.ARCHER, generator, counter);
                         counter++;
                     }
                     break;
@@ -156,18 +156,30 @@ public class World {
                     generator.setAgentBuilder(commander);
                     generator.setPlatform(container);
                     for (JSONObject agent : list) {
-                        addAgentToWorld(agent,commander,AgentType.COMMANDER,generator,counter);
+                        addAgentToWorld(agent, commander, AgentType.COMMANDER, generator, counter);
                         counter++;
                     }
                     break;
+                case "obstacle":
+                    for (JSONObject obstacle : list) {
+                        addObstacleToWorld(obstacle);
+                    }
             }
         }
 
-        offset += counter+1;
+        offset += counter + 1;
     }
 
-    public KDTree<AgentInTree> getAgentsTree() {
-        return agentsTree;
+    private void addObstacleToWorld(JSONObject obstacle) {
+        AgentInTree obs = new AgentInTree("", World.AgentsSides.Obstacle, new Point2D(obstacle.getInt("x"), obstacle.getInt("y")), World.AgentType.OBSTACLE, null);
+        double[] key = {obstacle.getInt("x"),obstacle.getInt("y")};
+        try {
+            agentsTree.insert(key,obs);
+        } catch (KeySizeException e) {
+            e.printStackTrace();
+        } catch (KeyDuplicateException e) {
+            e.printStackTrace();
+        }
     }
 
     private void addAgentToWorld(JSONObject agent, AgentBuilder builder, AgentType type, Director generator, int counter) {
@@ -187,7 +199,7 @@ public class World {
         }
         String name = "agent_" + (counter + offset);
 
-        AgentInTree ait = new AgentInTree("", side, new Point2D(agent.getInt("x"), agent.getInt("y")), type);
+        AgentInTree ait = new AgentInTree("", side, new Point2D(agent.getInt("x"), agent.getInt("y")), type, builder.getBehaviour());
         builder.setAgentName(name);
         builder.setPosition(ait);
 
@@ -223,12 +235,17 @@ public class World {
 
     private void setBehaviourByFile(AgentBuilder b, String behaviour) {
         switch (behaviour.toLowerCase()) {
-            case "berserk":
+            case "berserkbehaviour":
                 b.setBehaviourClass(BerserkBehaviour.class);
                 break;
-            case "aaa":
+            case "commanderbehaviour":
+                b.setBehaviourClass(CommanderBehaviour.class);
                 break;
         }
+    }
+
+    public KDTree<AgentInTree> getAgentsTree() {
+        return agentsTree;
     }
 
     public void clean() {
