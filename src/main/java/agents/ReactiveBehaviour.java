@@ -49,17 +49,6 @@ public abstract class ReactiveBehaviour extends Behaviour {
                 case DELETE:
                     myAgent.doDelete();
                     break;
-                case "commander-init":
-                    /*
-                    Element debugujący
-                    Wychodzi na to że commander wysyła wiadomość do samego siebie
-                     Nie było tego widać ponieważ tylko Berserk odpowiadał na ten typ wiadomości
-                     */
-                    System.out.println("You have my soul " + myAgent.getLocalName());
-                    myAgent.removeBehaviour(new BerserkBehaviour());
-                    myAgent.addBehaviour(new CommanderMinionBehaviour());
-                    state = 2;
-                    break;
                 default:
                     handleMessage(msg);
             }
