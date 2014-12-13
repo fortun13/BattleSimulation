@@ -1,7 +1,6 @@
 package main.java.agents;
 
 import jade.core.AID;
-import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import javafx.geometry.Point2D;
 import main.java.utils.AgentInTree;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
  * Created by fortun on 03.12.14.
  *
  */
-public class CommanderBehaviour extends Behaviour {
+public class CommanderBehaviour extends ReactiveBehaviour {
 
     private ArrayList<AID> minions = new ArrayList<>();
     private AID serverAID;
@@ -31,7 +30,7 @@ public class CommanderBehaviour extends Behaviour {
         if (msg != null) {
             switch (msg.getConversationId()) {
                 case "new-turn":
-                    decideOnAction();
+                    decideOnNextStep();
                     computationEnded();
                     break;
                 case "attack":
@@ -54,7 +53,7 @@ public class CommanderBehaviour extends Behaviour {
         myAgent.send(m);
     }
 
-    protected void decideOnAction() {
+    public void decideOnNextStep() {
         CannonFodder agent = (CannonFodder) myAgent;
         switch (state) {
             case 0:
@@ -96,5 +95,10 @@ public class CommanderBehaviour extends Behaviour {
     @Override
     public boolean done() {
         return false;
+    }
+
+    @Override
+    public void handleMessage(ACLMessage msg) {
+        //TODO - question is, what to do?
     }
 }

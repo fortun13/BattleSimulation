@@ -70,6 +70,8 @@ public class World {
                 return new WarriorBuilder(server.getAID(),BerserkBehaviour.class,this);
             case ARCHER:
                 return new ArcherBuilder(server.getAID(),BerserkBehaviour.class,this);
+            case COMMANDER:
+                return new CommanderBuilder(server.getAID(),CommanderBehaviour.class,this);
             default:
                 return new WarriorBuilder(server.getAID(),BerserkBehaviour.class,this);
         }
@@ -129,6 +131,7 @@ public class World {
         Director generator = new Director();
         AgentBuilder warrior = new WarriorBuilder(server.getAID(), null, this);
         AgentBuilder archer = new ArcherBuilder(server.getAID(), null, this);
+        AgentBuilder commander = new CommanderBuilder(server.getAID(), null, this);
 
         for (String type : map.keySet()) {
             ArrayList<JSONObject> list = map.get(type);
@@ -146,6 +149,14 @@ public class World {
                     generator.setPlatform(container);
                     for (JSONObject agent : list) {
                         addAgentToWorld(agent,archer,AgentType.ARCHER,generator,counter);
+                        counter++;
+                    }
+                    break;
+                case "commander":
+                    generator.setAgentBuilder(commander);
+                    generator.setPlatform(container);
+                    for (JSONObject agent : list) {
+                        addAgentToWorld(agent,commander,AgentType.COMMANDER,generator,counter);
                         counter++;
                     }
                     break;
@@ -349,7 +360,7 @@ public class World {
     public enum AgentsSides {Blues, Reds}
 
     public enum AgentType {
-        WARRIOR("res" + File.separator + "warrior.png",20), ARCHER("res" + File.separator + "archer.png",20);
+        WARRIOR("res" + File.separator + "warrior.png",20), ARCHER("res" + File.separator + "archer.png",20), COMMANDER("res" + File.separator + "commander.png",20);
 
         private String value;
         private int size;

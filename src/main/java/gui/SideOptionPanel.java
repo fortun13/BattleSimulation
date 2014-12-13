@@ -15,6 +15,9 @@ public class SideOptionPanel extends JPanel {
     private JSpinner archersNumber;
     private JSlider archersSlider;
 
+    private JSpinner commandersNumber;
+    private JSlider commandersSlider;
+
     public SideOptionPanel(String identifier) {
         setBorder(BorderFactory.createTitledBorder(identifier));
         //add(bluePanel);
@@ -48,16 +51,32 @@ public class SideOptionPanel extends JPanel {
 
         archersNumber.setValue(10);
         archersSliderPanel.add(archersSlider);
+
+        JPanel commandersSliderPanel = new JPanel();
+        commandersSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.commandersBorderTitle")));
+        add(commandersSliderPanel);
+
+        commandersNumber = new JSpinner();
+
+        commandersSliderPanel.add(commandersNumber);
+
+        commandersSlider = new JSlider();
+        commandersSlider.setValue(1);
+
+        commandersNumber.setValue(1);
+        commandersSliderPanel.add(commandersSlider);
     }
     
     public void sliderMoved() {
     	warriorsNumber.setValue(warriorsSlider.getValue());
         archersNumber.setValue(archersSlider.getValue());
+        commandersNumber.setValue(archersSlider.getValue());
     }
 
     public void setSliderChangeListener(ChangeListener listener) {
         warriorsSlider.addChangeListener(listener);
         archersSlider.addChangeListener(listener);
+        commandersSlider.addChangeListener(listener);
     }
 
     public JSpinner getAgentsNumberSpinner() {
@@ -71,5 +90,6 @@ public class SideOptionPanel extends JPanel {
     public int getArchersNumber() {
         return (int) archersNumber.getValue();
     }
-    
+
+    public int getCommandersNumber() { return (int) commandersNumber.getValue(); }
 }

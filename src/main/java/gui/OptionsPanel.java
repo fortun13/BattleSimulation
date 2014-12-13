@@ -113,6 +113,7 @@ public class OptionsPanel extends JPanel {
 		ArrayList<Pair<World.AgentType,Integer>> list = new ArrayList<>();
 		list.add(new Pair<>(World.AgentType.WARRIOR,panel.getWarriorsNumber()));
 		list.add(new Pair<>(World.AgentType.ARCHER,panel.getArchersNumber()));
+		list.add(new Pair<>(World.AgentType.COMMANDER,panel.getCommandersNumber()));
 		return list;
 	}
 
