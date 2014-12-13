@@ -61,6 +61,10 @@ public class CommanderBuilder extends AgentBuilder {
         }
     }
 
+    public void buildAttractionForce() {
+        parameters[7] = 100;
+    }
+
     @Override
     public void setAgentName(String agentName) {
         this.agentName = agentName;
@@ -72,5 +76,8 @@ public class CommanderBuilder extends AgentBuilder {
     }
 
     @Override
-    public void constructAgent() { super.constructAgent(); }
+    public void constructAgent() {
+        super.constructAgent();
+        buildAttractionForce();
+    }
 }

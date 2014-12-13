@@ -14,44 +14,6 @@ import java.util.ArrayList;
 public class CommanderBehaviour extends ReactiveBehaviour {
 
     private ArrayList<AID> minions = new ArrayList<>();
-    private AID serverAID;
-
-    protected AgentInTree enemyPosition;
-
-    int state = 0;
-
-    public CommanderBehaviour(AID serverAID) {
-        this.serverAID = serverAID;
-    }
-
-    @Override
-    public void action() {
-        ACLMessage msg = myAgent.receive();
-        if (msg != null) {
-            switch (msg.getConversationId()) {
-                case "new-turn":
-                    decideOnNextStep();
-                    computationEnded();
-                    break;
-                case "attack":
-                    ((Commander)myAgent).reactToAttack(msg);
-                    break;
-                case "enemy-dead":
-                    enemyPosition = null;
-                    break;
-            }
-
-        } else {
-            block();
-        }
-    }
-
-    protected void computationEnded() {
-        ACLMessage m = new ACLMessage(ACLMessage.INFORM);
-        m.addReceiver(serverAID);
-        m.setConversationId("ended-computation");
-        myAgent.send(m);
-    }
 
     public void decideOnNextStep() {
         CannonFodder agent = (CannonFodder) myAgent;
@@ -90,11 +52,6 @@ public class CommanderBehaviour extends ReactiveBehaviour {
                 state--;
                 break;
         }
-    }
-
-    @Override
-    public boolean done() {
-        return false;
     }
 
     @Override
