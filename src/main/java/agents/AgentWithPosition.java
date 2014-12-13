@@ -8,7 +8,6 @@ import javafx.geometry.Point2D;
 import main.java.utils.AgentInTree;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Created by Jakub Fortunka on 20.11.14.
@@ -39,19 +38,19 @@ public abstract class AgentWithPosition extends Agent {
         return position;
     }
 
-    public ArrayList<AID> getMinionsWithinRange(AgentInTree agent, Point2D commanderPlace, int attractionForce, World.AgentsSides side) {
-        double[] key = {commanderPlace.getX(),commanderPlace.getY()};
+    public ArrayList<AID> getMinionsWithinRange(Commander agent) {
+        double[] key = {agent.position.p.getX(),agent.position.p.getY()};
         ArrayList<AgentInTree> list = new ArrayList<>();
         try {
-            world.getAgentsTree().nearestEuclidean(key,attractionForce * 100).stream().filter(a -> a.side==side).forEach(list::add);
+            world.getAgentsTree().nearestEuclidean(key,agent.attractionForce).stream().filter(a -> a.side==agent.position.side).forEach(list::add);
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
-        if(list.contains(agent))
-            list.remove(agent);
+        if(list.contains(agent.position))
+            list.remove(agent.position);
         ArrayList<AID> ans = new ArrayList<>();
         for (AgentInTree a : list) {
-            ans.add(new AID(a.getAgentName(),false));
+            ans.add(new AID(a.getAgentName(),true));
         }
         return ans;
     }

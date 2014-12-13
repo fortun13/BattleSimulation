@@ -4,6 +4,7 @@ import javafx.geometry.Point2D;
 import main.java.gui.BoardPanel;
 import main.java.gui.MainFrame;
 
+import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ public class BoardMouseListener extends MouseAdapter {
 
     private BoardPanel board;
     public boolean simulationStarted;
+
+    private JPopupMenu popup = new JPopupMenu();
 
     public BoardMouseListener(BoardPanel b) {
         board = b;
@@ -90,18 +93,24 @@ public class BoardMouseListener extends MouseAdapter {
     public void mouseClicked(MouseEvent e) {
         Point2D p = new Point2D(e.getX(),e.getY());
         Point2D tmp = new Point2D(0,0);
-        if (cursorOnAgent(tmp,p)) {
-            BoardPanel.MyAgent agent = (BoardPanel.MyAgent) board.getMyAgents()
-                    .stream()
-                    .filter(l -> (tmp.add(
-                            l.getPoint().getX()+l.getAgent().type.getSize()/2,
-                            l.getPoint().getY()+l.getAgent().type.getSize()/2))
-                            .distance(p) < l.getAgent().type.getSize()/2)
-                    .toArray()[0];
-            ((MainFrame)board.getTopLevelAncestor()).updateStatistics(agent);
-        } else {
-            ((MainFrame)board.getTopLevelAncestor()).cleanStatistics();
+        if (!e.isPopupTrigger()) {
+            if (cursorOnAgent(tmp, p)) {
+                BoardPanel.MyAgent agent = (BoardPanel.MyAgent) board.getMyAgents()
+                        .stream()
+                        .filter(l -> (tmp.add(
+                                l.getPoint().getX() + l.getAgent().type.getSize() / 2,
+                                l.getPoint().getY() + l.getAgent().type.getSize() / 2))
+                                .distance(p) < l.getAgent().type.getSize() / 2)
+                        .toArray()[0];
+                ((MainFrame) board.getTopLevelAncestor()).updateStatistics(agent);
+            } else {
+                ((MainFrame) board.getTopLevelAncestor()).cleanStatistics();
 
+            }
+        } else {
+            if (cursorOnAgent(tmp,p)) {
+
+            }
         }
     }
 

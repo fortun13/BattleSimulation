@@ -2,8 +2,6 @@ package main.java.agents;
 
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
-import javafx.geometry.Point2D;
-import main.java.utils.AgentInTree;
 
 import java.util.ArrayList;
 
@@ -21,7 +19,7 @@ public class CommanderBehaviour extends ReactiveBehaviour {
             case 0:
                 System.out.println("Follow me!");
                 //TODO - get some limit for controlled minions
-                minions = ((AgentWithPosition) myAgent).getMinionsWithinRange(((AgentWithPosition) myAgent).getPosition(), ((Commander)myAgent).position.p, ((Commander) myAgent).attractionForce, ((Commander)myAgent).position.side);
+                minions = ((AgentWithPosition) myAgent).getMinionsWithinRange((Commander)myAgent);
                 /*
                 getMinionsWithinRange - zwraca tylko agenta ktory poszukuje minionów (czyli commandera)
                 zabezpieczyć przed zwracaniem samego siebie (o nie to chodzi)

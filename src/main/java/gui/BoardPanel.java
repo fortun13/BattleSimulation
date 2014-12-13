@@ -153,7 +153,7 @@ public class BoardPanel extends JPanel {
             try {
                 BufferedImage image;
                 if (!images.stream().anyMatch(p -> p.getKey().equals(agent.type))) {
-                    image = ImageIO.read(new File(agent.type.getValue()));
+                    image = ImageIO.read(new File(agent.type.getImagePath()));
                     images.add(new Pair<>(agent.type,image));
                 } else {
                     image = images.stream().filter( p -> p.getKey().equals(agent.type)).findFirst().get().getValue();

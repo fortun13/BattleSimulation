@@ -360,17 +360,21 @@ public class World {
     public enum AgentsSides {Blues, Reds}
 
     public enum AgentType {
-        WARRIOR("res" + File.separator + "warrior.png",20), ARCHER("res" + File.separator + "archer.png",20), COMMANDER("res" + File.separator + "commander.png",20);
+        WARRIOR("res" + File.separator + "warrior.png",20),
+        ARCHER("res" + File.separator + "archer.png",20),
+        COMMANDER("res" + File.separator + "commander.png",20),
+        OBSTACLE("res" + File.separator + "obstacle.png",40);
 
-        private String value;
+        private String imagePath;
         private int size;
+
         private AgentType(String pathToImage, int size) {
-            value = pathToImage;
+            imagePath = pathToImage;
             this.size = size;
         }
 
-        public String getValue() {
-            return value;
+        public String getImagePath() {
+            return imagePath;
         }
 
         public int getSize() {
