@@ -77,7 +77,7 @@ public abstract class CannonFodder extends AgentWithPosition {
                 speed *= temporize + Math.random()*(1-temporize);
 
             // agent dostosowuje prędkość i kierunek do innych
-            final double weight = 0.3;
+            final double weight = 0.01;
             double avgAngle = neighbours.parallelStream().mapToDouble(AgentInTree::getAngle).average().orElse(angle);
             double avgSpeed = neighbours.parallelStream().mapToDouble(AgentInTree::getSpeed).average().orElse(speed);
 
@@ -86,16 +86,37 @@ public abstract class CannonFodder extends AgentWithPosition {
             setSpeedVector(angle, speed);
 
             // agent stara się być w środku grupy
-            final double COMweight = 0.3;
-            double[] HVSpeed = getSpeedHV();
+            final double COMweight = 0.01;
+            double[] HVSpeed = getSpeedHV().clone();
             double meanDst = Math.sqrt(neighbours.parallelStream().mapToDouble(a -> sqrDst(mp, a.pos())).average().orElse(0));
             neighbours.forEach(n -> {
                 double dst = sqrDst(mp, n.pos());
                 dst = Math.sqrt(dst);
-                HVSpeed[0] += COMweight * (n.pos().getX() - mp.getX()) * (dst - meanDst) / dst;
-                HVSpeed[1] += COMweight * (n.pos().getY() - mp.getY()) * (dst - meanDst) / dst;
+                HVSpeed[0] -= COMweight * (n.pos().getX() - mp.getX()) * (dst - meanDst) / dst;
+                HVSpeed[1] -= COMweight * (n.pos().getY() - mp.getY()) * (dst - meanDst) / dst;
             });
             setSpeedHV(HVSpeed[0], HVSpeed[1]);
+
+            // utrzymanie minimalnej dległości od wszystkiego oprócz obranego celu
+            List<AgentInTree> anything = world.getAgentsTree().nearest(key, 20, ait -> ait != enemy).parallelStream()
+                    .filter(agentInTree -> {
+                        Point2D p2 = agentInTree.pos();
+                        if (p2 != mp) if (sqrDst(mp, p2) < rayOfView)
+                            if (Math.abs(Math.atan2(p2.getY() - mp.getY(), p2.getX() - mp.getX()) - finalAngle) < angleOfView)
+                                return true;
+                        return false;
+                    }).collect(Collectors.toList());
+            final double avoidWeight = 0.01;
+            double min = 40;
+            double[] HVSpeed2 = getSpeedHV().clone();
+            anything.forEach(thing -> {
+                double dst = sqrDst(mp, thing.pos());
+                double xDst = thing.pos().getX() - mp.getX();
+                double yDst = thing.pos().getY() - mp.getY();
+                HVSpeed2[0] += avoidWeight * (xDst * min / dst - xDst);
+                HVSpeed2[1] += avoidWeight * (yDst * min / dst - yDst);
+            });
+            setSpeedHV(HVSpeed2[0], HVSpeed2[1]);
 
 //            while (!world.moveAgent(this, gesDestination())) {
 //                setSpeedVector(Math.random()*360, speed);
