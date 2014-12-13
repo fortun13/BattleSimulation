@@ -1,9 +1,15 @@
 package main.java.adapters;
 
+import edu.wlu.cs.levy.CG.KeyDuplicateException;
+import edu.wlu.cs.levy.CG.KeySizeException;
 import javafx.geometry.Point2D;
+import main.java.agents.World;
 import main.java.gui.BoardPanel;
 import main.java.gui.MainFrame;
+import main.java.gui.Messages;
+import main.java.utils.AgentInTree;
 
+import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -20,12 +26,55 @@ public class BoardMouseListener extends MouseAdapter {
     private BoardPanel board;
     public boolean simulationStarted;
 
+    private JPopupMenu popup = new JPopupMenu();
+    int[] popupPosition = new int[2];
+
     public BoardMouseListener(BoardPanel b) {
         board = b;
+        MouseAdapter al = new MouseAdapter() {
+
+            public void mousePressed(MouseEvent e) {
+                //show dialog for creating obstacle
+                popup.setVisible(false);
+                String maybeInt = JOptionPane.showInputDialog(board,Messages.getString("BoardMouseListener.dialogText"),
+                        Messages.getString("BoardMouseListener.dialogTitle"),JOptionPane.PLAIN_MESSAGE);
+                if (maybeInt != null) {
+                    try {
+                        Integer size = Integer.parseInt(maybeInt);
+                        if (size <= 0)
+                            showErrorMessage();
+
+                        //create obstacle with this size (for now it will be only circle); add it to a tree; show it on board
+
+                        AgentInTree obs = new AgentInTree("", World.AgentsSides.Obstacle, new Point2D(popupPosition[0], popupPosition[1]), World.AgentType.OBSTACLE);
+                        double[] key = {popupPosition[0],popupPosition[1]};
+                        MainFrame f = ((MainFrame)board.getTopLevelAncestor());
+                        f.server.getWorld().getAgentsTree().insert(key,obs);
+                        f.redrawBoard(f.server.getWorld().getAgentsTree());
+                    } catch (NumberFormatException ex) {
+                        showErrorMessage();
+                    } catch (KeyDuplicateException e1) {
+                        e1.printStackTrace();
+                    } catch (KeySizeException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+
+            }
+        };
+        JMenuItem m = new JMenuItem(Messages.getString("BoardMouseListener.popupObstacleCreate"));
+        m.addMouseListener(al);
+        popup.add(m);
+    }
+
+    private void showErrorMessage() {
+        JOptionPane.showMessageDialog(board,Messages.getString("BoardMouseListener.badSizeMessage"),
+                Messages.getString("BoardMousePanel.badSizeTitle"),JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void mousePressed(MouseEvent e) {
 
+        maybeShowPopup(e);
         board.x1 = e.getX();
         board.y1 = e.getY();
     }
@@ -33,6 +82,7 @@ public class BoardMouseListener extends MouseAdapter {
     public void mouseReleased(MouseEvent e) {
         if (simulationStarted)
             return;
+        maybeShowPopup(e);
         ifCollisionMove(board.selectedAgent);
     }
 
@@ -87,22 +137,31 @@ public class BoardMouseListener extends MouseAdapter {
         }
     }
 
+    private void maybeShowPopup(MouseEvent e) {
+        if (e.isPopupTrigger()) {
+            popupPosition[0] = e.getX();
+            popupPosition[1] = e.getY();
+            popup.show(board, e.getX(), e.getY());
+        }
+    }
+
     public void mouseClicked(MouseEvent e) {
         Point2D p = new Point2D(e.getX(),e.getY());
         Point2D tmp = new Point2D(0,0);
-        if (cursorOnAgent(tmp,p)) {
-            BoardPanel.MyAgent agent = (BoardPanel.MyAgent) board.getMyAgents()
-                    .stream()
-                    .filter(l -> (tmp.add(
-                            l.getPoint().getX()+l.getAgent().type.getSize()/2,
-                            l.getPoint().getY()+l.getAgent().type.getSize()/2))
-                            .distance(p) < l.getAgent().type.getSize()/2)
-                    .toArray()[0];
-            ((MainFrame)board.getTopLevelAncestor()).updateStatistics(agent);
-        } else {
-            ((MainFrame)board.getTopLevelAncestor()).cleanStatistics();
+            if (cursorOnAgent(tmp, p)) {
+                BoardPanel.MyAgent agent = (BoardPanel.MyAgent) board.getMyAgents()
+                        .stream()
+                        .filter(l -> (tmp.add(
+                                l.getPoint().getX() + l.getAgent().type.getSize() / 2,
+                                l.getPoint().getY() + l.getAgent().type.getSize() / 2))
+                                .distance(p) < l.getAgent().type.getSize() / 2)
+                        .toArray()[0];
+                ((MainFrame) board.getTopLevelAncestor()).updateStatistics(agent);
+            } else {
+                ((MainFrame) board.getTopLevelAncestor()).cleanStatistics();
 
-        }
+            }
+
     }
 
     private boolean cursorOnAgent(Point2D tmp, Point2D p) {
