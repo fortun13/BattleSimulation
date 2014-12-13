@@ -23,12 +23,15 @@ public class SideOptionPanel extends JPanel {
         //add(bluePanel);
         //setLayout(new GridLayout(0, 1, 0, 0));
         setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
+        SpinnerNumberModel warriorsModel = new SpinnerNumberModel(10, 0, 500, 1);
+        SpinnerNumberModel archersModel = new SpinnerNumberModel(10, 0, 500, 1);
+        SpinnerNumberModel commandersModel = new SpinnerNumberModel(1, 0, 500, 1);
 
         JPanel warriorsSliderPanel = new JPanel();
         warriorsSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.warriorsBorderTitle")));
         add(warriorsSliderPanel);
 
-        warriorsNumber = new JSpinner();
+        warriorsNumber = new JSpinner(warriorsModel);
 
         warriorsSliderPanel.add(warriorsNumber);
 
@@ -42,7 +45,7 @@ public class SideOptionPanel extends JPanel {
         archersSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.archersBorderTitle")));
         add(archersSliderPanel);
 
-        archersNumber = new JSpinner();
+        archersNumber = new JSpinner(archersModel);
 
         archersSliderPanel.add(archersNumber);
 
@@ -56,7 +59,7 @@ public class SideOptionPanel extends JPanel {
         commandersSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.commandersBorderTitle")));
         add(commandersSliderPanel);
 
-        commandersNumber = new JSpinner();
+        commandersNumber = new JSpinner(commandersModel);
 
         commandersSliderPanel.add(commandersNumber);
 
@@ -70,7 +73,7 @@ public class SideOptionPanel extends JPanel {
     public void sliderMoved() {
     	warriorsNumber.setValue(warriorsSlider.getValue());
         archersNumber.setValue(archersSlider.getValue());
-        commandersNumber.setValue(archersSlider.getValue());
+        commandersNumber.setValue(commandersSlider.getValue());
     }
 
     public void setSliderChangeListener(ChangeListener listener) {
