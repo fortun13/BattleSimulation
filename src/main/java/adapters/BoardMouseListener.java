@@ -157,11 +157,19 @@ public class BoardMouseListener extends MouseAdapter {
                                 .distance(p) < l.getAgent().type.getSize() / 2)
                         .toArray()[0];
                 ((MainFrame) board.getTopLevelAncestor()).updateStatistics(agent);
+                if (board.clickedAgent != null)
+                    clearSelection();
+                agent.isClicked = true;
+                board.clickedAgent = agent;
             } else {
                 ((MainFrame) board.getTopLevelAncestor()).cleanStatistics();
-
+                clearSelection();
             }
+    }
 
+    private void clearSelection() {
+        board.clickedAgent.isClicked = false;
+        board.clickedAgent = null;
     }
 
     private boolean cursorOnAgent(Point2D tmp, Point2D p) {

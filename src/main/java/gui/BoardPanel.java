@@ -15,6 +15,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by Jakub Fortunka on 08.11.14.
@@ -29,6 +32,8 @@ public class BoardPanel extends JPanel {
     public int x1, y1, x2, y2;
     public MyAgent selectedAgent = null;
 
+    public MyAgent clickedAgent = null;
+
 	public JPanel innerBoard;
 
     private ArrayList<MyAgent> agentsList = new ArrayList<>();
@@ -36,7 +41,6 @@ public class BoardPanel extends JPanel {
     public BoardPanel() {
         super();
         setBackground(Color.WHITE);
-
         int WIDTH = 700;
         int HEIGHT = 400;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -45,14 +49,9 @@ public class BoardPanel extends JPanel {
     }
 
     public void generateBoard(int height, int width) {
-    	//setPreferredSize(new Dimension(WIDTH,HEIGHT));
-    	//innerBoard.removeAll();
-
         at = new AffineTransform();
         //at.scale(0.19, 0.19);
-
         at.scale(1,1);
-
     	setPreferredSize(new Dimension(width*(SQUARESIZE)+10, height*(SQUARESIZE)+10));
 
         innerBoard.setPreferredSize(new Dimension(width*(SQUARESIZE)+1, height*(SQUARESIZE)+1));
@@ -70,35 +69,42 @@ public class BoardPanel extends JPanel {
     }
     
     public void drawAgents(java.util.List<AgentInTree> agents) {
-        //innerBoard.removeAll();
-        agentsList.clear();
         for (AgentInTree agent : agents) {
-            //Color c;
-            switch (agent.side) {
-                case Blues:
-                    //c = new Color(4, 3, 228);
-                    agentsList.add(new MyAgent(Color.BLUE, agent));
-                    break;
-                case Reds:
-                    //c = new Color(221, 3, 0);
-                    agentsList.add(new MyAgent(Color.RED, agent));
-                    break;
-                case Obstacle:
-                    //c = new Color(52, 194, 36);
-                    agentsList.add(new MyAgent(Color.GREEN, agent));
-                    break;
-                default:
-                    //c = new Color(255,255,255);
+            if (agentsList.parallelStream().anyMatch(e -> e.getAgent().getAgentName().equals(agent.getAgentName()))) {
+                ((MyAgent)agentsList
+                        .parallelStream()
+                        .filter(l -> l.getAgent().getAgentName().equals(agent.getAgentName()))
+                        .toArray()[0])
+                        .setAgent(agent);
+                //continue;
+            } else {
+                switch (agent.side) {
+                    case Blues:
+                        agentsList.add(new MyAgent(Color.BLUE, agent));
+                        break;
+                    case Reds:
+                        agentsList.add(new MyAgent(Color.RED, agent));
+                        break;
+                    case Obstacle:
+                        agentsList.add(new MyAgent(Color.GREEN, agent));
+                        break;
+                    default:
+                }
             }
-            //agentsList.add(new MyAgent(c, agent));
+        }
+
+        for (Iterator<MyAgent> it = agentsList.iterator(); it.hasNext();) {
+            MyAgent a = it.next();
+            if (a.agent.isDead)
+                it.remove();
         }
 
         innerBoard.revalidate();
         innerBoard.repaint();
     }
 
-    public ArrayList<MyAgent> getMyAgents() {
-        return agentsList;
+    public List<MyAgent> getMyAgents() {
+        return Collections.unmodifiableList(agentsList);
     }
 
     public class Board extends JPanel {
@@ -107,13 +113,12 @@ public class BoardPanel extends JPanel {
 
             super.paint(g);
 
-            for(MyAgent s : agentsList) {
+            for(MyAgent s : getMyAgents()) {
                 s.paint(g);
             }
 
             if (cursor != null)
                 setCursor(cursor);
-
         }
     }
 
@@ -121,13 +126,13 @@ public class BoardPanel extends JPanel {
         private Color c;
         private AgentInTree agent;
 
+        public boolean isClicked = false;
+
         private Point2D pointBuffer = null;
 
         public MyAgent(Color c, AgentInTree agent) {
             this.c = c;
-
             this.agent = agent;
-
         }
 
         public AgentInTree getAgent() {
@@ -141,6 +146,10 @@ public class BoardPanel extends JPanel {
         public void setPoint(Point2D point) {
             pointBuffer = point;
             //pointOnBoard = point;
+        }
+
+        public void setAgent(AgentInTree agent) {
+            this.agent = agent;
         }
 
         public void paint(Graphics g) {
@@ -165,10 +174,17 @@ public class BoardPanel extends JPanel {
                     //System.out.println("Position: " + agent.p);
                     g2d.fillOval((int) agent.p.getX(), (int) agent.p.getY(), agent.type.getSize(), agent.type.getSize());
                     g2d.drawImage(image, (int) agent.p.getX(), (int) agent.p.getY(), null);
+                    if (isClicked)
+                        paintSelection(g2d,agent.p);
+
                 } else {
                     g2d.fillOval((int) pointBuffer.getX(), (int) pointBuffer.getY(), agent.type.getSize(), agent.type.getSize());
                     g2d.drawImage(image, (int) pointBuffer.getX(), (int) pointBuffer.getY(), null);
+                    if (isClicked)
+                        paintSelection(g2d,pointBuffer);
                 }
+
+
                 //g2d.drawImage(image,(int)agent.p.getX()*SQUARESIZE,(int)agent.p.getY()*SQUARESIZE,null);
                 //g2d.drawImage(image,(int)pointOnBoard.getX(),(int)pointOnBoard.getY(),null);
             } catch (IOException e) {
@@ -178,6 +194,11 @@ public class BoardPanel extends JPanel {
             g2d.setTransform(old);
         }
 
+        private void paintSelection(Graphics2D g, Point2D point) {
+            g.setColor(Color.GREEN);
+            g.setStroke(new BasicStroke(3.0f));
+            g.drawOval((int) point.getX(), (int) point.getY(),agent.type.getSize(), agent.type.getSize());
+        }
     }
 
 } 
