@@ -15,10 +15,8 @@ public class BerserkBehaviour extends ReactiveBehaviour {
     public void handleMessage(ACLMessage msg) {
         switch (msg.getConversationId()) {
             case "commander-init":
-                /*
-                 Nie widać efektów działania ponieważ commander wysyła to tylko do siebie */
                 //TODO probably will have to check if this turn message was send to server (boolean?)
-                System.out.println("You have my sword");
+                myAgent.removeBehaviour(new BerserkBehaviour());
                 myAgent.addBehaviour(new CommanderMinionBehaviour());
                 state = 2;
                 break;
