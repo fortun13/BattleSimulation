@@ -34,7 +34,7 @@ public class CommanderBuilder extends AgentBuilder {
 
     @Override
     public void buildSpeed() {
-        parameters[3] = 4;
+        parameters[3] = 7;
     }
 
     @Override
