@@ -31,6 +31,21 @@ public class Commander extends CannonFodder {
     }
 
 	@Override
+	protected void killYourself(ACLMessage msgToSend) {
+		System.out.println("I'm dead :( " + getLocalName());
+		sendMessageToEnemy(msgToSend);
+		//msgToSend.setConversationId("enemy-dead");
+		//msgToSend.addReceiver(world.server.getAID());
+		//send(msgToSend);
+		world.killAgent(this);
+	}
+
+	protected void sendMessageToEnemy(ACLMessage msgToSend) {
+		msgToSend.setConversationId("enemy-dead");
+		send(msgToSend);
+	}
+
+	@Override
 	protected boolean enemyInRangeOfAttack(AgentInTree enemy) {
 		return (position.p.distance(enemy.p) < 2);
 	}
@@ -58,15 +73,5 @@ public class Commander extends CannonFodder {
 		}
 		
 	}
-
-    @Override
-    public boolean isMotivated() {
-        return false;
-    }
-
-    @Override
-    protected void killYourself(ACLMessage msgToSend) {
-
-    }
 
 }

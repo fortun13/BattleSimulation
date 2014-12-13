@@ -25,6 +25,7 @@ public class CommanderBehaviour extends ReactiveBehaviour {
                 commanderAddMessage.setConversationId("commander-init");
                 commanderAddMessage.setContent(myAgent.getName());
                 minions.forEach(commanderAddMessage::addReceiver);
+                agent.send(commanderAddMessage);
                 state++;
                 break;
             case 1:
@@ -49,7 +50,8 @@ public class CommanderBehaviour extends ReactiveBehaviour {
                     Point2D destination = new Point2D(thisPosition.getX() + speedVec, thisPosition.getY());
                     agent.world.moveAgent(agent, destination);
                 }
-                state--;
+                minions.forEach(fightingStance::addReceiver);
+                agent.send(fightingStance);
                 break;
         }
     }

@@ -21,9 +21,11 @@ public class Warrior extends CannonFodder {
     }
 
 
-    protected void takeDown() {
+    /*protected void takeDown() {
 
     }
+    Nie jest wykorzystywana
+    */
 
     @Override
     protected void attack(AID enemy, AgentInTree position) {
