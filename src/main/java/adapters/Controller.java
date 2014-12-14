@@ -40,6 +40,7 @@ public class Controller {
 
             motionListener.simulationStarted = true;
             mouseListener.simulationStarted = true;
+            frame.getBoardPanel().simulationStarted = true;
             frame.server.startSimulation();
         });
 
@@ -58,8 +59,6 @@ public class Controller {
         frame.getOptionsPanel().setSidePanelsSliderListener(e -> {
             JSlider source = (JSlider) e.getSource();
             SideOptionPanel p = findParent(source, SideOptionPanel.class);
-            //TODO it's very unefficient
-            // ... although - even if I define it inside SideOptionPanel (so no finding parent and so on), it's still eating CPU...
             p.sliderMoved();
         });
 
@@ -84,6 +83,7 @@ public class Controller {
             motionListener.simulationStarted = false;
             mouseListener.simulationStarted = false;
         }
+        frame.getBoardPanel().simulationStarted = false;
         frame.getBoardPanel().generateBoard(boardHeight, boardWidth);
         frame.getBoardPanel().resetScale();
     }

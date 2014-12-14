@@ -36,6 +36,7 @@ public class BoardPanel extends JPanel {
 	public JPanel innerBoard;
 
     private ArrayList<MyAgent> agentsList = new ArrayList<>();
+    public boolean simulationStarted = false;
 
     public BoardPanel() {
         super();
@@ -70,39 +71,44 @@ public class BoardPanel extends JPanel {
     public void drawAgents(java.util.List<AgentInTree> agents) {
         ArrayList<MyAgent> lst = new ArrayList<>();
         for (AgentInTree agent : agents) {
-            if (agentsList.parallelStream().anyMatch(e -> e.getAgent().getAgentName().equals(agent.getAgentName()))) {
-                MyAgent a = ((MyAgent) agentsList
-                        .parallelStream()
-                        .filter(l -> l.getAgent().getAgentName().equals(agent.getAgentName()))
-                        .toArray()[0]);
-                a.setAgent(agent);
-                if (a.pointBuffer != null)
-                    a.pointBuffer = null;
-                lst.add(a);
-                //continue;
+            if (agent.getAgentName().equals("obstacle")) {
+                if (!agentsList.parallelStream().anyMatch(o -> o.getAgent().p.equals(agent.p))) {
+                    lst.add(new MyAgent(Color.GREEN,agent));
+                } else {
+                    lst.add((MyAgent)agentsList.parallelStream().filter(o -> o.getAgent().p.equals(agent.p)).toArray()[0]);
+                }
             } else {
-                switch (agent.side) {
-                    case Blues:
-                        lst.add(new MyAgent(Color.BLUE, agent));
-                        break;
-                    case Reds:
-                        lst.add(new MyAgent(Color.RED, agent));
-                        break;
-                    case Obstacle:
+                if (agentsList.parallelStream().anyMatch(e -> e.getAgent().getAgentName().equals(agent.getAgentName()))) {
+                    MyAgent a = ((MyAgent) agentsList
+                            .parallelStream()
+                            .filter(l -> l.getAgent().getAgentName().equals(agent.getAgentName()))
+                            .toArray()[0]);
+                    a.setAgent(agent);
+                    if (simulationStarted) {
+                        if (a.pointBuffer != null)
+                            a.pointBuffer = null;
+                    }
+                    lst.add(a);
+                    //continue;
+                } else {
+                    switch (agent.side) {
+                        case Blues:
+                            lst.add(new MyAgent(Color.BLUE, agent));
+                            break;
+                        case Reds:
+                            lst.add(new MyAgent(Color.RED, agent));
+                            break;
+                    /*case Obstacle:
                         lst.add(new MyAgent(Color.GREEN, agent));
-                        break;
-                    default:
+                        break;*/
+                        default:
+                            break;
+                    }
                 }
             }
         }
-
         agentsList.clear();
         agentsList = lst;
-        /*for (Iterator<MyAgent> it = agentsList.iterator(); it.hasNext();) {
-            MyAgent a = it.next();
-            if (a.agent.isDead)
-                it.remove();
-        }*/
 
         innerBoard.revalidate();
         innerBoard.repaint();

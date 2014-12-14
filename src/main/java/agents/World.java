@@ -171,7 +171,7 @@ public class World {
     }
 
     private void addObstacleToWorld(JSONObject obstacle) {
-        AgentInTree obs = new AgentInTree("", World.AgentsSides.Obstacle, new Point2D(obstacle.getInt("x"), obstacle.getInt("y")), World.AgentType.OBSTACLE, null);
+        AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle, new Point2D(obstacle.getInt("x"), obstacle.getInt("y")), World.AgentType.OBSTACLE, null);
         double[] key = {obstacle.getInt("x"),obstacle.getInt("y")};
         try {
             agentsTree.insert(key,obs);
