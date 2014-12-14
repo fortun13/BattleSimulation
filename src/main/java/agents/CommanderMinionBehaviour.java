@@ -33,6 +33,8 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
         CannonFodder agent = (CannonFodder) myAgent;
         if(stance) {
             enemyPosition = ((CannonFodder) myAgent).getNearestEnemy();
+            if (enemyPosition == null)
+                return ;
             if (((CannonFodder) myAgent).enemyInRangeOfAttack(enemyPosition))
                 doAction(() -> ((CannonFodder) myAgent).attack(enemy, enemyPosition));
             else

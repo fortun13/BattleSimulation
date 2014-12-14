@@ -76,6 +76,8 @@ public class BoardPanel extends JPanel {
                         .filter(l -> l.getAgent().getAgentName().equals(agent.getAgentName()))
                         .toArray()[0]);
                 a.setAgent(agent);
+                if (a.pointBuffer != null)
+                    a.pointBuffer = null;
                 lst.add(a);
                 //continue;
             } else {
