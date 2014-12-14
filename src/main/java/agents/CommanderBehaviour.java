@@ -15,21 +15,30 @@ public class CommanderBehaviour extends ReactiveBehaviour {
 
     public void decideOnNextStep() {
         CannonFodder agent = (CannonFodder) myAgent;
+        double posX = ((CannonFodder) myAgent).getPosition().pos().getX();
+        double posY = ((CannonFodder) myAgent).getPosition().pos().getY();
+
         switch (state) {
             case 0:
                 //TODO - get some limit for controlled minions
                 minions = ((AgentWithPosition) myAgent).getMinionsWithinRange((Commander)myAgent);
+                //System.out.println("Gromadzę miniony " + myAgent.getLocalName());
                 ACLMessage commanderAddMessage = new ACLMessage(ACLMessage.REQUEST);
                 commanderAddMessage.setConversationId("commander-init");
                 commanderAddMessage.setContent(myAgent.getName());
+                commanderAddMessage.addUserDefinedParameter("commanderPosX", String.valueOf(posX));
+                commanderAddMessage.addUserDefinedParameter("commanderPosY", String.valueOf(posY));
                 minions.forEach(commanderAddMessage::addReceiver);
                 agent.send(commanderAddMessage);
                 state++;
                 break;
             case 1:
-                //TODO for now - basic, find nearest enemy and send minions to kill
                 enemyPosition = ((CannonFodder)myAgent).getNearestEnemy();
+
                 ACLMessage fightingStance = new ACLMessage(ACLMessage.REQUEST);
+                fightingStance.setContent(myAgent.getName());
+                fightingStance.addUserDefinedParameter("commanderPosX", String.valueOf(posX));
+                fightingStance.addUserDefinedParameter("commanderPosY", String.valueOf(posY));
                 minions.forEach(fightingStance::addReceiver);
                 if (enemyPosition != null) {
                     fightingStance.setConversationId("stance-fight");
@@ -47,7 +56,6 @@ public class CommanderBehaviour extends ReactiveBehaviour {
                     Point2D thisPosition = agent.getPosition().pos();
                     Point2D destination = new Point2D(thisPosition.getX() + speedVec, thisPosition.getY());
                     agent.world.moveAgent(agent, destination);
-                    //TODO potrzebne sensowne zachowanie dla kamandira
                 }
                 agent.send(fightingStance);
                 break;
@@ -56,6 +64,5 @@ public class CommanderBehaviour extends ReactiveBehaviour {
 
     @Override
     public void handleMessage(ACLMessage msg) {
-        //TODO - question is, what to do?
     }
 }
