@@ -14,7 +14,7 @@ import java.util.ArrayList;
  *
  */
 public abstract class AgentWithPosition extends Agent {
-    protected int fieldOfView = 50;
+    protected int fieldOfView = 150;
 
     protected double morale = 50;
 
@@ -85,8 +85,7 @@ public abstract class AgentWithPosition extends Agent {
     }
 
     public void setSpeedHV(double hSpeed, double vSpeed) {
-        double size = 1;
-        setSpeedVector(Math.atan2(vSpeed, hSpeed), Math.sqrt(hSpeed*hSpeed + vSpeed*vSpeed) - 2* size);
+        setSpeedVector(Math.atan2(vSpeed, hSpeed), Math.sqrt(hSpeed*hSpeed + vSpeed*vSpeed));
     }
 
     public void setSpeedVector(double angle, double radius) {

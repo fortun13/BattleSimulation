@@ -53,6 +53,8 @@ public abstract class CannonFodder extends AgentWithPosition {
         Point2D mp = position.pos();
         Point2D ep = enemy.pos();
         setSpeedHV(ep.getX() - mp.getX(), ep.getY() - mp.getY());
+        double size = 1;
+        setSpeedVector(position.getAngle(), position.getSpeed()  - 2* size);
 
         final double[] key = {mp.getX(), mp.getY()};
         double angle = position.getAngle();
@@ -61,7 +63,7 @@ public abstract class CannonFodder extends AgentWithPosition {
             // agent szuka sąsiadów
             // zakres widzenia jest kwadratem, zeby nie liczyc niepotrzenie pierwiastka w obliczeniach ponizej
             final double rayOfView = fieldOfView*fieldOfView;
-            final double angleOfView = Math.toRadians(120 / 2); // po pol na strone
+            final double angleOfView = Math.toRadians(200 / 2); // po pol na strone
             final double finalAngle = angle;
             List<AgentInTree> neighbours = world.getAgentsTree().nearest(key, 20, agentInTree -> agentInTree.side == position.side).parallelStream().filter(agentInTree -> {
                 Point2D p2 = agentInTree.pos();
@@ -75,9 +77,10 @@ public abstract class CannonFodder extends AgentWithPosition {
             final double temporize = 0.4;
             if (neighbours.size() == 0)
                 speed *= temporize + Math.random()*(1-temporize);
+            setSpeedVector(angle, speed);
 
             // agent dostosowuje prędkość i kierunek do innych
-            final double weight = 0.01;
+            final double weight = 0.1;
             double avgAngle = neighbours.parallelStream().mapToDouble(AgentInTree::getAngle).average().orElse(angle);
             double avgSpeed = neighbours.parallelStream().mapToDouble(AgentInTree::getSpeed).average().orElse(speed);
 
@@ -86,14 +89,14 @@ public abstract class CannonFodder extends AgentWithPosition {
             setSpeedVector(angle, speed);
 
             // agent stara się być w środku grupy
-            final double COMweight = 0.01;
+            final double COMweight = 0.1;
             double[] HVSpeed = getSpeedHV().clone();
             double meanDst = Math.sqrt(neighbours.parallelStream().mapToDouble(a -> sqrDst(mp, a.pos())).average().orElse(0));
             neighbours.forEach(n -> {
                 double dst = sqrDst(mp, n.pos());
                 dst = Math.sqrt(dst);
-                HVSpeed[0] -= COMweight * (n.pos().getX() - mp.getX()) * (dst - meanDst) / dst;
-                HVSpeed[1] -= COMweight * (n.pos().getY() - mp.getY()) * (dst - meanDst) / dst;
+                HVSpeed[0] += COMweight * (n.pos().getX() - mp.getX()) * (dst - meanDst) / dst;
+                HVSpeed[1] += COMweight * (n.pos().getY() - mp.getY()) * (dst - meanDst) / dst;
             });
             setSpeedHV(HVSpeed[0], HVSpeed[1]);
 
@@ -107,14 +110,14 @@ public abstract class CannonFodder extends AgentWithPosition {
                         return false;
                     }).collect(Collectors.toList());
             final double avoidWeight = 0.01;
-            double min = 40;
+            double min = 46;
             double[] HVSpeed2 = getSpeedHV().clone();
             anything.forEach(thing -> {
                 double dst = sqrDst(mp, thing.pos());
                 double xDst = thing.pos().getX() - mp.getX();
                 double yDst = thing.pos().getY() - mp.getY();
-                HVSpeed2[0] += avoidWeight * (xDst * min / dst - xDst);
-                HVSpeed2[1] += avoidWeight * (yDst * min / dst - yDst);
+                HVSpeed2[0] -= avoidWeight * (xDst * min / dst - xDst);
+                HVSpeed2[1] -= avoidWeight * (yDst * min / dst - yDst);
             });
             setSpeedHV(HVSpeed2[0], HVSpeed2[1]);
 
