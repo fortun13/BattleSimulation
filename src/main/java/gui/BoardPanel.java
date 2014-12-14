@@ -200,9 +200,11 @@ public class BoardPanel extends JPanel {
         }
 
         private void paintSelection(Graphics2D g, Point2D point) {
-            g.setColor(Color.GREEN);
-            g.setStroke(new BasicStroke(3.0f));
-            g.drawOval((int) point.getX(), (int) point.getY(),agent.type.getSize(), agent.type.getSize());
+            if (agent.type != World.AgentType.OBSTACLE) {
+                g.setColor(Color.GREEN);
+                g.setStroke(new BasicStroke(2.0f));
+                g.drawOval((int) point.getX(), (int) point.getY(), agent.type.getSize(), agent.type.getSize());
+            }
         }
     }
 
