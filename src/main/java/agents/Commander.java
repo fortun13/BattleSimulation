@@ -4,6 +4,8 @@ import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import main.java.utils.AgentInTree;
 
+import java.util.ArrayList;
+
 public class Commander extends CannonFodder {
 	
 	protected int attractionForce;
@@ -60,6 +62,14 @@ public class Commander extends CannonFodder {
 		int acc = Integer.valueOf(el[3]);
 		//simplest version - if i got the message - then i will get hit
 		if (position.condition <= str) {
+			//Inform minions about death
+			ArrayList<AID> minions = this.getMinionsWithinRange(this);
+			ACLMessage commanderDeadMessage = new ACLMessage(ACLMessage.REQUEST);
+			commanderDeadMessage.setConversationId("commander-dead");
+			commanderDeadMessage.setContent(this.getName());
+			minions.forEach(commanderDeadMessage::addReceiver);
+			send(commanderDeadMessage);
+
 			//I am dead
 			position.condition-=str;
 			System.out.println("I'm dead :( " + getLocalName());

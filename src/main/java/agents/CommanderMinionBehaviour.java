@@ -10,7 +10,6 @@ import javafx.geometry.Point2D;
  */
 public class CommanderMinionBehaviour extends ReactiveBehaviour {
 
-    AID commander;
     boolean stance = false;
     double speedVec;
 
@@ -18,12 +17,19 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
     public void handleMessage(ACLMessage msg) {
         switch(msg.getConversationId()) {
             case "stance-fight":
+                //System.out.println("biję " + myAgent.getLocalName());
                 stance = true;
-                //TODO - get enemyPosition somehow...
                 break;
             case "stance-march":
+                //System.out.println("idę " + myAgent.getLocalName());
                 stance = false;
                 speedVec = Double.parseDouble(msg.getUserDefinedParameter("speedVecXVal"));
+                break;
+            case "commander-dead":
+                System.out.println("ojej " + myAgent.getLocalName());
+                myAgent.removeBehaviour(new CommanderMinionBehaviour());
+                myAgent.addBehaviour(new BerserkBehaviour());
+                commander = null;
                 break;
         }
     }
@@ -33,12 +39,17 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
         CannonFodder agent = (CannonFodder) myAgent;
         if(stance) {
             enemyPosition = ((CannonFodder) myAgent).getNearestEnemy();
-            if (enemyPosition == null)
-                return ;
-            if (((CannonFodder) myAgent).enemyInRangeOfAttack(enemyPosition))
-                doAction(() -> ((CannonFodder) myAgent).attack(enemy, enemyPosition));
-            else
-                doAction(() -> ((CannonFodder) myAgent).gotoEnemy(enemyPosition));
+            if (enemyPosition == null) {
+                Point2D thisPosition = agent.getPosition().pos();
+                Point2D destination = new Point2D(thisPosition.getX() + speedVec, thisPosition.getY());
+                agent.world.moveAgent(agent, destination);
+            }
+            else {
+                if (((CannonFodder) myAgent).enemyInRangeOfAttack(enemyPosition))
+                    doAction(() -> ((CannonFodder) myAgent).attack(enemy, enemyPosition));
+                else
+                    doAction(() -> ((CannonFodder) myAgent).gotoEnemy(enemyPosition));
+            }
         }
         else {
             Point2D thisPosition = agent.getPosition().pos();

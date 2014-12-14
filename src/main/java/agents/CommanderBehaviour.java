@@ -22,7 +22,7 @@ public class CommanderBehaviour extends ReactiveBehaviour {
                 ACLMessage commanderAddMessage = new ACLMessage(ACLMessage.REQUEST);
                 commanderAddMessage.setConversationId("commander-init");
                 commanderAddMessage.setContent(myAgent.getName());
-                for(int i = 0; i < minions.size(); i++) { commanderAddMessage.addReceiver(minions.get(i)); }
+                minions.forEach(commanderAddMessage::addReceiver);
                 agent.send(commanderAddMessage);
                 state++;
                 break;
@@ -47,10 +47,8 @@ public class CommanderBehaviour extends ReactiveBehaviour {
                     Point2D thisPosition = agent.getPosition().pos();
                     Point2D destination = new Point2D(thisPosition.getX() + speedVec, thisPosition.getY());
                     agent.world.moveAgent(agent, destination);
-                    //agent.keepPosition();
                     //TODO potrzebne sensowne zachowanie dla kamandira
                 }
-                minions.forEach(fightingStance::addReceiver);
                 agent.send(fightingStance);
                 break;
         }
