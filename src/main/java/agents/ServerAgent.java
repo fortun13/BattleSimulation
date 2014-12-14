@@ -104,7 +104,7 @@ public class ServerAgent extends Agent {
             world.redsAgents.forEach(newTurn::addReceiver);
             newTurn.setConversationId("new-turn");
             interval = getTimestep();
-            System.out.println("Interval: " + interval);
+            //System.out.println("Interval: " + interval);
         }
 
         public void reset() {

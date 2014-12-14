@@ -55,5 +55,9 @@ public abstract class AgentBuilder {
         buildWorld();
         buildPosition();
     }
+
+    public Class<? extends ReactiveBehaviour> getBehaviour() {
+        return behaviourClass;
+    }
 }
 

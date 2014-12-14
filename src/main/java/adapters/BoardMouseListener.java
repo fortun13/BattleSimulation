@@ -46,7 +46,7 @@ public class BoardMouseListener extends MouseAdapter {
 
                         //create obstacle with this size (for now it will be only circle); add it to a tree; show it on board
 
-                        AgentInTree obs = new AgentInTree("", World.AgentsSides.Obstacle, new Point2D(popupPosition[0], popupPosition[1]), World.AgentType.OBSTACLE);
+                        AgentInTree obs = new AgentInTree("", World.AgentsSides.Obstacle, new Point2D(popupPosition[0], popupPosition[1]), World.AgentType.OBSTACLE, null);
                         double[] key = {popupPosition[0],popupPosition[1]};
                         MainFrame f = ((MainFrame)board.getTopLevelAncestor());
                         f.server.getWorld().getAgentsTree().insert(key,obs);
@@ -157,11 +157,19 @@ public class BoardMouseListener extends MouseAdapter {
                                 .distance(p) < l.getAgent().type.getSize() / 2)
                         .toArray()[0];
                 ((MainFrame) board.getTopLevelAncestor()).updateStatistics(agent);
+                if (board.clickedAgent != null)
+                    clearSelection();
+                agent.isClicked = true;
+                board.clickedAgent = agent;
             } else {
                 ((MainFrame) board.getTopLevelAncestor()).cleanStatistics();
-
+                clearSelection();
             }
+    }
 
+    private void clearSelection() {
+        board.clickedAgent.isClicked = false;
+        board.clickedAgent = null;
     }
 
     private boolean cursorOnAgent(Point2D tmp, Point2D p) {
