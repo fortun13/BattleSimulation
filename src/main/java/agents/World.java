@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Marek on 2014-11-15.
@@ -97,9 +98,8 @@ public class World {
                 default:
                     redsAgents.add(new AID(agent.getName(), true));
             }
-            double[] key = {ait.p.getX(), ait.p.getY()};
             try {
-                agentsTree.insert(key, ait);
+                agentsTree.insert(new double[] {ait.p.getX(), ait.p.getY()}, ait);
             } catch (KeySizeException | KeyDuplicateException e) {
                 e.printStackTrace();
             }
@@ -172,9 +172,8 @@ public class World {
 
     private void addObstacleToWorld(JSONObject obstacle) {
         AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle, new Point2D(obstacle.getInt("x"), obstacle.getInt("y")), World.AgentType.OBSTACLE, null);
-        double[] key = {obstacle.getInt("x"),obstacle.getInt("y")};
         try {
-            agentsTree.insert(key,obs);
+            agentsTree.insert(new double[] {obstacle.getInt("x"),obstacle.getInt("y")},obs);
         } catch (KeySizeException e) {
             e.printStackTrace();
         } catch (KeyDuplicateException e) {
@@ -184,7 +183,6 @@ public class World {
 
     private void addAgentToWorld(JSONObject agent, AgentBuilder builder, AgentType type, Director generator, int counter) {
         setBehaviourByFile(builder, agent.get("behaviour").toString());
-
         AgentsSides side;
         switch (agent.get("side").toString().toLowerCase()) {
             case "blues":
@@ -220,9 +218,8 @@ public class World {
                 default:
                     break;
             }
-            double[] key = {ait.p.getX(), ait.p.getY()};
             try {
-                agentsTree.insert(key, ait);
+                agentsTree.insert(new double[] {ait.p.getX(), ait.p.getY()}, ait);
             } catch (KeySizeException | KeyDuplicateException e) {
                 e.printStackTrace();
             }
@@ -264,9 +261,8 @@ public class World {
 
     public void removeAgent(AgentWithPosition agent) {
         if (!agent.position.isDead) {
-            double[] agentKey = {agent.position.p.getX(), agent.position.p.getY()};
             try {
-                agentsTree.delete(agentKey);
+                agentsTree.delete(new double[] {agent.position.p.getX(), agent.position.p.getY()});
             } catch (KeySizeException | KeyMissingException e) {
                 e.printStackTrace();
             }
@@ -323,34 +319,41 @@ public class World {
 
     public synchronized int[] countFriendFoe(AgentWithPosition agent) {
 
-        double[] key = {agent.position.p.getX(), agent.position.p.getY()};
         int vec[] = new int[2];
 
         try {
-            vec[0] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.position.side == a.side).count();
+            List<AgentInTree> lst = agentsTree
+                    .nearest(new double[] {agent.position.p.getX(), agent.position.p.getY()}, agent.fieldOfView, e -> e.side != AgentsSides.Obstacle);
+            vec[0] = (int) lst
+                    .parallelStream()
+                    .filter(l -> l.side == agent.position.side)
+                    .count();
+            vec[1] = lst.size() - vec[0];
+            //vec[0] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.position.side == a.side).count();
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
 
-        try {
+        /*try {
             vec[1] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.position.side != a.side && a.side != AgentsSides.Obstacle).count();
         } catch (KeySizeException e) {
             e.printStackTrace();
-        }
+        }*/
 
         return vec;
     }
 
     public List<AgentInTree> getNeighborFriends(AgentWithPosition agent) {
-        List<AgentInTree> friendlyNeighbors = new ArrayList<>();
-        double[] key = {agent.position.p.getX(), agent.position.p.getY()};
+        //List<AgentInTree> friendlyNeighbors = new ArrayList<>();
         try {
-            agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> a.side == agent.position.side).forEach(friendlyNeighbors::add);
+            return agentsTree
+                    .nearestEuclidean(new double[] {agent.position.p.getX(), agent.position.p.getY()}, agent.fieldOfView)
+                    .stream()
+                    .filter(a -> a.side == agent.position.side).collect(Collectors.toList());
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
-        return friendlyNeighbors;
-
+        return new ArrayList<AgentInTree>();
     }
 
     public void killAgent(AgentWithPosition agent) {

@@ -128,12 +128,11 @@ public class MainFrame extends JFrame {
     }
 
     public void redrawBoard(KDTree<AgentInTree> agents) {
-        double[] testKey = {0,0};
         Pair<Integer,Integer> bsize = optionsPanel.getBoardSize();
         double[] upperKey = {bsize.getValue()*boardPanel.SQUARESIZE,bsize.getKey()*boardPanel.SQUARESIZE};
         List<AgentInTree> lst = null;
         try {
-            lst = agents.range(testKey,upperKey);
+            lst = agents.range(new double[] {0,0},upperKey);
         } catch (KeySizeException e) {
             e.printStackTrace();
         }

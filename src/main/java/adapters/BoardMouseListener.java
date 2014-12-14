@@ -47,9 +47,8 @@ public class BoardMouseListener extends MouseAdapter {
                         //create obstacle with this size (for now it will be only circle); add it to a tree; show it on board
 
                         AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle, new Point2D(popupPosition[0], popupPosition[1]), World.AgentType.OBSTACLE, null);
-                        double[] key = {popupPosition[0],popupPosition[1]};
                         MainFrame f = ((MainFrame)board.getTopLevelAncestor());
-                        f.server.getWorld().getAgentsTree().insert(key,obs);
+                        f.server.getWorld().getAgentsTree().insert(new double[] {popupPosition[0],popupPosition[1]},obs);
                         f.redrawBoard(f.server.getWorld().getAgentsTree());
                     } catch (NumberFormatException ex) {
                         showErrorMessage();
