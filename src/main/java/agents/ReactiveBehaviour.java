@@ -40,8 +40,16 @@ public abstract class ReactiveBehaviour extends Behaviour {
                     }
                     computationEnded(msg);
                     break;
-                case "battle-ended":
-                    System.out.println("WE WON!!");
+                case "battle-ended-victory":
+                    System.out.println("WE'VE WON!");
+                    state = WAITN;
+                    break;
+                case "battle-ended-loss":
+                    System.out.println("WE'VE LOST...");
+                    state = WAITN;
+                    break;
+                case "battle-ended-draw":
+                    System.out.println("DRAW");
                     state = WAITN;
                     break;
                 case "attack":

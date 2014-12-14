@@ -28,7 +28,6 @@ public abstract class CannonFodder extends AgentWithPosition {
         Object[] parameters = getArguments();
 
         addBehaviour((ReactiveBehaviour) parameters[0]);
-        //this.condition = (int) parameters[1];
         this.strength = (int) parameters[2];
         this.speed = (int) parameters[3];
         this.accuracy = (int) parameters[4];
@@ -140,7 +139,6 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     @Override
     protected void keepPosition() {
-        //List<KdTree.Placed> friendlyNeighbors;
         List<AgentInTree> friendlyNeighbors;
 
         friendlyNeighbors = world.getNeighborFriends(this);

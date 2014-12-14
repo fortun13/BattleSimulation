@@ -34,7 +34,8 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                 speedVec = Double.parseDouble(msg.getUserDefinedParameter("speedVecXVal"));
                 break;
             case "commander-dead":
-                System.out.println("ojej " + myAgent.getLocalName());
+                //System.out.println("ojej " + myAgent.getLocalName());
+                ((CannonFodder)myAgent).morale -= 10;
                 myAgent.removeBehaviour(new CommanderMinionBehaviour());
                 myAgent.addBehaviour(new BerserkBehaviour());
                 commander = null;

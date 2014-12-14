@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public abstract class AgentWithPosition extends Agent {
     protected int fieldOfView = 150;
 
-    protected double morale = 50;
+    public double morale = 50;
 
     protected double previousRatio=1;
 
@@ -83,7 +83,6 @@ public abstract class AgentWithPosition extends Agent {
     }
 
     protected abstract void killYourself(ACLMessage msgToSend);
-
 
     public double[] getSpeedHV() {
         double angle = position.speed[0], r = position.speed[1];

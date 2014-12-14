@@ -32,7 +32,8 @@ public class World {
     public ArrayList<AID> redsAgents = new ArrayList<>();
     public ServerAgent server;
     private int boardCenterX;
-    public ArrayList<AID> corpses = new ArrayList<>();
+    public ArrayList<AID> redsCorpses = new ArrayList<>();
+    public ArrayList<AID> bluesCorpses = new ArrayList<>();
 
     private KDTree<Pair<AgentWithPosition, Point2D>> destinations = new KDTree<>(2);
 
@@ -251,7 +252,8 @@ public class World {
             m.setConversationId(ReactiveBehaviour.DELETE);
             bluesAgents.forEach(m::addReceiver);
             redsAgents.forEach(m::addReceiver);
-            corpses.forEach(m::addReceiver);
+            redsCorpses.forEach(m::addReceiver);
+            bluesCorpses.forEach(m::addReceiver);
             server.send(m);
             //bluesAgents.clear();
             //redsAgents.clear();
@@ -369,12 +371,14 @@ public class World {
         } catch (KeySizeException | KeyMissingException e) {
             e.printStackTrace();
         }
-        if (bluesAgents.contains(agent.getAID()))
+        if (bluesAgents.contains(agent.getAID())) {
             bluesAgents.remove(agent.getAID());
-        else if (redsAgents.contains(agent.getAID()))
+            bluesCorpses.add(agent.getAID());
+        }
+        else if (redsAgents.contains(agent.getAID())) {
             redsAgents.remove(agent.getAID());
-
-        corpses.add(agent.getAID());
+            redsCorpses.add(agent.getAID());
+        }
     }
 
     public double computeBoardCenter(Point2D position) {

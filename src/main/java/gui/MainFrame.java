@@ -47,7 +47,7 @@ public class MainFrame extends JFrame {
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        int FRAME_WIDTH = 1000;
+        int FRAME_WIDTH = 1200;
         int FRAME_HEIGHT = 700;
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
