@@ -309,7 +309,7 @@ public class World {
         }
         position.setPosition(destination);
         try {
-            agentsTree.delete(oldPos);
+            agentsTree.delete(oldPos,true);
             agentsTree.insert(newPos, position);
         } catch (KeySizeException | KeyDuplicateException | KeyMissingException e) {
             e.printStackTrace();
@@ -319,13 +319,15 @@ public class World {
 
     }
 
-    public synchronized int[] countFriendFoe(AgentWithPosition agent) {
+    public int[] countFriendFoe(AgentWithPosition agent) {
 
         int vec[] = new int[2];
 
         try {
             List<AgentInTree> lst = agentsTree
-                    .nearest(new double[] {agent.position.p.getX(), agent.position.p.getY()}, agent.fieldOfView, e -> e.side != AgentsSides.Obstacle);
+                    .nearestEuclidean(new double[]{agent.position.p.getX(), agent.position.p.getY()}, agent.fieldOfView)
+                    .parallelStream()
+                    .filter(e -> e.side != AgentsSides.Obstacle).collect(Collectors.toList());
             vec[0] = (int) lst
                     .parallelStream()
                     .filter(l -> l.side == agent.position.side)
@@ -350,7 +352,7 @@ public class World {
         try {
             return agentsTree
                     .nearestEuclidean(new double[] {agent.position.p.getX(), agent.position.p.getY()}, agent.fieldOfView)
-                    .stream()
+                    .parallelStream()
                     .filter(a -> a.side == agent.position.side).collect(Collectors.toList());
         } catch (KeySizeException e) {
             e.printStackTrace();
@@ -359,6 +361,9 @@ public class World {
     }
 
     public void killAgent(AgentWithPosition agent) {
+        if (agent.position.isDead)
+            return;
+    	
         agent.position.isDead = true;
 
         //agents.rmPoint(agent.getPosition());
