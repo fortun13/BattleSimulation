@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -69,35 +68,39 @@ public class BoardPanel extends JPanel {
     }
     
     public void drawAgents(java.util.List<AgentInTree> agents) {
+        ArrayList<MyAgent> lst = new ArrayList<>();
         for (AgentInTree agent : agents) {
             if (agentsList.parallelStream().anyMatch(e -> e.getAgent().getAgentName().equals(agent.getAgentName()))) {
-                ((MyAgent)agentsList
+                MyAgent a = ((MyAgent) agentsList
                         .parallelStream()
                         .filter(l -> l.getAgent().getAgentName().equals(agent.getAgentName()))
-                        .toArray()[0])
-                        .setAgent(agent);
+                        .toArray()[0]);
+                a.setAgent(agent);
+                lst.add(a);
                 //continue;
             } else {
                 switch (agent.side) {
                     case Blues:
-                        agentsList.add(new MyAgent(Color.BLUE, agent));
+                        lst.add(new MyAgent(Color.BLUE, agent));
                         break;
                     case Reds:
-                        agentsList.add(new MyAgent(Color.RED, agent));
+                        lst.add(new MyAgent(Color.RED, agent));
                         break;
                     case Obstacle:
-                        agentsList.add(new MyAgent(Color.GREEN, agent));
+                        lst.add(new MyAgent(Color.GREEN, agent));
                         break;
                     default:
                 }
             }
         }
 
-        for (Iterator<MyAgent> it = agentsList.iterator(); it.hasNext();) {
+        agentsList.clear();
+        agentsList = lst;
+        /*for (Iterator<MyAgent> it = agentsList.iterator(); it.hasNext();) {
             MyAgent a = it.next();
             if (a.agent.isDead)
                 it.remove();
-        }
+        }*/
 
         innerBoard.revalidate();
         innerBoard.repaint();
