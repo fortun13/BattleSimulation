@@ -5,10 +5,19 @@ import javax.swing.event.ChangeListener;
 
 /**
  * Created by Jakub Fortunka on 12.11.14.
+ *
  */
 
 public class SideOptionPanel extends JPanel {
+    private static final int HP = 0;
+    private static final int STR = 1;
+    private static final int SPD = 2;
+    private static final int ACC = 3;
+    public static final int ROA = 4;
 
+    private static final String[] labels = {"condition", "strength", "speed", "accuracy", "range"};
+    private static final int[] vals = {40, 6, 7, 90, 3};
+    public final JSpinner[] options = new JSpinner[vals.length];
     private JSpinner warriorsNumber;
     private JSlider warriorsSlider;
 
@@ -20,11 +29,11 @@ public class SideOptionPanel extends JPanel {
 
     public SideOptionPanel(String identifier) {
         setBorder(BorderFactory.createTitledBorder(identifier));
-        //add(bluePanel);
-        //setLayout(new GridLayout(0, 1, 0, 0));
         setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 
         JPanel warriorsSliderPanel = new JPanel();
+        warriorsSliderPanel.setLayout(new BoxLayout(warriorsSliderPanel, BoxLayout.PAGE_AXIS));
+
         warriorsSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.warriorsBorderTitle")));
         add(warriorsSliderPanel);
 
@@ -34,9 +43,30 @@ public class SideOptionPanel extends JPanel {
 
         warriorsSlider = new JSlider();
         warriorsSlider.setValue(10);
-        
+
         warriorsNumber.setValue(10);
         warriorsSliderPanel.add(warriorsSlider);
+
+        JPanel row = new JPanel();
+        row.add(warriorsSlider);
+        row.add(warriorsNumber);
+        warriorsSliderPanel.add(row);
+
+        for (int i = 0; i < labels.length; i+=2) {
+            row = new JPanel();
+            for (int col = 0; col < 2; col++) {
+                int j = i + col;
+                if (j >= labels.length) break;
+
+                JLabel l = new JLabel(labels[j], JLabel.TRAILING);
+                options[j] = new JSpinner();
+                options[j].setValue(vals[j]);
+
+                row.add(l);
+                row.add(options[j]);
+            }
+            warriorsSliderPanel.add(row);
+        }
 
         JPanel archersSliderPanel = new JPanel();
         archersSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.archersBorderTitle")));
@@ -79,10 +109,6 @@ public class SideOptionPanel extends JPanel {
         commandersSlider.addChangeListener(listener);
     }
 
-    public JSpinner getAgentsNumberSpinner() {
-        return warriorsNumber;
-    }
-
     public int getWarriorsNumber() {
         return (int) warriorsNumber.getValue();
     }
@@ -92,4 +118,24 @@ public class SideOptionPanel extends JPanel {
     }
 
     public int getCommandersNumber() { return (int) commandersNumber.getValue(); }
+
+    public Integer getRange() {
+        return (Integer) options[ROA].getValue();
+    }
+
+    public Integer getCondition() {
+        return (Integer) options[HP].getValue();
+    }
+
+    public Integer getAccuracy() {
+        return (Integer) options[ACC].getValue();
+    }
+
+    public Integer getStrength() {
+        return (Integer) options[STR].getValue();
+    }
+
+    public Integer getSpeed() {
+        return (Integer) options[SPD].getValue();
+    }
 }

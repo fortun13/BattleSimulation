@@ -49,7 +49,8 @@ public abstract class AgentWithPosition extends Agent {
         if(list.contains(agent.position))
             list.remove(agent.position);
         ArrayList<AID> ans = new ArrayList<>();
-        for (AgentInTree a : list) {
+        for (AgentInTree a :
+                list) {
             ans.add(new AID(a.getAgentName(),true));
         }
         return ans;
@@ -86,6 +87,10 @@ public abstract class AgentWithPosition extends Agent {
 
     public void setSpeedHV(double hSpeed, double vSpeed) {
         setSpeedVector(Math.atan2(vSpeed, hSpeed), Math.sqrt(hSpeed*hSpeed + vSpeed*vSpeed));
+    }
+
+    public void setSpeedHV(double hSpeed, double vSpeed, double limit) {
+        setSpeedVector(Math.atan2(vSpeed, hSpeed), Math.sqrt(hSpeed*hSpeed + vSpeed*vSpeed) - limit);
     }
 
     public void setSpeedVector(double angle, double radius) {

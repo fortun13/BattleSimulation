@@ -12,17 +12,15 @@ import main.java.agents.World;
  *
  */
 public abstract class AgentBuilder {
-    protected AID serverAID;
     protected PlatformController platform;
     protected Object[] parameters = new Object[9];
 
     Class<? extends ReactiveBehaviour> behaviourClass;
-    AgentInTree position;
-    World world;
-    String agentName;
+    protected Settings settings;
 
-    protected AgentBuilder(AID serverAID) {
-        this.serverAID = serverAID;
+
+    protected AgentBuilder(Settings s) {
+        settings = s;
     }
 
     public void setPlatform(PlatformController platform) {
@@ -39,8 +37,7 @@ public abstract class AgentBuilder {
     public abstract void buildWorld();
     public abstract void buildBehaviour();
 
-    public abstract void setAgentName(String agentName);
-    public abstract void setPosition(AgentInTree position);
+    protected abstract void buildAttackRange();
 
     public void setBehaviourClass(Class<? extends ReactiveBehaviour> behaviourClass) {
         this.behaviourClass = behaviourClass;
@@ -54,10 +51,32 @@ public abstract class AgentBuilder {
         buildAccuracy();
         buildWorld();
         buildPosition();
+        buildAttackRange();
     }
+
 
     public Class<? extends ReactiveBehaviour> getBehaviour() {
         return behaviourClass;
+    }
+
+    public Settings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(Settings settings) {
+        this.settings = settings;
+    }
+
+    public static class Settings {
+        public AID server;
+        public World world;
+        public String name;
+        public AgentInTree position;
+        public Integer condition;
+        public Integer strength;
+        public Integer speed;
+        public Integer accuracy;
+        public Integer attackRange;
     }
 }
 

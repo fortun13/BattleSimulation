@@ -8,25 +8,11 @@ import main.java.utils.AgentInTree;
  * Created by Jakub Fortunka on 19.11.14.
  *
  */
+@SuppressWarnings("unused")
 public class Archer extends CannonFodder {
 
-    private int attackRange;
-
-
     public void setup() {
-
         super.setup();
-
-        Object[] parameters = getArguments();
-
-        /*addBehaviour((ReactiveBehaviour) parameters[0]);
-        this.condition = (int) parameters[1];
-        this.strength = (int) parameters[2];
-        this.speed = (int) parameters[3];
-        this.accuracy  = (int) parameters[4];
-        this.world = (World) parameters[5];
-        this.position = (AgentInTree) parameters[6];*/
-        this.attackRange = (int) parameters[7];
     }
 
     protected void takeDown() {

@@ -11,6 +11,8 @@ import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
+import main.java.gui.OptionsPanel;
+import main.java.gui.SideOptionPanel;
 import main.java.utils.*;
 import org.json.JSONObject;
 
@@ -33,26 +35,21 @@ public class World {
     private int boardCenterX;
     public ArrayList<AID> corpses = new ArrayList<>();
 
-    private KDTree<Pair<AgentWithPosition, Point2D>> destinations = new KDTree<>(2);
-
     public World(ServerAgent serverAgent, ArrayList<Pair<AgentType, Integer>> blues, ArrayList<Pair<AgentType, Integer>> reds) {
         this.server = serverAgent;
         this.boardCenterX = (int) server.getFrame().getOptionsPanel().getBoardWidth().getValue();
 
         Director generator = new Director();
 
-        //int tmp = offset;
-
         iterateOverAgentsList("agentBlue_", blues, generator,2, AgentsSides.Blues);
-        //offset = tmp;
         iterateOverAgentsList("agentRed_",reds,generator,40, AgentsSides.Reds);
-        //offset=0;
     }
 
     private void iterateOverAgentsList(String agentPrefix, ArrayList<Pair<AgentType,Integer>> list, Director generator, int xPosition, AgentsSides agentSide) {
         int counter = 1;
         for (Pair<AgentType, Integer> p : list) {
-            AgentBuilder builder = chooseBuilder(p.getKey());
+            OptionsPanel panel = server.m_frame.getOptionsPanel();
+            AgentBuilder builder = chooseBuilder(p.getKey(), agentSide == AgentsSides.Reds ? panel.redPanel : panel.bluePanel);
             PlatformController container = server.getContainerController();
             generator.setAgentBuilder(builder);
             generator.setPlatform(container);
@@ -64,24 +61,31 @@ public class World {
         offset += counter;
     }
 
-    private AgentBuilder chooseBuilder(AgentType type) {
-        switch(type) {
-            case WARRIOR:
-                return new WarriorBuilder(server.getAID(),BerserkBehaviour.class,this);
+    private AgentBuilder chooseBuilder(AgentType type, SideOptionPanel sideOptionPanel) {
+        AgentBuilder.Settings s = new AgentBuilder.Settings();
+        s.server = server.getAID();
+        s.world = this;
+        switch (type) {
             case ARCHER:
-                return new ArcherBuilder(server.getAID(),BerserkBehaviour.class,this);
+                return new ArcherBuilder(s, BerserkBehaviour.class);
             case COMMANDER:
-                return new CommanderBuilder(server.getAID(),CommanderBehaviour.class,this);
+                return new CommanderBuilder(s, BerserkBehaviour.class);
             default:
-                return new WarriorBuilder(server.getAID(),BerserkBehaviour.class,this);
+                s.condition = sideOptionPanel.getCondition();
+                s.speed = sideOptionPanel.getSpeed();
+                s.strength = sideOptionPanel.getStrength();
+                s.accuracy = sideOptionPanel.getAccuracy();
+                s.attackRange = sideOptionPanel.getRange();
+                return new WarriorBuilder(s, BerserkBehaviour.class);
         }
     }
 
     private void addAgentsToWorld(AgentBuilder builder, AgentType type, AgentsSides agentSide, Director generator, int counter, String agentPrefix, int xPosition) {
-        String agentName = agentPrefix + (counter + offset);
-        AgentInTree ait = new AgentInTree("", agentSide, new Point2D(xPosition, counter*type.getSize()), type, builder.getBehaviour());
-        builder.setAgentName(agentName);
-        builder.setPosition(ait);
+        AgentBuilder.Settings s = builder.getSettings();
+        s.name = agentPrefix + (counter + offset);
+        AgentInTree ait = new AgentInTree("", agentSide, new Point2D(xPosition, counter * type.getSize()), type, builder.getBehaviour());
+        s.position = ait;
+        builder.setSettings(s);
         generator.constructAgent();
         AgentController agent;
         try {
@@ -109,29 +113,20 @@ public class World {
 
     }
 
-    public boolean setDestination(AgentWithPosition agent, Point2D destination) {
-        try {
-            destinations.insert(
-                    new double[]{destination.getX(), destination.getY()},
-                    new Pair<>(agent, destination)
-            );
-        } catch (KeySizeException e) {
-            throw new RuntimeException(e);
-        } catch (KeyDuplicateException e) {
-            return false;
-        }
-        return true;
-    }
-
     public World(ServerAgent server, HashMap<String,ArrayList<JSONObject>> map, int boardWidth) {
         int counter = 0;
         this.server = server;
         boardCenterX = boardWidth;
         PlatformController container = server.getContainerController();
         Director generator = new Director();
-        AgentBuilder warrior = new WarriorBuilder(server.getAID(), null, this);
-        AgentBuilder archer = new ArcherBuilder(server.getAID(), null, this);
-        AgentBuilder commander = new CommanderBuilder(server.getAID(), null, this);
+
+        AgentBuilder.Settings s = new AgentBuilder.Settings();
+        s.server = server.getAID();
+        s.world = this;
+
+        AgentBuilder warrior = new WarriorBuilder(s, null);
+        AgentBuilder archer = new ArcherBuilder(s, null);
+        AgentBuilder commander = new CommanderBuilder(s, null);
 
         for (String type : map.keySet()) {
             ArrayList<JSONObject> list = map.get(type);
@@ -161,9 +156,7 @@ public class World {
                     }
                     break;
                 case "obstacle":
-                    for (JSONObject obstacle : list) {
-                        addObstacleToWorld(obstacle);
-                    }
+                    list.forEach(this::addObstacleToWorld);
             }
         }
 
@@ -175,9 +168,7 @@ public class World {
         double[] key = {obstacle.getInt("x"),obstacle.getInt("y")};
         try {
             agentsTree.insert(key,obs);
-        } catch (KeySizeException e) {
-            e.printStackTrace();
-        } catch (KeyDuplicateException e) {
+        } catch (KeySizeException | KeyDuplicateException e) {
             e.printStackTrace();
         }
     }
@@ -197,11 +188,13 @@ public class World {
                 side = AgentsSides.Obstacle;
                 break;
         }
-        String name = "agent_" + (counter + offset);
+        AgentBuilder.Settings s = builder.getSettings();
+        s.name = "agent_" + (counter + offset);
 
         AgentInTree ait = new AgentInTree("", side, new Point2D(agent.getInt("x"), agent.getInt("y")), type, builder.getBehaviour());
-        builder.setAgentName(name);
-        builder.setPosition(ait);
+        s.position = ait;
+
+        builder.setSettings(s);
 
         generator.constructAgent();
 
@@ -229,8 +222,6 @@ public class World {
         } catch (ControllerException e) {
             e.printStackTrace();
         }
-        //offset++;
-
     }
 
     private void setBehaviourByFile(AgentBuilder b, String behaviour) {

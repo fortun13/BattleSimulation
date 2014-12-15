@@ -1,10 +1,8 @@
 package main.java.utils;
 
-import jade.core.AID;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import main.java.agents.ReactiveBehaviour;
-import main.java.agents.World;
 
 /**
  * Created by Jakub Fortunka on 21.11.14.
@@ -12,15 +10,14 @@ import main.java.agents.World;
  */
 public class ArcherBuilder extends AgentBuilder {
 
-    public ArcherBuilder(AID serverAID, Class<? extends ReactiveBehaviour> b, World w) {
-        super(serverAID);
+    public ArcherBuilder(Settings s, Class<? extends ReactiveBehaviour> b) {
+        super(s);
         behaviourClass = b;
-        world = w;
     }
 
     @Override
     public AgentController getAgent() throws ControllerException {
-        return platform.createNewAgent(agentName,"main.java.agents.Archer",parameters.clone());
+        return platform.createNewAgent(settings.name,"main.java.agents.Archer",parameters.clone());
     }
 
     @Override
@@ -45,12 +42,12 @@ public class ArcherBuilder extends AgentBuilder {
 
     @Override
     public void buildPosition() {
-        parameters[6] = position;
+        parameters[6] = settings.position;
     }
 
     @Override
     public void buildWorld() {
-        parameters[5] = world;
+        parameters[5] = settings.world;
     }
 
     @Override
@@ -62,16 +59,6 @@ public class ArcherBuilder extends AgentBuilder {
         }
     }
 
-    @Override
-    public void setAgentName(String agentName) {
-        this.agentName = agentName;
-    }
-
-    @Override
-    public void setPosition(AgentInTree position) {
-        this.position = position;
-    }
-
     public void buildAttackRange() {
         parameters[7] = 145;
     }
@@ -79,6 +66,5 @@ public class ArcherBuilder extends AgentBuilder {
     @Override
     public void constructAgent() {
         super.constructAgent();
-        buildAttackRange();
     }
 }

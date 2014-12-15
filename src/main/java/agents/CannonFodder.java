@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  */
 public abstract class CannonFodder extends AgentWithPosition {
 
-    protected int strength, speed, accuracy;
+    protected int strength, speed, accuracy, attackRange;
 
     public void setup() {
         // 0 - behaviour
@@ -24,17 +24,18 @@ public abstract class CannonFodder extends AgentWithPosition {
         // 4 - accuracy
         // 5 - world
         // 6 - position
+        // 7 - attack range
 
         Object[] parameters = getArguments();
 
         addBehaviour((ReactiveBehaviour) parameters[0]);
-        //this.condition = (int) parameters[1];
         this.strength = (int) parameters[2];
         this.speed = (int) parameters[3];
         this.accuracy = (int) parameters[4];
         this.world = (World) parameters[5];
         this.position = (AgentInTree) parameters[6];
         this.position.condition = (int) parameters[1];
+        this.attackRange = (int) parameters[7];
     }
 
     @Override
@@ -52,9 +53,9 @@ public abstract class CannonFodder extends AgentWithPosition {
     protected void gotoEnemy(AgentInTree enemy) {
         Point2D mp = position.pos();
         Point2D ep = enemy.pos();
-        setSpeedHV(ep.getX() - mp.getX(), ep.getY() - mp.getY());
-        double size = 1;
-        setSpeedVector(position.getAngle(), position.getSpeed()  - 2* size);
+
+        double size = (Integer) world.server.getFrame().getOptionsPanel().as.getValue();
+        setSpeedHV(ep.getX() - mp.getX(), ep.getY() - mp.getY(), size);
 
         final double[] key = {mp.getX(), mp.getY()};
         double angle = position.getAngle();
@@ -101,23 +102,23 @@ public abstract class CannonFodder extends AgentWithPosition {
             setSpeedHV(HVSpeed[0], HVSpeed[1]);
 
             // utrzymanie minimalnej dległości od wszystkiego oprócz obranego celu
+            double min =30;
             List<AgentInTree> anything = world.getAgentsTree().nearest(key, 20, ait -> ait != enemy).parallelStream()
                     .filter(agentInTree -> {
                         Point2D p2 = agentInTree.pos();
-                        if (p2 != mp) if (sqrDst(mp, p2) < rayOfView)
-                            if (Math.abs(Math.atan2(p2.getY() - mp.getY(), p2.getX() - mp.getX()) - finalAngle) < angleOfView)
+                        if (p2 != mp) if (sqrDst(mp, p2) < 3*min)
+//                            if (Math.abs(Math.atan2(p2.getY() - mp.getY(), p2.getX() - mp.getX()) - finalAngle) < angleOfView)
                                 return true;
                         return false;
                     }).collect(Collectors.toList());
-            final double avoidWeight = 0.01;
-            double min = 86;
+            final double avoidWeight = 0.1;
             double[] HVSpeed2 = getSpeedHV().clone();
             anything.forEach(thing -> {
-                double dst = sqrDst(mp, thing.pos());
+                double dst = Math.sqrt(sqrDst(mp, thing.pos()));
                 double xDst = thing.pos().getX() - mp.getX();
                 double yDst = thing.pos().getY() - mp.getY();
-                HVSpeed2[0] -= avoidWeight * (xDst * min / dst - xDst);
-                HVSpeed2[1] -= avoidWeight * (yDst * min / dst - yDst);
+                HVSpeed2[0] += avoidWeight * (xDst * min / dst - xDst);
+                HVSpeed2[1] += avoidWeight * (yDst * min / dst - yDst);
             });
             setSpeedHV(HVSpeed2[0], HVSpeed2[1]);
 

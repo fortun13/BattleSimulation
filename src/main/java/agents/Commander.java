@@ -13,7 +13,7 @@ public class Commander extends CannonFodder {
 		
 		Object[] p = getArguments();
 		
-		attractionForce = (int)p[7];
+		attractionForce = (int)p[8];
 	}
 
     @Override

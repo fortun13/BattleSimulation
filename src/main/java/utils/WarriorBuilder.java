@@ -1,81 +1,62 @@
 package main.java.utils;
 
-import jade.core.AID;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import main.java.agents.ReactiveBehaviour;
-import main.java.agents.World;
 
 public class WarriorBuilder extends AgentBuilder {
 
-    public WarriorBuilder(AID serverAID, Class<? extends ReactiveBehaviour> b, World w) {
-        super(serverAID);
+    public WarriorBuilder(Settings s, Class<? extends ReactiveBehaviour> b) {
+        super(s);
         behaviourClass = b;
-        world = w;
     }
 
     @Override
     public AgentController getAgent() throws ControllerException {
-        return platform.createNewAgent(agentName, "main.java.agents.Warrior", parameters.clone());
+        return platform.createNewAgent(settings.name, "main.java.agents.Warrior", parameters.clone());
     }
 
     @Override
     public void buildCondition() {
-        parameters[1] = 40;
+        parameters[1] = settings.condition;
     }
 
     @Override
     public void buildStrength() {
-        parameters[2] = 6;
+        parameters[2] = settings.strength;
     }
 
     @Override
     public void buildSpeed() {
-        parameters[3] = 7;
+        parameters[3] = settings.speed;
     }
 
     @Override
     public void buildAccuracy() {
-        parameters[4] = 90;
+        parameters[4] = settings.accuracy;
     }
 
     @Override
     public void buildPosition() {
-        parameters[6] = position;
+        parameters[6] = settings.position;
     }
 
     @Override
     public void buildWorld() {
-        parameters[5] = world;
+        parameters[5] = settings.world;
     }
 
     @Override
     public void buildBehaviour() {
-        //parameters[0] = behaviour;
         try {
             parameters[0] = behaviourClass.newInstance();
-//            Type[] args = {AID.class};
-//            for (Constructor<?> constructor : behaviourClass.getDeclaredConstructors()) {
-//                if (Arrays.equals(constructor.getParameterTypes(), args)) {
-//                    constructor.setAccessible(true);
-//                    parameters[0] = constructor.newInstance(serverAID);
-//                    return;
-//                }
-//            }
-//            throw new RuntimeException("no constructor found with parameters: " + Arrays.toString(args));
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void setAgentName(String agentName) {
-        this.agentName = agentName;
-    }
-
-    @Override
-    public void setPosition(AgentInTree position) {
-        this.position = position;
+    public void buildAttackRange() {
+        parameters[7] = settings.attackRange;
     }
 
     @Override

@@ -13,14 +13,22 @@ public class OptionsPanel extends JPanel {
 
 	private final JButton btnSaveToFile;
 	private JSpinner timeStepSpinner;
+	public JSpinner as;
+	public JSpinner aov;
+	public JSpinner rov;
+	public JSpinner t;
+	public JSpinner dosw;
+	public JSpinner comw;
+	public JSpinner aw;
+	public JSpinner mind;
 	private JSpinner boardWidth;
 	private JSpinner boardHeight;
 
 	private JFileChooser fileChooser = new JFileChooser();
 	private JButton openFile;
 
-    private SideOptionPanel bluePanel;
-    private SideOptionPanel redPanel;
+    public SideOptionPanel bluePanel;
+    public SideOptionPanel redPanel;
 
     public OptionsPanel() {
 		setLayout(new GridLayout(1, 0, 0, 0));
@@ -67,6 +75,10 @@ public class OptionsPanel extends JPanel {
 		timeStepSpinner = new JSpinner();
 		timeStepSpinner.setValue(40);
 		timeStepPanel.add(timeStepSpinner);
+		as = new JSpinner();
+		as.setValue(10);
+		timeStepPanel.add(as);
+
 		generalPanel.add(timeStepPanel);
 
 		JPanel buttons = new JPanel();

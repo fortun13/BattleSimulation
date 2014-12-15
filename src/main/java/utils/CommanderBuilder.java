@@ -1,25 +1,23 @@
 package main.java.utils;
 
-import jade.core.AID;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import main.java.agents.ReactiveBehaviour;
-import main.java.agents.World;
 
 /**
  * Created by KrzysiekH on 2014-12-13.
+ *
  */
 public class CommanderBuilder extends AgentBuilder {
 
-    public CommanderBuilder(AID serverAID, Class<? extends ReactiveBehaviour> b, World w) {
-        super(serverAID);
+    public CommanderBuilder(Settings s, Class<? extends ReactiveBehaviour> b) {
+        super(s);
         behaviourClass = b;
-        world = w;
     }
 
     @Override
     public AgentController getAgent() throws ControllerException {
-        return platform.createNewAgent(agentName,"main.java.agents.Commander",parameters.clone());
+        return platform.createNewAgent(settings.name,"main.java.agents.Commander",parameters.clone());
     }
 
     @Override
@@ -44,12 +42,12 @@ public class CommanderBuilder extends AgentBuilder {
 
     @Override
     public void buildPosition() {
-        parameters[6] = position;
+        parameters[6] = settings.position;
     }
 
     @Override
     public void buildWorld() {
-        parameters[5] = world;
+        parameters[5] = settings.world;
     }
 
     @Override
@@ -62,17 +60,12 @@ public class CommanderBuilder extends AgentBuilder {
     }
 
     public void buildAttractionForce() {
-        parameters[7] = 100;
+        parameters[8] = 100;
     }
 
     @Override
-    public void setAgentName(String agentName) {
-        this.agentName = agentName;
-    }
-
-    @Override
-    public void setPosition(AgentInTree position) {
-        this.position = position;
+    protected void buildAttackRange() {
+        parameters[7] = 3;
     }
 
     @Override
