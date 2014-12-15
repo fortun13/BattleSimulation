@@ -36,7 +36,7 @@ public class BoardMouseListener extends MouseAdapter {
             public void mousePressed(MouseEvent e) {
                 //show dialog for creating obstacle
                 popup.setVisible(false);
-                String maybeInt = JOptionPane.showInputDialog(board,Messages.getString("BoardMouseListener.dialogText"),
+                /*String maybeInt = JOptionPane.showInputDialog(board,Messages.getString("BoardMouseListener.dialogText"),
                         Messages.getString("BoardMouseListener.dialogTitle"),JOptionPane.PLAIN_MESSAGE);
                 if (maybeInt != null) {
                     try {
@@ -46,10 +46,7 @@ public class BoardMouseListener extends MouseAdapter {
 
                         //create obstacle with this size (for now it will be only circle); add it to a tree; show it on board
 
-                        AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle, new Point2D(popupPosition[0], popupPosition[1]), World.AgentType.OBSTACLE, null);
-                        MainFrame f = ((MainFrame)board.getTopLevelAncestor());
-                        f.server.getWorld().getAgentsTree().insert(new double[] {popupPosition[0],popupPosition[1]},obs);
-                        f.redrawBoard(f.server.getWorld().getAgentsTree());
+
                     } catch (NumberFormatException ex) {
                         showErrorMessage();
                     } catch (KeyDuplicateException e1) {
@@ -57,8 +54,19 @@ public class BoardMouseListener extends MouseAdapter {
                     } catch (KeySizeException e1) {
                         e1.printStackTrace();
                     }
-                }
+                }*/
 
+
+                try {
+                    AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle, new Point2D(popupPosition[0], popupPosition[1]), World.AgentType.OBSTACLE, null);
+                    MainFrame f = ((MainFrame)board.getTopLevelAncestor());
+                    f.server.getWorld().getAgentsTree().insert(new double[] {popupPosition[0],popupPosition[1]},obs);
+                    f.redrawBoard(f.server.getWorld().getAgentsTree());
+                } catch (KeySizeException e1) {
+                    e1.printStackTrace();
+                } catch (KeyDuplicateException e1) {
+                    e1.printStackTrace();
+                }
             }
 
             private void showErrorMessage() {

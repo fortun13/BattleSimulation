@@ -192,6 +192,14 @@ public class World {
         }
         AgentBuilder.Settings s = builder.getSettings();
         s.name = "agent_" + (counter + offset);
+        SideOptionPanel sideOptionPanel = (side == AgentsSides.Blues) ? server.m_frame.getOptionsPanel().bluePanel : server.m_frame.getOptionsPanel().redPanel;
+        s.condition = sideOptionPanel.getCondition(type);
+        s.speed = sideOptionPanel.getSpeed(type);
+        s.strength = sideOptionPanel.getStrength(type);
+        s.accuracy = sideOptionPanel.getAccuracy(type);
+        s.attackRange = sideOptionPanel.getRange(type);
+        if (type == AgentType.COMMANDER)
+            s.attractionForce = sideOptionPanel.getAttractionForce();
 
         AgentInTree ait = new AgentInTree("", side, new Point2D(agent.getInt("x"), agent.getInt("y")), type, builder.getBehaviour());
         s.position = ait;
