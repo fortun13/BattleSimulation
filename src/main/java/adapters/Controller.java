@@ -120,7 +120,8 @@ public class Controller {
                         }
                     }
                     prepareMouseListenersAndBoard(obj.getInt("boardWidth"),obj.getInt("boardHeight"));
-                    frame.server.prepareSimulation(null,null,map, obj.getInt("boardWidth"),frame.getOptionsPanel().getTimeStep());
+                    //frame.server.prepareSimulation(null,null,map, obj.getInt("boardWidth"),frame.getOptionsPanel().getTimeStep());
+                    frame.server.prepareSimulation(null,null,map, frame.getFRAME_WIDTH(),frame.getOptionsPanel().getTimeStep());
                     frame.getOptionsPanel().setBoardSize(obj.getInt("boardWidth"),obj.getInt("boardHeight"));
                 } catch (FileNotFoundException e1) {
                     e1.printStackTrace();

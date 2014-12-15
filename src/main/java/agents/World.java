@@ -33,13 +33,13 @@ public class World {
     public ArrayList<AID> bluesAgents = new ArrayList<>();
     public ArrayList<AID> redsAgents = new ArrayList<>();
     public ServerAgent server;
-    private int boardCenterX;
+    public int boardCenterX;
     public ArrayList<AID> redsCorpses = new ArrayList<>();
     public ArrayList<AID> bluesCorpses = new ArrayList<>();
 
     public World(ServerAgent serverAgent, ArrayList<Pair<AgentType, Integer>> blues, ArrayList<Pair<AgentType, Integer>> reds) {
         this.server = serverAgent;
-        this.boardCenterX = (int) server.getFrame().getOptionsPanel().getBoardWidth().getValue();
+        this.boardCenterX = (int) server.getFrame().getFRAME_WIDTH()/2;
 
         Director generator = new Director();
 
@@ -77,7 +77,7 @@ public class World {
                 return new ArcherBuilder(s, BerserkBehaviour.class);
             case COMMANDER:
                 s.attractionForce = sideOptionPanel.getAttractionForce();
-                return new CommanderBuilder(s, BerserkBehaviour.class);
+                return new CommanderBuilder(s, CommanderBehaviour.class);
             default:
                 return new WarriorBuilder(s, BerserkBehaviour.class);
         }
@@ -118,7 +118,7 @@ public class World {
     public World(ServerAgent server, HashMap<String,ArrayList<JSONObject>> map, int boardWidth) {
         int counter = 0;
         this.server = server;
-        boardCenterX = boardWidth;
+        boardCenterX = boardWidth/2;
         PlatformController container = server.getContainerController();
         Director generator = new Director();
 
@@ -391,7 +391,7 @@ public class World {
     public double computeBoardCenter(Point2D position) {
         double X = position.getX();
         double returnVal;
-        returnVal = (boardCenterX / 2 - X);
+        returnVal = (boardCenterX - X);
         if (returnVal != 0)
             returnVal = returnVal / Math.abs(returnVal);
         return returnVal;

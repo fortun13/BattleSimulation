@@ -59,6 +59,28 @@ public abstract class AgentWithPosition extends Agent {
         return ans;
     }
 
+    public ArrayList<AID> enemyInRange(CannonFodder agent) {
+        ArrayList<AgentInTree> list = new ArrayList<>();
+        try {
+            world.getAgentsTree()
+                    .nearestEuclidean(new double[]{agent.position.p.getX(), agent.position.p.getY()},agent.fieldOfView)
+                    .stream()
+                    .filter(a -> a.side!=agent.position.side)
+                    .forEach(list::add);
+        } catch (KeySizeException e) {
+            e.printStackTrace();
+        }
+        /*Raczej zbędnę bo szukamy wrogów, ale profilaktycznie zostawię*/
+        if(list.contains(agent.position))
+            list.remove(agent.position);
+        ArrayList<AID> ans = new ArrayList<>();
+        for (AgentInTree a :
+                list) {
+            ans.add(new AID(a.getAgentName(),true));
+        }
+        return ans;
+    }
+
     public abstract void reactToAttack(ACLMessage msg);
 
     public boolean isMotivated() {

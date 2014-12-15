@@ -25,6 +25,8 @@ public class MainFrame extends JFrame {
     private final JButton spawnAgents;
     private final JLabel lblConditionState;
     private final JLabel lblspeedState;
+    private final int FRAME_WIDTH = 1200;
+    private final int FRAME_HEIGHT = 700;
 
     private BoardPanel.MyAgent clickedAgent;
 
@@ -47,8 +49,7 @@ public class MainFrame extends JFrame {
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        int FRAME_WIDTH = 1200;
-        int FRAME_HEIGHT = 700;
+
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
 
@@ -175,5 +176,13 @@ public class MainFrame extends JFrame {
         clickedAgent = null;
         lblConditionState.setText("");
         lblspeedState.setText("");
+    }
+
+    public int getFRAME_WIDTH() {
+        return FRAME_WIDTH;
+    }
+
+    public int getFRAME_HEIGHT() {
+        return FRAME_HEIGHT;
     }
 }

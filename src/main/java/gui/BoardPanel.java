@@ -120,6 +120,7 @@ public class BoardPanel extends JPanel {
 
     public class Board extends JPanel {
         @Override
+        //TODO Pojawiają się wyjątki sygnalizujące rysowanie poza planszą (javax.swing.JComponent.paintToOffscreen)
         public void paint(Graphics g) {
 
             super.paint(g);
