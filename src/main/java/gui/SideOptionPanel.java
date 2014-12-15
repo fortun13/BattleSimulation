@@ -16,7 +16,7 @@ public class SideOptionPanel extends JPanel {
     public static final int ROA = 4;
 
     private static final String[] labels = {"condition", "strength", "speed", "accuracy", "range"};
-    private static final int[] vals = {40, 6, 7, 90, 3};
+    private static final int[] vals = {160, 6, 7, 90, 23};
     public final JSpinner[] options = new JSpinner[vals.length];
     private JSpinner warriorsNumber;
     private JSlider warriorsSlider;

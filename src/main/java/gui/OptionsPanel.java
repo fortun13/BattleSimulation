@@ -79,6 +79,10 @@ public class OptionsPanel extends JPanel {
 		timeStepSpinner = new JSpinner(new SpinnerNumberModel(40, 1, 1000, 1));
 		timeStepPanel.add(timeStepSpinner);
 
+		as = new JSpinner();
+		as.setValue(20);
+		timeStepPanel.add(as);
+
 		JLabel lblTurnsLimit = new JLabel(Messages.getString("OptionsPanel.turnsLimit.text"));
 		timeStepPanel.add(lblTurnsLimit);
 		turnsLimitSpinner = new JSpinner(new SpinnerNumberModel(500, 100, 10000, 1));
@@ -86,9 +90,6 @@ public class OptionsPanel extends JPanel {
 		limitButton = new JCheckBox(Messages.getString("OptionsPanel.turnsLimitCB.text"));
 		limitButton.setSelected(false);
 		timeStepPanel.add(limitButton);
-		as = new JSpinner();
-		as.setValue(20);
-		timeStepPanel.add(as);
 
 		generalPanel.add(timeStepPanel);
 
