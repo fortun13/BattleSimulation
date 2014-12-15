@@ -139,8 +139,8 @@ public abstract class CannonFodder extends AgentWithPosition {
         return (p2.getX() - mp.getX()) * (p2.getX() - mp.getX()) + (p2.getY() - mp.getY()) * (p2.getY() - mp.getY());
     }
 
+    @Override
     protected void keepPosition() {
-        //List<KdTree.Placed> friendlyNeighbors;
         List<AgentInTree> friendlyNeighbors;
 
         friendlyNeighbors = world.getNeighborFriends(this);

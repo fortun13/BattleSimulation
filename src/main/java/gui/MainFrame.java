@@ -47,7 +47,7 @@ public class MainFrame extends JFrame {
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        int FRAME_WIDTH = 1000;
+        int FRAME_WIDTH = 1200;
         int FRAME_HEIGHT = 700;
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
@@ -128,12 +128,11 @@ public class MainFrame extends JFrame {
     }
 
     public void redrawBoard(KDTree<AgentInTree> agents) {
-        double[] testKey = {0,0};
         Pair<Integer,Integer> bsize = optionsPanel.getBoardSize();
         double[] upperKey = {bsize.getValue()*boardPanel.SQUARESIZE,bsize.getKey()*boardPanel.SQUARESIZE};
         List<AgentInTree> lst = null;
         try {
-            lst = agents.range(testKey,upperKey);
+            lst = agents.range(new double[] {0,0},upperKey);
         } catch (KeySizeException e) {
             e.printStackTrace();
         }

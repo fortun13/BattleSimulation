@@ -21,6 +21,8 @@ public class OptionsPanel extends JPanel {
 	public JSpinner comw;
 	public JSpinner aw;
 	public JSpinner mind;
+	private JSpinner turnsLimitSpinner;
+	private JCheckBox limitButton;
 	private JSpinner boardWidth;
 	private JSpinner boardHeight;
 
@@ -72,11 +74,20 @@ public class OptionsPanel extends JPanel {
 
 		JPanel timeStepPanel = new JPanel();
 		timeStepPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("OptionsPanel.timeStepBorderTitle")));
-		timeStepSpinner = new JSpinner();
-		timeStepSpinner.setValue(40);
+		JLabel lblTimeStep = new JLabel(Messages.getString("OptionsPanel.timeStepLabelHeight.text"));
+		timeStepPanel.add(lblTimeStep);
+		timeStepSpinner = new JSpinner(new SpinnerNumberModel(40, 1, 1000, 1));
 		timeStepPanel.add(timeStepSpinner);
+
+		JLabel lblTurnsLimit = new JLabel(Messages.getString("OptionsPanel.turnsLimit.text"));
+		timeStepPanel.add(lblTurnsLimit);
+		turnsLimitSpinner = new JSpinner(new SpinnerNumberModel(500, 100, 10000, 1));
+		timeStepPanel.add(turnsLimitSpinner);
+		limitButton = new JCheckBox(Messages.getString("OptionsPanel.turnsLimitCB.text"));
+		limitButton.setSelected(false);
+		timeStepPanel.add(limitButton);
 		as = new JSpinner();
-		as.setValue(10);
+		as.setValue(20);
 		timeStepPanel.add(as);
 
 		generalPanel.add(timeStepPanel);
@@ -150,4 +161,7 @@ public class OptionsPanel extends JPanel {
 		this.boardHeight.setValue(boardHeight);
 		this.boardWidth.setValue(boardWidth);
 	}
+
+	public JCheckBox getLimitButton() {	return limitButton;	}
+	public JSpinner getTurnsLimitSpinner() { return turnsLimitSpinner; }
 }

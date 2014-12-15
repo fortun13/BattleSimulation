@@ -15,9 +15,11 @@ public class BerserkBehaviour extends ReactiveBehaviour {
     public void handleMessage(ACLMessage msg) {
         switch (msg.getConversationId()) {
             case "commander-init":
+                //System.out.println("Zostałem minionem " + myAgent.getLocalName());
                 //TODO probably will have to check if this turn message was send to server (boolean?)
                 myAgent.removeBehaviour(new BerserkBehaviour());
                 myAgent.addBehaviour(new CommanderMinionBehaviour());
+                commander = msg.getSender();
                 state = 2;
                 break;
         }

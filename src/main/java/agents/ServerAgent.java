@@ -3,6 +3,7 @@ package main.java.agents;
 import edu.wlu.cs.levy.CG.KeyDuplicateException;
 import edu.wlu.cs.levy.CG.KeyMissingException;
 import edu.wlu.cs.levy.CG.KeySizeException;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
@@ -50,14 +51,41 @@ public class ServerAgent extends Agent {
 
             switch (state) {
                 case 0:
-                    if (world.redsAgents.size() == 0 || world.bluesAgents.size() == 0) {
+                    if ((world.redsAgents.size() == 0 || world.bluesAgents.size() == 0)
+                            || (m_frame.getOptionsPanel().getLimitButton().isSelected()
+                            && (int)m_frame.getOptionsPanel().getTurnsLimitSpinner().getValue() <= stepsCounter)) {
                         state = 2;
                         System.out.println("Turn: " + stepsCounter);
-                        ACLMessage endBattle = new ACLMessage(ACLMessage.INFORM);
-                        world.redsAgents.forEach(endBattle::addReceiver);
-                        world.bluesAgents.forEach(endBattle::addReceiver);
-                        endBattle.setConversationId("battle-ended");
-                        send(endBattle);
+                        //obliczanie stosunku strat do l. początkowej
+                        double victoryCon = computeVictoryCondition();
+                        if(victoryCon > 0) {
+                            ACLMessage endBattleVictory = new ACLMessage(ACLMessage.INFORM);
+                            world.bluesAgents.forEach(endBattleVictory::addReceiver);
+                            endBattleVictory.setConversationId("battle-ended-victory");
+                            send(endBattleVictory);
+                            ACLMessage endBattleLoss = new ACLMessage(ACLMessage.INFORM);
+                            world.redsAgents.forEach(endBattleLoss::addReceiver);
+                            endBattleLoss.setConversationId("battle-ended-loss");
+                            send(endBattleLoss);
+                        } else if(victoryCon < 0) {
+                            ACLMessage endBattleVictory = new ACLMessage(ACLMessage.INFORM);
+                            world.redsAgents.forEach(endBattleVictory::addReceiver);
+                            endBattleVictory.setConversationId("battle-ended-victory");
+                            send(endBattleVictory);
+                            ACLMessage endBattleLoss = new ACLMessage(ACLMessage.INFORM);
+                            world.bluesAgents.forEach(endBattleLoss::addReceiver);
+                            endBattleLoss.setConversationId("battle-ended-loss");
+                            send(endBattleLoss);
+                            /*wiadomość trzeba by też posłać trupom - jak padną wszyscy to nikt jej nie odbierze...
+                            * Zresztą - czy wiadomośc o wyniku ma jakieś znaczenie poza upiększająco-wizualnym?*/
+                        } else {
+                            ACLMessage endBattle = new ACLMessage(ACLMessage.INFORM);
+                            world.redsAgents.forEach(endBattle::addReceiver);
+                            world.bluesAgents.forEach(endBattle::addReceiver);
+                            endBattle.setConversationId("battle-ended-draw");
+                            send(endBattle);
+                        }
+
                         m_frame.redrawBoard(world.getAgentsTree());
                         break;
                     }
@@ -188,6 +216,14 @@ public class ServerAgent extends Agent {
                 e.printStackTrace();
             }
         }
+    }
+
+    protected double computeVictoryCondition() {
+        double deathReds = world.redsCorpses.size();
+        double allReds = world.redsAgents.size();
+        double deathBlues = world.bluesCorpses.size();
+        double allBlues = world.bluesAgents.size();
+        return (deathReds/(allReds + deathReds)) - (deathBlues/(allBlues + deathBlues));
     }
 
     protected void updateState() {

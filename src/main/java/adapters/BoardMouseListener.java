@@ -46,10 +46,9 @@ public class BoardMouseListener extends MouseAdapter {
 
                         //create obstacle with this size (for now it will be only circle); add it to a tree; show it on board
 
-                        AgentInTree obs = new AgentInTree("", World.AgentsSides.Obstacle, new Point2D(popupPosition[0], popupPosition[1]), World.AgentType.OBSTACLE, null);
-                        double[] key = {popupPosition[0],popupPosition[1]};
+                        AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle, new Point2D(popupPosition[0], popupPosition[1]), World.AgentType.OBSTACLE, null);
                         MainFrame f = ((MainFrame)board.getTopLevelAncestor());
-                        f.server.getWorld().getAgentsTree().insert(key,obs);
+                        f.server.getWorld().getAgentsTree().insert(new double[] {popupPosition[0],popupPosition[1]},obs);
                         f.redrawBoard(f.server.getWorld().getAgentsTree());
                     } catch (NumberFormatException ex) {
                         showErrorMessage();
@@ -61,19 +60,19 @@ public class BoardMouseListener extends MouseAdapter {
                 }
 
             }
+
+            private void showErrorMessage() {
+                JOptionPane.showMessageDialog(board,Messages.getString("BoardMouseListener.badSizeMessage"),
+                        Messages.getString("BoardMousePanel.badSizeTitle"),JOptionPane.INFORMATION_MESSAGE);
+            }
+
         };
         JMenuItem m = new JMenuItem(Messages.getString("BoardMouseListener.popupObstacleCreate"));
         m.addMouseListener(al);
         popup.add(m);
     }
 
-    private void showErrorMessage() {
-        JOptionPane.showMessageDialog(board,Messages.getString("BoardMouseListener.badSizeMessage"),
-                Messages.getString("BoardMousePanel.badSizeTitle"),JOptionPane.INFORMATION_MESSAGE);
-    }
-
     public void mousePressed(MouseEvent e) {
-
         maybeShowPopup(e);
         board.x1 = e.getX();
         board.y1 = e.getY();
@@ -82,8 +81,8 @@ public class BoardMouseListener extends MouseAdapter {
     public void mouseReleased(MouseEvent e) {
         if (simulationStarted)
             return;
-        maybeShowPopup(e);
-        ifCollisionMove(board.selectedAgent);
+        if (!maybeShowPopup(e))
+            ifCollisionMove(board.selectedAgent);
     }
 
     private void ifCollisionMove(BoardPanel.MyAgent position) {
@@ -137,17 +136,20 @@ public class BoardMouseListener extends MouseAdapter {
         }
     }
 
-    private void maybeShowPopup(MouseEvent e) {
-        if (e.isPopupTrigger()) {
-            popupPosition[0] = e.getX();
-            popupPosition[1] = e.getY();
-            popup.show(board, e.getX(), e.getY());
+    private boolean maybeShowPopup(MouseEvent e) {
+        if (e.isPopupTrigger() && !cursorOnAgent(new Point2D(0, 0), new Point2D(e.getX(), e.getY()))) {
+                popupPosition[0] = e.getX();
+                popupPosition[1] = e.getY();
+                popup.show(board, e.getX(), e.getY());
+                return true;
         }
+        return false;
     }
 
     public void mouseClicked(MouseEvent e) {
-        Point2D p = new Point2D(e.getX(),e.getY());
-        Point2D tmp = new Point2D(0,0);
+        if (!e.isPopupTrigger()) {
+            Point2D p = new Point2D(e.getX(), e.getY());
+            Point2D tmp = new Point2D(0, 0);
             if (cursorOnAgent(tmp, p)) {
                 BoardPanel.MyAgent agent = (BoardPanel.MyAgent) board.getMyAgents()
                         .stream()
@@ -163,8 +165,10 @@ public class BoardMouseListener extends MouseAdapter {
                 board.clickedAgent = agent;
             } else {
                 ((MainFrame) board.getTopLevelAncestor()).cleanStatistics();
-                clearSelection();
+                if (board.clickedAgent != null)
+                    clearSelection();
             }
+        }
     }
 
     private void clearSelection() {

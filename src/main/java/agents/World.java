@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Marek on 2014-11-15.
@@ -33,7 +34,8 @@ public class World {
     public ArrayList<AID> redsAgents = new ArrayList<>();
     public ServerAgent server;
     private int boardCenterX;
-    public ArrayList<AID> corpses = new ArrayList<>();
+    public ArrayList<AID> redsCorpses = new ArrayList<>();
+    public ArrayList<AID> bluesCorpses = new ArrayList<>();
 
     public World(ServerAgent serverAgent, ArrayList<Pair<AgentType, Integer>> blues, ArrayList<Pair<AgentType, Integer>> reds) {
         this.server = serverAgent;
@@ -101,9 +103,8 @@ public class World {
                 default:
                     redsAgents.add(new AID(agent.getName(), true));
             }
-            double[] key = {ait.p.getX(), ait.p.getY()};
             try {
-                agentsTree.insert(key, ait);
+                agentsTree.insert(new double[] {ait.p.getX(), ait.p.getY()}, ait);
             } catch (KeySizeException | KeyDuplicateException e) {
                 e.printStackTrace();
             }
@@ -164,18 +165,18 @@ public class World {
     }
 
     private void addObstacleToWorld(JSONObject obstacle) {
-        AgentInTree obs = new AgentInTree("", World.AgentsSides.Obstacle, new Point2D(obstacle.getInt("x"), obstacle.getInt("y")), World.AgentType.OBSTACLE, null);
-        double[] key = {obstacle.getInt("x"),obstacle.getInt("y")};
+        AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle, new Point2D(obstacle.getInt("x"), obstacle.getInt("y")), World.AgentType.OBSTACLE, null);
         try {
-            agentsTree.insert(key,obs);
-        } catch (KeySizeException | KeyDuplicateException e) {
+            agentsTree.insert(new double[] {obstacle.getInt("x"),obstacle.getInt("y")},obs);
+        } catch (KeySizeException e) {
+            e.printStackTrace();
+        } catch (KeyDuplicateException e) {
             e.printStackTrace();
         }
     }
 
     private void addAgentToWorld(JSONObject agent, AgentBuilder builder, AgentType type, Director generator, int counter) {
         setBehaviourByFile(builder, agent.get("behaviour").toString());
-
         AgentsSides side;
         switch (agent.get("side").toString().toLowerCase()) {
             case "blues":
@@ -213,9 +214,8 @@ public class World {
                 default:
                     break;
             }
-            double[] key = {ait.p.getX(), ait.p.getY()};
             try {
-                agentsTree.insert(key, ait);
+                agentsTree.insert(new double[] {ait.p.getX(), ait.p.getY()}, ait);
             } catch (KeySizeException | KeyDuplicateException e) {
                 e.printStackTrace();
             }
@@ -245,7 +245,8 @@ public class World {
             m.setConversationId(ReactiveBehaviour.DELETE);
             bluesAgents.forEach(m::addReceiver);
             redsAgents.forEach(m::addReceiver);
-            corpses.forEach(m::addReceiver);
+            redsCorpses.forEach(m::addReceiver);
+            bluesCorpses.forEach(m::addReceiver);
             server.send(m);
             //bluesAgents.clear();
             //redsAgents.clear();
@@ -255,9 +256,8 @@ public class World {
 
     public void removeAgent(AgentWithPosition agent) {
         if (!agent.position.isDead) {
-            double[] agentKey = {agent.position.p.getX(), agent.position.p.getY()};
             try {
-                agentsTree.delete(agentKey);
+                agentsTree.delete(new double[] {agent.position.p.getX(), agent.position.p.getY()});
             } catch (KeySizeException | KeyMissingException e) {
                 e.printStackTrace();
             }
@@ -302,7 +302,7 @@ public class World {
         }
         position.setPosition(destination);
         try {
-            agentsTree.delete(oldPos);
+            agentsTree.delete(oldPos,true);
             agentsTree.insert(newPos, position);
         } catch (KeySizeException | KeyDuplicateException | KeyMissingException e) {
             e.printStackTrace();
@@ -312,39 +312,51 @@ public class World {
 
     }
 
-    public synchronized int[] countFriendFoe(AgentWithPosition agent) {
+    public int[] countFriendFoe(AgentWithPosition agent) {
 
-        double[] key = {agent.position.p.getX(), agent.position.p.getY()};
         int vec[] = new int[2];
 
         try {
-            vec[0] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.position.side == a.side).count();
+            List<AgentInTree> lst = agentsTree
+                    .nearestEuclidean(new double[]{agent.position.p.getX(), agent.position.p.getY()}, agent.fieldOfView)
+                    .parallelStream()
+                    .filter(e -> e.side != AgentsSides.Obstacle).collect(Collectors.toList());
+            vec[0] = (int) lst
+                    .parallelStream()
+                    .filter(l -> l.side == agent.position.side)
+                    .count();
+            vec[1] = lst.size() - vec[0];
+            //vec[0] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.position.side == a.side).count();
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
 
-        try {
+        /*try {
             vec[1] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.position.side != a.side && a.side != AgentsSides.Obstacle).count();
         } catch (KeySizeException e) {
             e.printStackTrace();
-        }
+        }*/
 
         return vec;
     }
 
     public List<AgentInTree> getNeighborFriends(AgentWithPosition agent) {
-        List<AgentInTree> friendlyNeighbors = new ArrayList<>();
-        double[] key = {agent.position.p.getX(), agent.position.p.getY()};
+        //List<AgentInTree> friendlyNeighbors = new ArrayList<>();
         try {
-            agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> a.side == agent.position.side).forEach(friendlyNeighbors::add);
+            return agentsTree
+                    .nearestEuclidean(new double[] {agent.position.p.getX(), agent.position.p.getY()}, agent.fieldOfView)
+                    .parallelStream()
+                    .filter(a -> a.side == agent.position.side).collect(Collectors.toList());
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
-        return friendlyNeighbors;
-
+        return new ArrayList<AgentInTree>();
     }
 
     public void killAgent(AgentWithPosition agent) {
+        if (agent.position.isDead)
+            return;
+    	
         agent.position.isDead = true;
 
         //agents.rmPoint(agent.getPosition());
@@ -357,12 +369,14 @@ public class World {
         } catch (KeySizeException | KeyMissingException e) {
             e.printStackTrace();
         }
-        if (bluesAgents.contains(agent.getAID()))
+        if (bluesAgents.contains(agent.getAID())) {
             bluesAgents.remove(agent.getAID());
-        else if (redsAgents.contains(agent.getAID()))
+            bluesCorpses.add(agent.getAID());
+        }
+        else if (redsAgents.contains(agent.getAID())) {
             redsAgents.remove(agent.getAID());
-
-        corpses.add(agent.getAID());
+            redsCorpses.add(agent.getAID());
+        }
     }
 
     public double computeBoardCenter(Point2D position) {

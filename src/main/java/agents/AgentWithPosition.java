@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public abstract class AgentWithPosition extends Agent {
     protected int fieldOfView = 150;
 
-    protected double morale = 50;
+    public double morale = 50;
 
     protected double previousRatio=1;
 
@@ -39,10 +39,13 @@ public abstract class AgentWithPosition extends Agent {
     }
 
     public ArrayList<AID> getMinionsWithinRange(Commander agent) {
-        double[] key = {agent.position.p.getX(),agent.position.p.getY()};
         ArrayList<AgentInTree> list = new ArrayList<>();
         try {
-            world.getAgentsTree().nearestEuclidean(key,agent.attractionForce).stream().filter(a -> a.side==agent.position.side).forEach(list::add);
+            world.getAgentsTree()
+                    .nearestEuclidean(new double[]{agent.position.p.getX(), agent.position.p.getY()},agent.attractionForce)
+                    .stream()
+                    .filter(a -> a.side==agent.position.side)
+                    .forEach(list::add);
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
@@ -63,8 +66,11 @@ public abstract class AgentWithPosition extends Agent {
         count = world.countFriendFoe(this);
         //System.out.println("Friends: " + count[0] + " Enemies: " + count[1]);
         if (count[1] == 0) {
-            morale += 2;
-            return true;
+            morale += 4;
+            return morale > 0;
+        } else if (count[0] == 0) {
+            morale -= 4;
+            return morale > 0;
         }
         double ratio = ((double)count[0])/((double)count[1]);
         //System.out.println("Ratio: " + ratio);
@@ -78,7 +84,6 @@ public abstract class AgentWithPosition extends Agent {
     }
 
     protected abstract void killYourself(ACLMessage msgToSend);
-
 
     public double[] getSpeedHV() {
         double angle = position.speed[0], r = position.speed[1];
