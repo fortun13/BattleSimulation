@@ -77,6 +77,7 @@ public abstract class AgentBuilder {
         public Integer speed;
         public Integer accuracy;
         public Integer attackRange;
+        public Integer attractionForce;
     }
 }
 

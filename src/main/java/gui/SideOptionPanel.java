@@ -1,10 +1,13 @@
 package main.java.gui;
 
+import main.java.agents.World;
+import main.java.agents.World.AgentType;
+
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.*;
+import java.util.HashMap;
 
 /**
  * Created by Jakub Fortunka on 12.11.14.
@@ -12,145 +15,187 @@ import java.awt.GridLayout;
  */
 
 public class SideOptionPanel extends JPanel {
-    private static final int HP = 0;
-    private static final int STR = 1;
-    private static final int SPD = 2;
-    private static final int ACC = 3;
-    public static final int ROA = 4;
+	private static final int HP = 0;
+	private static final int STR = 1;
+	private static final int SPD = 2;
+	private static final int ACC = 3;
+	public static final int ROA = 4;
+    private static final int ATRACTIONFORCE = 5;
 
-    private static final String[] labels = {Messages.getString("SideOptionPanel.parametersConditionLabel"),
-    	Messages.getString("SideOptionPanel.parametersStrengthLabel"),
-    	Messages.getString("SideOptionPanel.parametersSpeedLabel"),
-    	Messages.getString("SideOptionPanel.parametersAccuracyLabel"),
-    	Messages.getString("SideOptionPanel.parametersRangeLabel")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-    private static final int[] vals = {160, 6, 7, 90, 23};
-    public final JSpinner[] options = new JSpinner[vals.length];
-    private JSpinner warriorsNumber;
-    private JSlider warriorsSlider;
+	private static final String[] labels = {Messages.getString("SideOptionPanel.parametersConditionLabel"),
+		Messages.getString("SideOptionPanel.parametersStrengthLabel"),
+		Messages.getString("SideOptionPanel.parametersSpeedLabel"),
+		Messages.getString("SideOptionPanel.parametersAccuracyLabel"),
+		Messages.getString("SideOptionPanel.parametersRangeLabel")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
-    private JSpinner archersNumber;
-    private JSlider archersSlider;
+	HashMap<World.AgentType,JSpinner[]> optionsPerType = new HashMap<>();
 
-    private JSpinner commandersNumber;
-    private JSlider commandersSlider;
+	private JSpinner warriorsNumber;
+	private JSlider warriorsSlider;
 
-    public SideOptionPanel(String identifier) {
-        setBorder(BorderFactory.createTitledBorder(identifier));
-        setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
+	private JSpinner archersNumber;
+	private JSlider archersSlider;
 
-        JPanel warriorsSliderPanel = new JPanel();
+	private JSpinner commandersNumber;
+	private JSlider commandersSlider;
+	private JPanel warriorsNumberPanel;
+	private JPanel archersNumberPanel;
+	private JPanel commandersNumberPanel;
 
-        warriorsSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.warriorsBorderTitle"))); //$NON-NLS-1$
-        add(warriorsSliderPanel);
-        //warriorsSliderPanel.setLayout(new BoxLayout(warriorsSliderPanel, BoxLayout.Y_AXIS));
 
-        warriorsNumber = new JSpinner(new SpinnerNumberModel(10, 0, 500, 1));
+	public SideOptionPanel(String identifier) {
+		setBorder(BorderFactory.createTitledBorder(identifier));
+		setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 
-        warriorsSliderPanel.add(warriorsNumber);
+		JPanel warriorsSliderPanel = new JPanel();
 
-        warriorsSlider = new JSlider();
-        warriorsSlider.setValue(10);
+		warriorsSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.warriorsBorderTitle"))); //$NON-NLS-1$
+		add(warriorsSliderPanel);
+		warriorsSliderPanel.setLayout(new BoxLayout(warriorsSliderPanel, BoxLayout.Y_AXIS));
 
-        warriorsNumber.setValue(10);
-        warriorsSliderPanel.add(warriorsSlider);
+		warriorsNumberPanel = new JPanel();
+		warriorsSliderPanel.add(warriorsNumberPanel);
+		//warriorsSliderPanel.setLayout(new BoxLayout(warriorsSliderPanel, BoxLayout.Y_AXIS));
 
-        JPanel archersSliderPanel = new JPanel();
-        archersSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.archersBorderTitle"))); //$NON-NLS-1$
-        add(archersSliderPanel);
+		warriorsNumber = new JSpinner(new SpinnerNumberModel(10, 0, 500, 1));
+		warriorsNumberPanel.add(warriorsNumber);
 
-        archersNumber = new JSpinner(new SpinnerNumberModel(10, 0, 500, 1));
+		warriorsNumber.setValue(10);
 
-        archersSliderPanel.add(archersNumber);
+		warriorsSlider = new JSlider();
+		warriorsNumberPanel.add(warriorsSlider);
+		warriorsSlider.setValue(10);
 
-        archersSlider = new JSlider();
-        archersSlider.setValue(10);
+		createParametersPanel(warriorsSliderPanel, World.AgentType.WARRIOR, new int[] {160, 6, 7, 90, 23});
 
-        archersNumber.setValue(10);
-        archersSliderPanel.add(archersSlider);
+		JPanel archersSliderPanel = new JPanel();
+		archersSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.archersBorderTitle"))); //$NON-NLS-1$
+		add(archersSliderPanel);
 
-        JPanel commandersSliderPanel = new JPanel();
-        commandersSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.commandersBorderTitle"))); //$NON-NLS-1$
-        add(commandersSliderPanel);
 
-        commandersNumber = new JSpinner(new SpinnerNumberModel(1, 0, 500, 1));
+		archersSliderPanel.setLayout(new BoxLayout(archersSliderPanel, BoxLayout.Y_AXIS));
 
-        commandersSliderPanel.add(commandersNumber);
+		archersNumberPanel = new JPanel();
+		archersSliderPanel.add(archersNumberPanel);
 
-        commandersSlider = new JSlider();
-        commandersSlider.setValue(1);
+		archersNumber = new JSpinner(new SpinnerNumberModel(10, 0, 500, 1));
+		archersNumberPanel.add(archersNumber);
 
-        commandersNumber.setValue(1);
-        commandersSliderPanel.add(commandersSlider);
-        
-        JPanel parameters = new JPanel();
-        parameters.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.parametersBordername"))); //$NON-NLS-1$
-        add(parameters);
-        parameters.setLayout(new GridLayout(0, 1, 0, 0));
-        
-        JPanel row;
-        //JPanel row = new JPanel();
-        //row.setLayout(new FlowLayout());
-        //row.add(warriorsSlider);
-        //row.add(warriorsNumber);
-        //warriorsSliderPanel.add(row);
+		archersNumber.setValue(10);
 
-        for (int i = 0; i < labels.length; i+=2) {
-            row = new JPanel();
-            row.setLayout(new FlowLayout());
-            for (int col = 0; col < 2; col++) {
-                int j = i + col;
-                if (j >= labels.length) break;
+		archersSlider = new JSlider();
+		archersNumberPanel.add(archersSlider);
+		archersSlider.setValue(10);
 
-                JLabel l = new JLabel(labels[j], JLabel.TRAILING);
-                options[j] = new JSpinner();
-                options[j].setValue(vals[j]);
+		createParametersPanel(archersSliderPanel, World.AgentType.ARCHER, new int[]{10, 3, 4, 95, 140});
 
-                row.add(l);
-                row.add(options[j]);
-            }
-            parameters.add(row);
+		JPanel commandersSliderPanel = new JPanel();
+		commandersSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.commandersBorderTitle"))); //$NON-NLS-1$
+		add(commandersSliderPanel);
+		commandersSliderPanel.setLayout(new BoxLayout(commandersSliderPanel, BoxLayout.Y_AXIS));
+
+		commandersNumberPanel = new JPanel();
+		commandersSliderPanel.add(commandersNumberPanel);
+
+		commandersNumber = new JSpinner(new SpinnerNumberModel(1, 0, 500, 1));
+		commandersNumberPanel.add(commandersNumber);
+
+		commandersNumber.setValue(1);
+
+		commandersSlider = new JSlider();
+		commandersNumberPanel.add(commandersSlider);
+		commandersSlider.setValue(1);
+
+		createParametersPanel(commandersSliderPanel, AgentType.COMMANDER, new int[] {60,10,7,95,3});
+
+	}
+
+	private void createParametersPanel(JPanel panelToAdd, World.AgentType type, int[] defaultValues) {
+        JSpinner[] options;
+        switch (type) {
+            case COMMANDER:
+                options = new JSpinner[defaultValues.length+1];
+                break;
+            default:
+                options = new JSpinner[defaultValues.length];
         }
-    }
-    
-    public void sliderMoved() {
-    	warriorsNumber.setValue(warriorsSlider.getValue());
-        archersNumber.setValue(archersSlider.getValue());
-        commandersNumber.setValue(commandersSlider.getValue());
-    }
+		JPanel parameters = new JPanel();
+		parameters.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.parametersBordername"))); //$NON-NLS-1$
+		panelToAdd.add(parameters);
+		parameters.setLayout(new GridLayout(0, 1, 0, 0));
 
-    public void setSliderChangeListener(ChangeListener listener) {
-        warriorsSlider.addChangeListener(listener);
-        archersSlider.addChangeListener(listener);
-        commandersSlider.addChangeListener(listener);
-    }
+		JPanel row = new JPanel();
 
-    public int getWarriorsNumber() {
-        return (int) warriorsNumber.getValue();
-    }
+		for (int i = 0; i < labels.length; i+=2) {
+			row = new JPanel();
+			row.setLayout(new FlowLayout());
+			for (int col = 0; col < 2; col++) {
+				int j = i + col;
+				if (j >= labels.length) break;
 
-    public int getArchersNumber() {
-        return (int) archersNumber.getValue();
-    }
+				JLabel l = new JLabel(labels[j], JLabel.TRAILING);
+				options[j] = new JSpinner();
+				options[j].setValue(defaultValues[j]);
 
-    public int getCommandersNumber() { return (int) commandersNumber.getValue(); }
+				row.add(l);
+				row.add(options[j]);
+			}
+			parameters.add(row);
+		}
 
-    public Integer getRange() {
-        return (Integer) options[ROA].getValue();
-    }
+        if (type == AgentType.COMMANDER) {
+            JLabel l = new JLabel(Messages.getString("sideOptionPanel.commanderAttractionForceLabel"), JLabel.TRAILING);
+            options[labels.length] = new JSpinner();
+            options[labels.length].setValue(100);
+            row.add(l);
+            row.add(options[labels.length]);
+        }
+		optionsPerType.put(type,options);
+	}
 
-    public Integer getCondition() {
-        return (Integer) options[HP].getValue();
-    }
+	public void sliderMoved() {
+		warriorsNumber.setValue(warriorsSlider.getValue());
+		archersNumber.setValue(archersSlider.getValue());
+		commandersNumber.setValue(commandersSlider.getValue());
+	}
 
-    public Integer getAccuracy() {
-        return (Integer) options[ACC].getValue();
-    }
+	public void setSliderChangeListener(ChangeListener listener) {
+		warriorsSlider.addChangeListener(listener);
+		archersSlider.addChangeListener(listener);
+		commandersSlider.addChangeListener(listener);
+	}
 
-    public Integer getStrength() {
-        return (Integer) options[STR].getValue();
-    }
+	public int getWarriorsNumber() {
+		return (int) warriorsNumber.getValue();
+	}
 
-    public Integer getSpeed() {
-        return (Integer) options[SPD].getValue();
+	public int getArchersNumber() {
+		return (int) archersNumber.getValue();
+	}
+
+	public int getCommandersNumber() { return (int) commandersNumber.getValue(); }
+
+	public Integer getRange(World.AgentType type) {
+		return (Integer) optionsPerType.get(type)[ROA].getValue();
+	}
+
+	public Integer getCondition(World.AgentType type) {
+		return (Integer) optionsPerType.get(type)[HP].getValue();
+	}
+
+	public Integer getAccuracy(World.AgentType type) {
+		return (Integer) optionsPerType.get(type)[ACC].getValue();
+	}
+
+	public Integer getStrength(World.AgentType type) {
+		return (Integer) optionsPerType.get(type)[STR].getValue();
+	}
+
+	public Integer getSpeed(World.AgentType type) {
+		return (Integer) optionsPerType.get(type)[SPD].getValue();
+	}
+
+    public Integer getAttractionForce() {
+        return (Integer) optionsPerType.get(AgentType.COMMANDER)[ATRACTIONFORCE].getValue();
     }
 }

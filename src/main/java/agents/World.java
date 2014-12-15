@@ -43,7 +43,7 @@ public class World {
 
         Director generator = new Director();
 
-        iterateOverAgentsList("agentBlue_", blues, generator,2, AgentsSides.Blues);
+        iterateOverAgentsList("agentBlue_", blues, generator,8, AgentsSides.Blues);
         iterateOverAgentsList("agentRed_",reds,generator,40, AgentsSides.Reds);
     }
 
@@ -67,17 +67,18 @@ public class World {
         AgentBuilder.Settings s = new AgentBuilder.Settings();
         s.server = server.getAID();
         s.world = this;
+        s.condition = sideOptionPanel.getCondition(type);
+        s.speed = sideOptionPanel.getSpeed(type);
+        s.strength = sideOptionPanel.getStrength(type);
+        s.accuracy = sideOptionPanel.getAccuracy(type);
+        s.attackRange = sideOptionPanel.getRange(type);
         switch (type) {
             case ARCHER:
                 return new ArcherBuilder(s, BerserkBehaviour.class);
             case COMMANDER:
+                s.attractionForce = sideOptionPanel.getAttractionForce();
                 return new CommanderBuilder(s, BerserkBehaviour.class);
             default:
-                s.condition = sideOptionPanel.getCondition();
-                s.speed = sideOptionPanel.getSpeed();
-                s.strength = sideOptionPanel.getStrength();
-                s.accuracy = sideOptionPanel.getAccuracy();
-                s.attackRange = sideOptionPanel.getRange();
                 return new WarriorBuilder(s, BerserkBehaviour.class);
         }
     }

@@ -22,22 +22,22 @@ public class ArcherBuilder extends AgentBuilder {
 
     @Override
     public void buildCondition() {
-        parameters[1] = 10;
+        parameters[1] = settings.condition;
     }
 
     @Override
     public void buildStrength() {
-        parameters[2] = 4;
+        parameters[2] = settings.strength;
     }
 
     @Override
     public void buildSpeed() {
-        parameters[3] = 5;
+        parameters[3] = settings.speed;
     }
 
     @Override
     public void buildAccuracy() {
-        parameters[4] = 95;
+        parameters[4] = settings.accuracy;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class ArcherBuilder extends AgentBuilder {
     }
 
     public void buildAttackRange() {
-        parameters[7] = 145;
+        parameters[7] = settings.attackRange;
     }
 
     @Override

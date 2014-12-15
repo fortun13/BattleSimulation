@@ -22,22 +22,22 @@ public class CommanderBuilder extends AgentBuilder {
 
     @Override
     public void buildCondition() {
-        parameters[1] = 60;
+        parameters[1] = settings.condition;
     }
 
     @Override
     public void buildStrength() {
-        parameters[2] = 10;
+        parameters[2] = settings.strength;
     }
 
     @Override
     public void buildSpeed() {
-        parameters[3] = 7;
+        parameters[3] = settings.speed;
     }
 
     @Override
     public void buildAccuracy() {
-        parameters[4] = 95;
+        parameters[4] = settings.accuracy;
     }
 
     @Override
@@ -60,12 +60,12 @@ public class CommanderBuilder extends AgentBuilder {
     }
 
     public void buildAttractionForce() {
-        parameters[8] = 100;
+        parameters[8] = settings.attractionForce;
     }
 
     @Override
     protected void buildAttackRange() {
-        parameters[7] = 3;
+        parameters[7] = settings.attackRange;
     }
 
     @Override
