@@ -33,10 +33,10 @@ public class OptionsPanel extends JPanel {
     public SideOptionPanel redPanel;
 
     public OptionsPanel() {
-		setLayout(new GridLayout(1, 0, 0, 0));
 
         bluePanel = new SideOptionPanel(Messages.getString("OptionsPanel.bluePanelBorderTitle"));
         redPanel = new SideOptionPanel(Messages.getString("OptionsPanel.redPanelBorderTitle"));
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
         add(bluePanel);
         add(redPanel);
@@ -44,13 +44,13 @@ public class OptionsPanel extends JPanel {
 		JPanel generalPanel = new JPanel();
 		generalPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("OptionsPanel.generalBorderTitle")));
 		add(generalPanel);
-		generalPanel.setLayout(new GridLayout(0, 1, 5, 5));
+		generalPanel.setLayout(new BoxLayout(generalPanel, BoxLayout.Y_AXIS));
 		//generalPanel.setLayout(new BoxLayout(generalPanel,BoxLayout.Y_AXIS));
 		
 		JPanel generalBoardSize = new JPanel();
 		generalBoardSize.setBorder(BorderFactory.createTitledBorder(Messages.getString("OptionsPanel.boardSizeBorderTitle")));
 		generalPanel.add(generalBoardSize);
-		generalBoardSize.setLayout(new GridLayout(1, 2, 0, 0));
+		generalBoardSize.setLayout(new BoxLayout(generalBoardSize, BoxLayout.Y_AXIS));
 		
 		JPanel boardWidthPanel = new JPanel();
 		generalBoardSize.add(boardWidthPanel);
@@ -72,26 +72,37 @@ public class OptionsPanel extends JPanel {
 		boardHeight.setValue(50);
 		boardHeightPanel.add(boardHeight);
 
-		JPanel timeStepPanel = new JPanel();
-		timeStepPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("OptionsPanel.timeStepBorderTitle")));
+		JPanel timeOptionsPanel = new JPanel();
+		timeOptionsPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("OptionsPanel.timeOptionsBorderTitle")));
+		timeOptionsPanel.setLayout(new BoxLayout(timeOptionsPanel, BoxLayout.Y_AXIS));
+		
+		JPanel timeStepP = new JPanel();
 		JLabel lblTimeStep = new JLabel(Messages.getString("OptionsPanel.timeStepLabelHeight.text"));
-		timeStepPanel.add(lblTimeStep);
+		timeStepP.add(lblTimeStep);
 		timeStepSpinner = new JSpinner(new SpinnerNumberModel(40, 1, 1000, 1));
-		timeStepPanel.add(timeStepSpinner);
-
+		timeStepP.add(timeStepSpinner);
+		timeOptionsPanel.add(timeStepP);
+		
+		JPanel smth = new JPanel();
+		JLabel lblSmth = new JLabel(Messages.getString("OptionsPanel.lblSmth.text")); //$NON-NLS-1$
+		smth.add(lblSmth);
 		as = new JSpinner();
 		as.setValue(20);
-		timeStepPanel.add(as);
+		smth.add(as);
+		timeOptionsPanel.add(smth);
+		
 
+		JPanel turnsLimitPanel = new JPanel();
 		JLabel lblTurnsLimit = new JLabel(Messages.getString("OptionsPanel.turnsLimit.text"));
-		timeStepPanel.add(lblTurnsLimit);
+		turnsLimitPanel.add(lblTurnsLimit);
 		turnsLimitSpinner = new JSpinner(new SpinnerNumberModel(500, 100, 10000, 1));
-		timeStepPanel.add(turnsLimitSpinner);
+		turnsLimitPanel.add(turnsLimitSpinner);
 		limitButton = new JCheckBox(Messages.getString("OptionsPanel.turnsLimitCB.text"));
 		limitButton.setSelected(false);
-		timeStepPanel.add(limitButton);
+		turnsLimitPanel.add(limitButton);
+		timeOptionsPanel.add(turnsLimitPanel);
 
-		generalPanel.add(timeStepPanel);
+		generalPanel.add(timeOptionsPanel);
 
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons,BoxLayout.Y_AXIS));
