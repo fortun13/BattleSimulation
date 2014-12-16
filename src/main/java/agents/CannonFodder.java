@@ -95,7 +95,7 @@ public abstract class CannonFodder extends AgentWithPosition {
             setSpeedVector(angle, speed);
 
             // agent stara się być w środku grupy
-            final double COMweight = 0.1;
+            /*final double COMweight = 0.1;
             double[] HVSpeed = getSpeedHV().clone();
             double meanDst = Math.sqrt(neighbours.parallelStream().mapToDouble(a -> sqrDst(mp, a.pos())).average().orElse(0));
             neighbours.forEach(n -> {
@@ -104,7 +104,7 @@ public abstract class CannonFodder extends AgentWithPosition {
                 HVSpeed[0] += COMweight * (n.pos().getX() - mp.getX()) * (dst - meanDst) / dst;
                 HVSpeed[1] += COMweight * (n.pos().getY() - mp.getY()) * (dst - meanDst) / dst;
             });
-            setSpeedHV(HVSpeed[0], HVSpeed[1]);
+            setSpeedHV(HVSpeed[0], HVSpeed[1]);*/
 
             // utrzymanie minimalnej dległości od wszystkiego oprócz obranego celu
             double min = 30;

@@ -50,30 +50,10 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
 
     @Override
     public void decideOnNextStep() {
-        Point2D destination;
         CannonFodder agent = (CannonFodder) myAgent;
-        int centerDirection;
         switch (stance) {
             case FOLLOWING:
-                centerDirection = (int)(((CannonFodder)myAgent).world.returnBoardCenter().getX() - commanderPosX);
-                switch (((CannonFodder)myAgent).type) {
-                    case WARRIOR:
-                        if(centerDirection >= 0)
-                            destination = new Point2D(commanderPosX + 20, commanderPosY);
-                        else
-                            destination = new Point2D(commanderPosX - 20, commanderPosY);
-                        break;
-                    case ARCHER:
-                        if(centerDirection >= 0)
-                            destination = new Point2D(commanderPosX - 20, commanderPosY);
-                        else
-                            destination = new Point2D(commanderPosX + 20, commanderPosY);
-                        break;
-                    default:
-                        destination = new Point2D(commanderPosX, commanderPosY);
-                        break;
-                }
-                ((CannonFodder) myAgent).goToPoint(destination);
+                gotoCommander();
                 break;
             case FIGHTING:
             case BERSERK:
@@ -89,25 +69,7 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                             state = ATTACKING;
                         } else {
                             if(stance == FIGHTING){
-                                centerDirection = (int)(((CannonFodder)myAgent).world.returnBoardCenter().getX() - commanderPosX);
-                                switch (((CannonFodder)myAgent).type) {
-                                    case WARRIOR:
-                                        if(centerDirection >= 0)
-                                            destination = new Point2D(commanderPosX + 20, commanderPosY);
-                                        else
-                                            destination = new Point2D(commanderPosX - 20, commanderPosY);
-                                        break;
-                                    case ARCHER:
-                                        if(centerDirection >= 0)
-                                            destination = new Point2D(commanderPosX - 20, commanderPosY);
-                                        else
-                                            destination = new Point2D(commanderPosX + 20, commanderPosY);
-                                        break;
-                                    default:
-                                        destination = new Point2D(commanderPosX, commanderPosY);
-                                        break;
-                                }
-                                ((CannonFodder) myAgent).goToPoint(destination);
+                                gotoCommander();
                             }
                             else if (stance == BERSERK)
                                 ((CannonFodder) myAgent).goToPoint(((CannonFodder) myAgent).world.returnBoardCenter());
@@ -119,7 +81,8 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                             agent.attack(enemy, enemyPosition);
                         }
                         else
-                            agent.gotoEnemy(enemyPosition);
+                            //agent.gotoEnemy(enemyPosition);
+                            gotoCommander();
                         break;
                 }
         }
@@ -133,5 +96,29 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
             return ;
         }
         action.run();
+    }
+
+    private void gotoCommander() {
+        Point2D destination;
+        int centerDirection;
+        centerDirection = (int)(((CannonFodder)myAgent).world.returnBoardCenter().getX() - commanderPosX);
+        switch (((CannonFodder)myAgent).type) {
+            case WARRIOR:
+                if(centerDirection >= 0)
+                    destination = new Point2D(commanderPosX + 20, commanderPosY);
+                else
+                    destination = new Point2D(commanderPosX - 20, commanderPosY);
+                break;
+            case ARCHER:
+                if(centerDirection >= 0)
+                    destination = new Point2D(commanderPosX - 20, commanderPosY);
+                else
+                    destination = new Point2D(commanderPosX + 20, commanderPosY);
+                break;
+            default:
+                destination = new Point2D(commanderPosX, commanderPosY);
+                break;
+        }
+        ((CannonFodder) myAgent).goToPoint(destination);
     }
 }
