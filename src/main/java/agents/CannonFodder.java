@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public abstract class CannonFodder extends AgentWithPosition {
 
     protected int strength, speed, accuracy, attackRange;
+    protected AID commander;
 
     public void setup() {
         // 0 - behaviour
@@ -142,46 +143,18 @@ public abstract class CannonFodder extends AgentWithPosition {
         return (p2.getX() - mp.getX()) * (p2.getX() - mp.getX()) + (p2.getY() - mp.getY()) * (p2.getY() - mp.getY());
     }
 
-    /*@Override
-    protected void keepPosition() {
-        /*List<AgentInTree> friendlyNeighbors;
-
-        friendlyNeighbors = world.getNeighborFriends(this);
-
-        Point2D thisPosition = position.pos();
-        double vec[] = {0, 0};
-        double posX, posY, srDistance = 0, pomDistance;
-        for (AgentInTree friendlyNeighbor : friendlyNeighbors) {
-            posX = friendlyNeighbor.pos().getX();
-            posY = friendlyNeighbor.pos().getY();
-            srDistance = srDistance + Math.sqrt(Math.pow(posX - thisPosition.getX(), 2) + Math.pow(posY - thisPosition.getY(), 2));
-        }
-        for (AgentInTree friendlyNeighbor : friendlyNeighbors) {
-            posX = friendlyNeighbor.pos().getX();
-            posY = friendlyNeighbor.pos().getY();
-            pomDistance = Math.sqrt(Math.pow(posX - thisPosition.getX(), 2) + Math.pow(posY - thisPosition.getY(), 2));
-            vec[0] = vec[0] + ((posX - thisPosition.getX()) * (pomDistance - srDistance)) / pomDistance;
-            vec[1] = vec[1] + ((posY - thisPosition.getY()) * (pomDistance - srDistance)) / pomDistance;
-        }
-        vec[0] = Math.round(vec[0]);
-        vec[1] = Math.round(vec[1]);
-        if (vec[0] != 0) vec[0] = vec[0]/Math.abs(vec[0]);
-        if (vec[1] != 0) vec[1] = vec[1]/Math.abs(vec[1]);
-        // Just move your ass...
-        if(vec[0] == 0.0 && vec[1] == 0.0){
-            vec[0] = world.returnBoardCenter(this.position.pos());
-        }
-        Point2D destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getY() + vec[1]);
-        world.moveAgent(this,destination);
-
-        //TODO there sould be world.boardCenterY, so agent would go to the center of the board
-        goToPoint(new Point2D(world.boardCenterX,world.boardCenterY));
-    }*/
-
     protected abstract void attack(AID enemy, AgentInTree position);
 
     @Override
     public void setSpeedVector(double angle, double radius) {
         super.setSpeedVector(angle, Math.min(radius, speed));
     }
+
+    public AID getCommander() {
+        return commander;
+    }
+    public void setCommander(AID commander) {
+        this.commander = commander;
+    }
+
 }

@@ -95,9 +95,7 @@ public class Commander extends CannonFodder {
 			world.killAgent(this);
 		} else {
 			// I'm still alive
-			position.condition = position.condition-str;
+			position.condition = position.condition - str;
 		}
-		
 	}
-
 }

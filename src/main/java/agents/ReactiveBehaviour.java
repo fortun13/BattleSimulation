@@ -16,7 +16,6 @@ public abstract class ReactiveBehaviour extends Behaviour {
     protected int state = 0;
     protected AgentInTree enemyPosition;
     protected AID enemy;
-    protected AID commander;
 
     @Override
     public void action() {

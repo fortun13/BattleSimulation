@@ -10,22 +10,9 @@ import main.java.utils.AgentInTree;
  */
 @SuppressWarnings("UnusedDeclaration")
 public class Warrior extends CannonFodder {
-
-    /*public Warrior() {
-
-        super();
-    }*/
-
     public void setup() {
         super.setup();
     }
-
-
-    /*protected void takeDown() {
-
-    }
-    Nie jest wykorzystywana
-    */
 
     @Override
     protected void attack(AID enemy, AgentInTree position) {
@@ -45,9 +32,6 @@ public class Warrior extends CannonFodder {
     protected void killYourself(ACLMessage msgToSend) {
         System.out.println("I'm dead :( " + getLocalName());
         sendMessageToEnemy(msgToSend);
-        //msgToSend.setConversationId("enemy-dead");
-        //msgToSend.addReceiver(world.server.getAID());
-        //send(msgToSend);
         world.killAgent(this);
     }
 
@@ -82,15 +66,12 @@ public class Warrior extends CannonFodder {
         int str = Integer.valueOf(el[1]);
         int spe = Integer.valueOf(el[2]);
         int acc = Integer.valueOf(el[3]);
-        //simplest version - if i got the message - then i will get hit
         if (position.condition <= str) {
-            //I am dead
             position.condition-=str;
-            //ACLMessage toServer = new ACLMessage(ACLMessage.INFORM);
-            //toServer.addReceiver(world.server.getAID());
-            //toServer.setConversationId("agent-dead");
-            //send(toServer);
-
+            ACLMessage toCommander = new ACLMessage(ACLMessage.INFORM);
+            toCommander.addReceiver(this.commander);
+            toCommander.setConversationId("minion-dead");
+            send(toCommander);
             killYourself(msg.createReply());
         } else {
             // I'm still alive

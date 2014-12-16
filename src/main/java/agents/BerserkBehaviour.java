@@ -18,7 +18,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                 //TODO probably will have to check if this turn message was send to server (boolean?)
                 myAgent.removeBehaviour(new BerserkBehaviour());
                 myAgent.addBehaviour(new CommanderMinionBehaviour());
-                commander = msg.getSender();
+                ((CannonFodder)myAgent).setCommander(msg.getSender());
                 state = 2;
                 break;
         }

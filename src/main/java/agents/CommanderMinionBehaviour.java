@@ -1,22 +1,18 @@
 package main.java.agents;
 
-import edu.wlu.cs.levy.CG.KeySizeException;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
-import main.java.gui.BoardPanel;
-import main.java.utils.AgentInTree;
 import javafx.geometry.Point2D;
-
-import java.util.ArrayList;
 
 /**
  * Created by Fortun on 2014-12-03.
  *
  */
 public class CommanderMinionBehaviour extends ReactiveBehaviour {
-    private static final int FOLLOWIN = 1;
-    private static final int BORED = 0;
-    boolean stance = false;
+    private static final int BERSERK = 2;
+    private static final int ATTACKING = 1;
+    private static final int FOLLOWING = 0;
+    int stance = FOLLOWING;
     Double commanderPosX = new Double(0);
     Double commanderPosY = new Double(0);
 
@@ -26,66 +22,87 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
             case "stance-fight":
                 commanderPosX = Double.parseDouble(msg.getUserDefinedParameter("commanderPosX"));
                 commanderPosY = Double.parseDouble(msg.getUserDefinedParameter("commanderPosY"));
-                stance = true;
+                stance = 1;
                 break;
             case "stance-march":
                 commanderPosX = Double.parseDouble(msg.getUserDefinedParameter("commanderPosX"));
                 commanderPosY = Double.parseDouble(msg.getUserDefinedParameter("commanderPosY"));
-                stance = false;
+                stance = FOLLOWING;
                 break;
             case "commander-dead":
                 ((CannonFodder)myAgent).position.morale -= 10;
-                //myAgent.removeBehaviour(new CommanderMinionBehaviour());
-                //myAgent.addBehaviour(new BerserkBehaviour());
+                stance = BERSERK;
                 commanderPosX = ((CannonFodder) myAgent).world.returnBoardCenter().getX();
                 commanderPosY = ((CannonFodder) myAgent).world.returnBoardCenter().getY();
-                commander = null;
+                ((CannonFodder)myAgent).setCommander(null);
+                break;
+            case "commander-init":
+                ((CannonFodder)myAgent).setCommander(msg.getSender());
+                stance = FOLLOWING;
                 break;
         }
     }
 
     @Override
     public void decideOnNextStep() {
+        Point2D destination;
         CannonFodder agent = (CannonFodder) myAgent;
-        if(stance) {
-            if (enemyPosition == null || enemyPosition.isDead) {
-                state = BORED;
-            }
-            switch(state) {
-                case BORED:
-                    enemyPosition = agent.getNearestEnemy();
-                    if (enemyPosition != null) {
-                        enemy = new AID(enemyPosition.getAgentName(),true);
-                        agent.gotoEnemy(enemyPosition);
-                        state = FOLLOWIN;
-                    }
-                    else {
-                        if(commanderPosX != null && commanderPosY != null){
-                            Point2D destination = new Point2D(commanderPosX, commanderPosY);
+        switch (stance) {
+            case FOLLOWING:
+                destination = new Point2D(commanderPosX, commanderPosY);
+                ((CannonFodder) myAgent).goToPoint(destination);
+                break;
+            case ATTACKING:
+                if (enemyPosition == null || enemyPosition.isDead) {
+                    state = FOLLOWING;
+                }
+                switch (state) {
+                    case FOLLOWING:
+                        enemyPosition = agent.getNearestEnemy();
+                        if (enemyPosition != null) {
+                            enemy = new AID(enemyPosition.getAgentName(), true);
+                            agent.gotoEnemy(enemyPosition);
+                            state = ATTACKING;
+                        } else {
+                            destination = new Point2D(commanderPosX, commanderPosY);
                             ((CannonFodder) myAgent).goToPoint(destination);
                         }
-                        else
-                            ((CannonFodder) myAgent).goToPoint(((CannonFodder) myAgent).world.returnBoardCenter());
-                    }
-                    break;
-                case FOLLOWIN:
-                    if (agent.enemyInRangeOfAttack(enemyPosition)) {
-                        agent.setSpeedVector(0, 0);
-                        agent.attack(enemy, enemyPosition);
-                    } else {
-                        agent.gotoEnemy(enemyPosition);
                         break;
-                    }
-                    break;
-            }
-        }
-        else {
-            if(commanderPosX != null && commanderPosY != null){
-                Point2D destination = new Point2D(commanderPosX, commanderPosY);
-                ((CannonFodder) myAgent).goToPoint(destination);
-            }
-            else
-                ((CannonFodder) myAgent).goToPoint(((CannonFodder) myAgent).world.returnBoardCenter());
+                    case ATTACKING:
+                        if (agent.enemyInRangeOfAttack(enemyPosition)) {
+                            agent.setSpeedVector(0, 0);
+                            agent.attack(enemy, enemyPosition);
+                        }
+                        else
+                            agent.gotoEnemy(enemyPosition);
+                        break;
+                }
+            case BERSERK:
+                if (enemyPosition == null || enemyPosition.isDead) {
+                    state = FOLLOWING;
+                }
+                switch(state) {
+                    case FOLLOWING:
+                        enemyPosition = agent.getNearestEnemy();
+                        if (enemyPosition != null) {
+                            enemy = new AID(enemyPosition.getAgentName(),true);
+                            agent.gotoEnemy(enemyPosition);
+                            state = ATTACKING;
+                        }
+                        else {
+                            ((CannonFodder) myAgent).goToPoint(((CannonFodder) myAgent).world.returnBoardCenter());
+                        }
+                        break;
+                    case ATTACKING:
+                        if (agent.enemyInRangeOfAttack(enemyPosition)) {
+                            agent.setSpeedVector(0, 0);
+                            agent.attack(enemy, enemyPosition);
+                        }
+                        else
+                            agent.gotoEnemy(enemyPosition);
+                        break;
+                }
+                break;
         }
     }
 
