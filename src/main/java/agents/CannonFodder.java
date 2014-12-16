@@ -51,8 +51,11 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     @Override
     protected void gotoEnemy(AgentInTree enemy) {
+        goToPoint(enemy.p);
+    }
+
+    private void goToPoint(Point2D ep) {
         Point2D mp = position.pos();
-        Point2D ep = enemy.pos();
 
         double size = (Integer) world.server.getFrame().getOptionsPanel().as.getValue();
         setSpeedHV(ep.getX() - mp.getX(), ep.getY() - mp.getY(), size);
@@ -103,12 +106,12 @@ public abstract class CannonFodder extends AgentWithPosition {
 
             // utrzymanie minimalnej dległości od wszystkiego oprócz obranego celu
             double min = 30;
-            List<AgentInTree> anything = world.getAgentsTree().nearest(key, 20, ait -> ait != enemy).parallelStream()
+            List<AgentInTree> anything = world.getAgentsTree().nearest(key, 20, ait -> ait.p != ep).parallelStream()
                     .filter(agentInTree -> {
                         Point2D p2 = agentInTree.pos();
                         if (p2 != mp) if (sqrDst(mp, p2) < 3*min)
 //                            if (Math.abs(Math.atan2(p2.getY() - mp.getY(), p2.getX() - mp.getX()) - finalAngle) < angleOfView)
-                                return true;
+                            return true;
                         return false;
                     }).collect(Collectors.toList());
             final double avoidWeight = 0.1;
@@ -166,7 +169,7 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     @Override
     protected void keepPosition() {
-        List<AgentInTree> friendlyNeighbors;
+        /*List<AgentInTree> friendlyNeighbors;
 
         friendlyNeighbors = world.getNeighborFriends(this);
 
@@ -194,7 +197,10 @@ public abstract class CannonFodder extends AgentWithPosition {
             vec[0] = world.computeBoardCenter(this.position.pos());
         }
         Point2D destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getY() + vec[1]);
-        world.moveAgent(this,destination);
+        world.moveAgent(this,destination);*/
+
+        //TODO there sould be world.boardCenterY, so agent would go to the center of the board
+        goToPoint(new Point2D(world.boardCenterX,world.boardCenterX));
     }
 
     protected abstract void attack(AID enemy, AgentInTree position);

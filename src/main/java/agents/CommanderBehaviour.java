@@ -38,10 +38,9 @@ public class CommanderBehaviour extends ReactiveBehaviour {
                 fightingStance.addUserDefinedParameter("commanderPosY", String.valueOf(posY));
                 minions.forEach(fightingStance::addReceiver);
 
-                ArrayList<AID> enemiesInRange = ((CannonFodder) myAgent).enemyInRange(agent);
-                if (enemiesInRange.size() != 0) {
+                enemyPosition = ((Commander) myAgent).getNearestEnemy();
+                if (enemyPosition != null) {
                     fightingStance.setConversationId("stance-fight");
-                    enemyPosition = ((CannonFodder)myAgent).getNearestEnemy();
                     AID enemy = new AID(enemyPosition.getAgentName(), true);
                     agent.gotoEnemy(enemyPosition);
                     if (agent.enemyInRangeOfAttack(enemyPosition)) {
