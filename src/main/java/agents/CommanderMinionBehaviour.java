@@ -34,7 +34,7 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                 stance = false;
                 break;
             case "commander-dead":
-                ((CannonFodder)myAgent).morale -= 10;
+                ((CannonFodder)myAgent).position.morale -= 10;
                 //myAgent.removeBehaviour(new CommanderMinionBehaviour());
                 //myAgent.addBehaviour(new BerserkBehaviour());
                 commanderPosX = ((CannonFodder) myAgent).world.returnBoardCenter().getX();
