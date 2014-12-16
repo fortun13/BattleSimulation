@@ -14,7 +14,7 @@ public class Archer extends CannonFodder {
 
     public void setup() {
         super.setup();
-        this.getPosition().type= AgentType.ARCHER;
+        this.getCurrentState().type= AgentType.ARCHER;
     }
 
     protected void takeDown() {
@@ -41,7 +41,7 @@ public class Archer extends CannonFodder {
 
     @Override
     public boolean enemyInRangeOfAttack(AgentInTree enemy) {
-        return getPosition().pos().distance(enemy.pos()) < (2+getAttackRange());
+        return getCurrentState().pos().distance(enemy.pos()) < (2+getAttackRange());
     }
 
     @Override
@@ -53,13 +53,13 @@ public class Archer extends CannonFodder {
         int spe = Integer.valueOf(el[2]);
         int acc = Integer.valueOf(el[3]);
         //simplest version - if i got the message - then i will get hit
-        if (position.condition <= str) {
+        if (currentState.condition <= str) {
             //I am dead
-            position.condition-=str;
+            currentState.condition-=str;
             killYourself(msg.createReply());
         } else {
             // I'm still alive
-            position.condition = position.condition-str;
+            currentState.condition = currentState.condition-str;
         }
     }
 

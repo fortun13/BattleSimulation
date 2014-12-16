@@ -35,7 +35,7 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                 stance = FOLLOWING;
                 break;
             case "commander-dead":
-                ((CannonFodder)myAgent).position.morale -= 10;
+                ((CannonFodder)myAgent).currentState.morale -= 10;
                 stance = BERSERK;
                 commanderPosX = ((CannonFodder) myAgent).world.returnBoardCenter().getX();
                 commanderPosY = ((CannonFodder) myAgent).world.returnBoardCenter().getY();
@@ -102,7 +102,7 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
         Point2D destination;
         int centerDirection;
         centerDirection = (int)(((CannonFodder)myAgent).world.returnBoardCenter().getX() - commanderPosX);
-        switch (((CannonFodder)myAgent).getPosition().type) {
+        switch (((CannonFodder)myAgent).getCurrentState().type) {
             case WARRIOR:
                 if(centerDirection >= 0)
                     destination = new Point2D(commanderPosX + 20, commanderPosY);

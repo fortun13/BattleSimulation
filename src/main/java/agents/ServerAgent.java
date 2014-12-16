@@ -214,7 +214,6 @@ public class ServerAgent extends Agent {
     public void prepareSimulation(ArrayList<Pair<World.AgentType,Integer>> blues,
                                   ArrayList<Pair<World.AgentType,Integer>> reds,
                                   HashMap<String,ArrayList<JSONObject>> map,
-                                  int boardWidth,
                                   long timestep) {
         this.timestep = timestep;
         if (world != null) {
@@ -224,7 +223,7 @@ public class ServerAgent extends Agent {
         if (map == null)
             world = new World(this,blues,reds);
         else
-            world = new World(this,map,boardWidth);
+            world = new World(this,map);
 
         serverBehaviour.reset();
         m_frame.redrawBoard(world.getAllAgents());

@@ -4,9 +4,6 @@ import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import main.java.utils.AgentInTree;
 
-import javax.sound.sampled.*;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class Commander extends CannonFodder {
@@ -52,13 +49,13 @@ public class Commander extends CannonFodder {
 
 	@Override
 	public boolean enemyInRangeOfAttack(AgentInTree enemy) {
-		return position.pos().distance(enemy.pos()) < attackRange;
+		return currentState.pos().distance(enemy.pos()) < attackRange;
 	}
 
 	@Override
 	public void reactToAttack(ACLMessage msg) {
-		if (position.isDead) {
-			try {
+		if (currentState.isDead) {
+			/*try {
 				Clip clip = AudioSystem.getClip();
 				File stream = new File("res/die_fast.wav");
 				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(stream);
@@ -66,7 +63,7 @@ public class Commander extends CannonFodder {
 				clip.start();
 			} catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
 				System.out.println("Nie będzie muzyki");
-			}
+			}*/
 			sendMessageToEnemy(msg.createReply());
 			return ;
 		}
@@ -77,7 +74,7 @@ public class Commander extends CannonFodder {
 		int spe = Integer.valueOf(el[2]);
 		int acc = Integer.valueOf(el[3]);
 		//simplest version - if i got the message - then i will get hit
-		if (position.condition <= str) {
+		if (currentState.condition <= str) {
 			//Inform minions about death
 			ArrayList<AID> minions = this.getMinionsWithinRange(this);
 			ACLMessage commanderDeadMessage = new ACLMessage(ACLMessage.REQUEST);
@@ -87,7 +84,7 @@ public class Commander extends CannonFodder {
 			send(commanderDeadMessage);
 
 			//I am dead
-			position.condition-=str;
+			currentState.condition-=str;
 			System.out.println("I'm dead :( " + getLocalName());
 			ACLMessage msgAboutDeath = msg.createReply();
 			msgAboutDeath.setConversationId("enemy-dead");
@@ -95,7 +92,7 @@ public class Commander extends CannonFodder {
 			world.killAgent(this);
 		} else {
 			// I'm still alive
-			position.condition = position.condition - str;
+			currentState.condition = currentState.condition - str;
 		}
 	}
 }

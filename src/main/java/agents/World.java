@@ -40,11 +40,12 @@ public class World {
 
     public World(ServerAgent serverAgent, ArrayList<Pair<AgentType, Integer>> blues, ArrayList<Pair<AgentType, Integer>> reds) {
         this.server = serverAgent;
-        boardCenter = new Point2D(server.getFrame().getBoardPanel().getWidth()/2, server.getFrame().getBoardPanel().getHeight()/2);
+        Point2D p = server.getFrame().getBoardPanel().getBoardSize();
+        boardCenter = new Point2D((p.getX()-1)/2,(p.getY()-1)/2);
         Director generator = new Director();
 
-        iterateOverAgentsList("agentBlue_", blues, generator,8, AgentsSides.Blues);
-        iterateOverAgentsList("agentRed_",reds,generator,40, AgentsSides.Reds);
+        iterateOverAgentsList("agentBlue_", blues, generator,10, AgentsSides.Blues);
+        iterateOverAgentsList("agentRed_",reds,generator,(int)(p.getX()/server.getFrame().getBoardPanel().SQUARESIZE)-10, AgentsSides.Reds);
     }
 
     private void iterateOverAgentsList(String agentPrefix, ArrayList<Pair<AgentType,Integer>> list, Director generator, int xPosition, AgentsSides agentSide) {
@@ -115,10 +116,11 @@ public class World {
 
     }
 
-    public World(ServerAgent server, HashMap<String,ArrayList<JSONObject>> map, int boardWidth) {
+    public World(ServerAgent server, HashMap<String,ArrayList<JSONObject>> map) {
         int counter = 0;
         this.server = server;
-        boardCenter = new Point2D(server.getFrame().getBoardPanel().getWidth()/2, server.getFrame().getBoardPanel().getHeight()/2);
+        Point2D p = server.getFrame().getBoardPanel().getBoardSize();
+        boardCenter = new Point2D((p.getX()-1)/2,(p.getY()-1)/2);
         PlatformController container = server.getContainerController();
         Director generator = new Director();
 
@@ -264,13 +266,13 @@ public class World {
     }
 
     public void removeAgent(AgentWithPosition agent) {
-        if (!agent.position.isDead) {
+        if (!agent.currentState.isDead) {
             try {
-                agentsTree.delete(new double[] {agent.position.p.getX(), agent.position.p.getY()});
+                agentsTree.delete(new double[] {agent.currentState.p.getX(), agent.currentState.p.getY()});
             } catch (KeySizeException | KeyMissingException e) {
                 e.printStackTrace();
             }
-            switch (agent.position.side) {
+            switch (agent.currentState.side) {
                 case Blues:
                     bluesAgents.remove(agent.getAID());
                     break;
@@ -285,9 +287,9 @@ public class World {
     public AgentInTree getNearestEnemy(AgentWithPosition agent) {
         try {
             List<AgentInTree> l = agentsTree
-                    .nearestEuclidean(new double[] {agent.position.p.getX(), agent.position.p.getY()},agent.fieldOfView)
+                    .nearestEuclidean(new double[] {agent.currentState.p.getX(), agent.currentState.p.getY()},agent.fieldOfView)
                     .parallelStream()
-                    .filter(a -> a.side != agent.position.side && a.side != AgentsSides.Obstacle)
+                    .filter(a -> a.side != agent.currentState.side && a.side != AgentsSides.Obstacle)
                     .collect(Collectors.toList());
             if (l != null && !l.isEmpty())
                 return l.get(0);
@@ -298,12 +300,12 @@ public class World {
     }
 
     public synchronized boolean moveAgent(CannonFodder agent, Point2D destination) {
-        AgentInTree position = agent.getPosition();
+        AgentInTree position = agent.getCurrentState();
         double[] oldPos = {position.p.getX(), position.p.getY()};
         double[] newPos = {destination.getX(), destination.getY()};
 
         try {
-            //if (agentsTree.nearestEuclidean(oldPos,agent.position.type.getSize()-15).size() > 1)
+            //if (agentsTree.nearestEuclidean(oldPos,agent.currentState.type.getSize()-15).size() > 1)
             //    return false;
             //System.out.println("Move");
             if (agentsTree.search(newPos) != null)
@@ -318,7 +320,7 @@ public class World {
         } catch (KeySizeException | KeyDuplicateException | KeyMissingException e) {
             e.printStackTrace();
         }
-        agent.position = position;
+        agent.currentState = position;
         return true;
 
     }
@@ -329,21 +331,21 @@ public class World {
 
         try {
             List<AgentInTree> lst = agentsTree
-                    .nearestEuclidean(new double[]{agent.position.p.getX(), agent.position.p.getY()}, agent.fieldOfView)
+                    .nearestEuclidean(new double[]{agent.currentState.p.getX(), agent.currentState.p.getY()}, agent.fieldOfView)
                     .parallelStream()
                     .filter(e -> e.side != AgentsSides.Obstacle).collect(Collectors.toList());
             vec[0] = (int) lst
                     .parallelStream()
-                    .filter(l -> l.side == agent.position.side)
+                    .filter(l -> l.side == agent.currentState.side)
                     .count();
             vec[1] = lst.size() - vec[0];
-            //vec[0] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.position.side == a.side).count();
+            //vec[0] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.currentState.side == a.side).count();
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
 
         /*try {
-            vec[1] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.position.side != a.side && a.side != AgentsSides.Obstacle).count();
+            vec[1] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.currentState.side != a.side && a.side != AgentsSides.Obstacle).count();
         } catch (KeySizeException e) {
             e.printStackTrace();
         }*/
@@ -355,9 +357,9 @@ public class World {
         //List<AgentInTree> friendlyNeighbors = new ArrayList<>();
         try {
             return agentsTree
-                    .nearestEuclidean(new double[] {agent.position.p.getX(), agent.position.p.getY()}, agent.fieldOfView)
+                    .nearestEuclidean(new double[] {agent.currentState.p.getX(), agent.currentState.p.getY()}, agent.fieldOfView)
                     .parallelStream()
-                    .filter(a -> a.side == agent.position.side).collect(Collectors.toList());
+                    .filter(a -> a.side == agent.currentState.side).collect(Collectors.toList());
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
@@ -365,15 +367,15 @@ public class World {
     }
 
     public void killAgent(AgentWithPosition agent) {
-        if (agent.position.isDead)
+        if (agent.currentState.isDead)
             return;
     	
-        agent.position.isDead = true;
+        agent.currentState.isDead = true;
 
-        //agents.rmPoint(agent.getPosition());
+        //agents.rmPoint(agent.getCurrentState());
 
         try {
-            double[] agentKey = {agent.position.p.getX(), agent.position.p.getY()};
+            double[] agentKey = {agent.currentState.p.getX(), agent.currentState.p.getY()};
             if (agentsTree.search(agentKey) != null) {
                 agentsTree.delete(agentKey);
             }

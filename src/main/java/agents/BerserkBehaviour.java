@@ -27,7 +27,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
     @Override
     public void decideOnNextStep() {
         CannonFodder agent = (CannonFodder) myAgent;
-        if (agent.position.condition <= 0) {
+        if (agent.currentState.condition <= 0) {
             return ;
         }
         if (enemyPosition == null || enemyPosition.isDead) {
