@@ -11,6 +11,7 @@ import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
+import main.java.gui.BoardPanel;
 import main.java.gui.OptionsPanel;
 import main.java.gui.SideOptionPanel;
 import main.java.utils.*;
@@ -41,6 +42,7 @@ public class World {
         this.server = serverAgent;
         boardCenter = new Point2D(server.getFrame().getBoardPanel().getWidth()/2, server.getFrame().getBoardPanel().getHeight()/2);
         Director generator = new Director();
+
         iterateOverAgentsList("agentBlue_", blues, generator,8, AgentsSides.Blues);
         iterateOverAgentsList("agentRed_",reds,generator,40, AgentsSides.Reds);
     }
@@ -392,20 +394,62 @@ public class World {
         return boardCenter;
     }
 
-    public enum AgentsSides {Blues, Reds, Obstacle}
+    public List<AgentInTree> getAllAgents() {
+        Pair<Integer, Integer> bsize = server.m_frame.getOptionsPanel().getBoardSize();
+        double[] upperKey = {bsize.getValue() * server.m_frame.getBoardPanel().SQUARESIZE, bsize.getKey() * server.m_frame.getBoardPanel().SQUARESIZE};
+        List<AgentInTree> lst = null;
+        try {
+            lst = agentsTree.range(new double[]{0, 0}, upperKey);
+        } catch (KeySizeException e) {
+            e.printStackTrace();
+        }
+        return lst;
+    }
+    
+    public void updateTree(List<BoardPanel.MyAgent> changed) {
+        for (BoardPanel.MyAgent a : changed) {
+            AgentInTree position = a.getAgent();
+            double[] oldPos = {position.p.getX(), position.p.getY()};
+            double[] newPos = {a.getPoint().getX(), a.getPoint().getY()};
+
+            position.setPosition(a.getPoint());
+            try {
+                agentsTree.delete(oldPos);
+                agentsTree.insert(newPos, position);
+            } catch (KeySizeException | KeyDuplicateException | KeyMissingException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public enum AgentsSides {
+        Blues("Blues"), Reds("Reds"), Obstacle("Obstacle");
+
+        private String name;
+        private AgentsSides(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return this.name;
+        }
+    }
 
     public enum AgentType {
-        WARRIOR("res" + File.separator + "warrior.png",20),
-        ARCHER("res" + File.separator + "archer.png",20),
-        COMMANDER("res" + File.separator + "commander.png",20),
-        OBSTACLE("res" + File.separator + "obstacle.png",40);
+        WARRIOR("res" + File.separator + "warrior.png",20, "Warrior"),
+        ARCHER("res" + File.separator + "archer.png",20, "Archer"),
+        COMMANDER("res" + File.separator + "commander.png",20, "Commander"),
+        OBSTACLE("res" + File.separator + "obstacle.png",40, "Obstacle");
 
         private String imagePath;
         private int size;
+        private String name;
 
-        private AgentType(String pathToImage, int size) {
+        private AgentType(String pathToImage, int size, String name) {
             imagePath = pathToImage;
             this.size = size;
+            this.name = name;
         }
 
         public String getImagePath() {
@@ -414,6 +458,11 @@ public class World {
 
         public int getSize() {
             return size;
+        }
+
+        @Override
+        public String toString() {
+            return name;
         }
     }
 }

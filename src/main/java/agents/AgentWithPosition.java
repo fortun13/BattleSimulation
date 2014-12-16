@@ -14,9 +14,7 @@ import java.util.ArrayList;
  *
  */
 public abstract class AgentWithPosition extends Agent {
-    protected int fieldOfView = 150;
-
-    public double morale = 50;
+    protected int fieldOfView = 200;
 
     protected double previousRatio=1;
 
@@ -66,21 +64,21 @@ public abstract class AgentWithPosition extends Agent {
         count = world.countFriendFoe(this);
         //System.out.println("Friends: " + count[0] + " Enemies: " + count[1]);
         if (count[1] == 0) {
-            morale += 4;
-            return morale > 0;
+            position.morale += 4;
+            return position.morale > 0;
         } else if (count[0] == 0) {
-            morale -= 4;
-            return morale > 0;
+            position.morale -= 4;
+            return position.morale > 0;
         }
         double ratio = ((double)count[0])/((double)count[1]);
         //System.out.println("Ratio: " + ratio);
         if (ratio < psychologicalResistance && ratio < previousRatio)
-            morale -= (1/ratio +2);
-        if (ratio >= 1 && morale<50)
-            morale += ratio;
+            position.morale -= (1/ratio +2);
+        if (ratio >= 1 && position.morale<50)
+            position.morale += ratio;
         previousRatio = ratio;
         //System.out.println(getLocalName() + " Morale: " + morale);
-        return morale > 0;
+        return position.morale > 0;
     }
 
     protected abstract void killYourself(ACLMessage msgToSend);

@@ -1,13 +1,7 @@
 package main.java.agents;
 
-import edu.wlu.cs.levy.CG.KeySizeException;
-import jade.core.AID;
 import jade.lang.acl.ACLMessage;
-import main.java.gui.BoardPanel;
-import main.java.utils.AgentInTree;
 import javafx.geometry.Point2D;
-
-import java.util.ArrayList;
 
 /**
  * Created by Fortun on 2014-12-03.
@@ -33,7 +27,7 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                 stance = false;
                 break;
             case "commander-dead":
-                ((CannonFodder)myAgent).morale -= 10;
+                ((CannonFodder)myAgent).position.morale -= 10;
                 myAgent.removeBehaviour(new CommanderMinionBehaviour());
                 myAgent.addBehaviour(new BerserkBehaviour());
                 commander = null;

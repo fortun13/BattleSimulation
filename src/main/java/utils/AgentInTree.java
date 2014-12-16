@@ -20,6 +20,8 @@ public class AgentInTree implements KdTree.Placed {
 
     public int condition;
 
+    public double morale = 50;
+
     public double getAngle() {
         return speed[0];
     }
