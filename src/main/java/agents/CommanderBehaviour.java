@@ -49,9 +49,7 @@ public class CommanderBehaviour extends ReactiveBehaviour {
                 }
                 else {
                     fightingStance.setConversationId("stance-march");
-                    double [] center = ((Commander) myAgent).world.returnBoardCenter();
-                    Point2D destination = new Point2D(center[0], center[1]);
-                    ((Commander) myAgent).goToPoint(destination);
+                    ((Commander) myAgent).goToPoint(((Commander) myAgent).world.returnBoardCenter());
                 }
                 agent.send(fightingStance);
                 break;

@@ -33,18 +33,14 @@ public class World {
     public ArrayList<AID> bluesAgents = new ArrayList<>();
     public ArrayList<AID> redsAgents = new ArrayList<>();
     public ServerAgent server;
-    public double boardCenterX;
-    public double boardCenterY;
+    private Point2D boardCenter;
     public ArrayList<AID> redsCorpses = new ArrayList<>();
     public ArrayList<AID> bluesCorpses = new ArrayList<>();
 
     public World(ServerAgent serverAgent, ArrayList<Pair<AgentType, Integer>> blues, ArrayList<Pair<AgentType, Integer>> reds) {
         this.server = serverAgent;
-        this.boardCenterX = server.getFrame().getBoardPanel().getWidth()/2;
-        this.boardCenterY = server.getFrame().getBoardPanel().getHeight()/2;
-
+        boardCenter = new Point2D(server.getFrame().getBoardPanel().getWidth()/2, server.getFrame().getBoardPanel().getHeight()/2);
         Director generator = new Director();
-
         iterateOverAgentsList("agentBlue_", blues, generator,8, AgentsSides.Blues);
         iterateOverAgentsList("agentRed_",reds,generator,40, AgentsSides.Reds);
     }
@@ -120,7 +116,7 @@ public class World {
     public World(ServerAgent server, HashMap<String,ArrayList<JSONObject>> map, int boardWidth) {
         int counter = 0;
         this.server = server;
-        boardCenterX = boardWidth/2;
+        boardCenter = new Point2D(server.getFrame().getBoardPanel().getWidth()/2, server.getFrame().getBoardPanel().getHeight()/2);
         PlatformController container = server.getContainerController();
         Director generator = new Director();
 
@@ -392,9 +388,8 @@ public class World {
         }
     }
 
-    public double[] returnBoardCenter() {
-        double returnVal[] = {boardCenterX, boardCenterY};
-        return returnVal;
+    public Point2D returnBoardCenter() {
+        return boardCenter;
     }
 
     public enum AgentsSides {Blues, Reds, Obstacle}

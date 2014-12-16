@@ -50,10 +50,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                     state = FOLLOWIN;
                 }
                 else {
-                    //moveSomewhere
-                    double [] center = ((CannonFodder) myAgent).world.returnBoardCenter();
-                    Point2D destination = new Point2D(center[0], center[1]);
-                    ((CannonFodder) myAgent).goToPoint(destination);
+                    ((CannonFodder) myAgent).goToPoint(((CannonFodder) myAgent).world.returnBoardCenter());
                 }
                 break;
             case FOLLOWIN:
