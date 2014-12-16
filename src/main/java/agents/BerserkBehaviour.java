@@ -2,6 +2,7 @@ package main.java.agents;
 
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
+import javafx.geometry.Point2D;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -50,7 +51,9 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                 }
                 else {
                     //moveSomewhere
-                    agent.keepPosition();
+                    double [] center = ((CannonFodder) myAgent).world.returnBoardCenter();
+                    Point2D destination = new Point2D(center[0], center[1]);
+                    ((CannonFodder) myAgent).goToPoint(destination);
                 }
                 break;
             case FOLLOWIN:

@@ -18,7 +18,6 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
     boolean stance = false;
     Double commanderPosX = new Double(0);
     Double commanderPosY = new Double(0);
-    double [] speedVec = new double[2];
 
     @Override
     public void handleMessage(ACLMessage msg) {
@@ -44,7 +43,6 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
 
     @Override
     public void decideOnNextStep() {
-        CannonFodder agent = (CannonFodder) myAgent;
         if(stance) {
             enemyPosition = ((CannonFodder) myAgent).getNearestEnemy();
             if (enemyPosition == null) {

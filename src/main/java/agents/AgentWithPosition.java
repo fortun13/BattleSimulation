@@ -32,7 +32,7 @@ public abstract class AgentWithPosition extends Agent {
 
     protected abstract void gotoEnemy(AgentInTree enemy);
 
-    protected abstract void keepPosition();
+    //protected abstract void keepPosition();
 
     public AgentInTree getPosition() {
         return position;

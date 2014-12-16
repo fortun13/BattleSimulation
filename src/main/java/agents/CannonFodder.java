@@ -138,36 +138,11 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     }
 
-    protected void followAgent(AgentInTree leader) {
-        Point2D mp = position.pos();
-        Point2D ep = leader.pos();
-
-        double size = (Integer) world.server.getFrame().getOptionsPanel().as.getValue();
-        setSpeedHV(ep.getX() - mp.getX(), ep.getY() - mp.getY(), size);
-
-        final double[] key = {mp.getX(), mp.getY()};
-        double angle = position.getAngle();
-        double speed = position.getSpeed();
-
-        // agent stara się nie wychodzić przed szereg:
-        final double temporize = 0.4;
-        speed *= temporize + Math.random()*(1-temporize);
-        setSpeedVector(angle, speed);
-
-        // agent dostosowuje prędkość i kierunek do innych
-        angle = leader.getAngle();
-        speed = leader.getSpeed();
-        setSpeedVector(angle, speed);
-        if (!world.moveAgent(this, gesDestination())) {
-            setSpeedVector(angle, 0);
-        }
-    }
-
     private double sqrDst(Point2D mp, Point2D p2) {
         return (p2.getX() - mp.getX()) * (p2.getX() - mp.getX()) + (p2.getY() - mp.getY()) * (p2.getY() - mp.getY());
     }
 
-    @Override
+    /*@Override
     protected void keepPosition() {
         /*List<AgentInTree> friendlyNeighbors;
 
@@ -197,11 +172,11 @@ public abstract class CannonFodder extends AgentWithPosition {
             vec[0] = world.returnBoardCenter(this.position.pos());
         }
         Point2D destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getY() + vec[1]);
-        world.moveAgent(this,destination);*/
+        world.moveAgent(this,destination);
 
         //TODO there sould be world.boardCenterY, so agent would go to the center of the board
         goToPoint(new Point2D(world.boardCenterX,world.boardCenterY));
-    }
+    }*/
 
     protected abstract void attack(AID enemy, AgentInTree position);
 
