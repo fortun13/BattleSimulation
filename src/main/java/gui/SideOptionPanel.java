@@ -62,7 +62,7 @@ public class SideOptionPanel extends JPanel {
 		warriorsNumberPanel.add(warriorsSlider);
 		warriorsSlider.setValue(10);
 
-		createParametersPanel(warriorsSliderPanel, World.AgentType.WARRIOR, new int[] {160, 6, 7, 90, 23});
+		createParametersPanel(warriorsSliderPanel, World.AgentType.WARRIOR, new int[] {160, 6, 7, 90, 25});
 
 		JPanel archersSliderPanel = new JPanel();
 		archersSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.archersBorderTitle"))); //$NON-NLS-1$
@@ -102,7 +102,7 @@ public class SideOptionPanel extends JPanel {
 		commandersNumberPanel.add(commandersSlider);
 		commandersSlider.setValue(1);
 
-		createParametersPanel(commandersSliderPanel, AgentType.COMMANDER, new int[] {60,10,7,95,3});
+		createParametersPanel(commandersSliderPanel, AgentType.COMMANDER, new int[] {60,10,7,95,25});
 
 	}
 

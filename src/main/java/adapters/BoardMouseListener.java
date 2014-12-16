@@ -61,7 +61,7 @@ public class BoardMouseListener extends MouseAdapter {
                     AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle, new Point2D(popupPosition[0], popupPosition[1]), World.AgentType.OBSTACLE, null);
                     MainFrame f = ((MainFrame)board.getTopLevelAncestor());
                     f.server.getWorld().getAgentsTree().insert(new double[] {popupPosition[0],popupPosition[1]},obs);
-                    f.redrawBoard(f.server.getWorld().getAgentsTree());
+                    f.redrawBoard(f.server.getWorld().getAllAgents());
                 } catch (KeySizeException e1) {
                     e1.printStackTrace();
                 } catch (KeyDuplicateException e1) {

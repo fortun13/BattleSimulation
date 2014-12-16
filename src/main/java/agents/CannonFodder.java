@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public abstract class CannonFodder extends AgentWithPosition {
 
     protected int strength, speed, accuracy, attackRange;
+    protected AID commander;
 
     public void setup() {
         // 0 - behaviour
@@ -59,7 +60,7 @@ public abstract class CannonFodder extends AgentWithPosition {
         Point2D mp = position.pos();
 
         BoidOptions options = world.server.getFrame().getOptionsPanel().options;
-        setSpeedHV(ep.getX() - mp.getX(), ep.getY() - mp.getY(), options.getAgentSize());
+        setSpeedHV(ep.getX() - mp.getX(2), ep.getY() - mp.getY(), options.getAgentSize());
 
         final double[] key = {mp.getX(), mp.getY()};
         double angle = position.getAngle();
@@ -95,7 +96,7 @@ public abstract class CannonFodder extends AgentWithPosition {
             setSpeedVector(angle, speed);
 
             // agent stara się być w środku grupy
-            final double seekCenterWeight = options.getSeekCenterWeight();
+            final double COMweight = 0.1;
             double[] HVSpeed = getSpeedHV().clone();
             double meanDst = Math.sqrt(neighbours.parallelStream().mapToDouble(a -> sqrDst(mp, a.pos())).average().orElse(0));
             neighbours.forEach(n -> {
@@ -140,72 +141,8 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     }
 
-    // TODO: odpowiedzieć na jedno, ale zajebiście ważne pytanie. DLACZEGO TU JEST POWIELONY KOD??????
-    // metoda Kopy'ego Peysta nie jest dobra
-    protected void followAgent(AgentInTree leader) {
-        Point2D mp = position.pos();
-        Point2D ep = leader.pos();
-
-        BoidOptions options = world.server.getFrame().getOptionsPanel().options;
-        double size = options.getAgentSize();
-        setSpeedHV(ep.getX() - mp.getX(), ep.getY() - mp.getY(), size);
-
-        double angle = position.getAngle();
-        double speed = position.getSpeed();
-
-        // agent stara się nie wychodzić przed szereg:
-        final double temporize = options.getTemporize();
-        speed *= temporize + Math.random()*(1-temporize);
-        setSpeedVector(angle, speed);
-
-        // agent dostosowuje prędkość i kierunek do innych
-        angle = leader.getAngle();
-        speed = leader.getSpeed();
-        setSpeedVector(angle, speed);
-        if (!world.moveAgent(this, gesDestination())) {
-            setSpeedVector(angle, 0);
-        }
-    }
-
     private double sqrDst(Point2D mp, Point2D p2) {
         return (p2.getX() - mp.getX()) * (p2.getX() - mp.getX()) + (p2.getY() - mp.getY()) * (p2.getY() - mp.getY());
-    }
-
-    @Override
-    protected void keepPosition() {
-        /*List<AgentInTree> friendlyNeighbors;
-
-        friendlyNeighbors = world.getNeighborFriends(this);
-
-        Point2D thisPosition = position.pos();
-        double vec[] = {0, 0};
-        double posX, posY, srDistance = 0, pomDistance;
-        for (AgentInTree friendlyNeighbor : friendlyNeighbors) {
-            posX = friendlyNeighbor.pos().getX();
-            posY = friendlyNeighbor.pos().getY();
-            srDistance = srDistance + Math.sqrt(Math.pow(posX - thisPosition.getX(), 2) + Math.pow(posY - thisPosition.getY(), 2));
-        }
-        for (AgentInTree friendlyNeighbor : friendlyNeighbors) {
-            posX = friendlyNeighbor.pos().getX();
-            posY = friendlyNeighbor.pos().getY();
-            pomDistance = Math.sqrt(Math.pow(posX - thisPosition.getX(), 2) + Math.pow(posY - thisPosition.getY(), 2));
-            vec[0] = vec[0] + ((posX - thisPosition.getX()) * (pomDistance - srDistance)) / pomDistance;
-            vec[1] = vec[1] + ((posY - thisPosition.getY()) * (pomDistance - srDistance)) / pomDistance;
-        }
-        vec[0] = Math.round(vec[0]);
-        vec[1] = Math.round(vec[1]);
-        if (vec[0] != 0) vec[0] = vec[0]/Math.abs(vec[0]);
-        if (vec[1] != 0) vec[1] = vec[1]/Math.abs(vec[1]);
-        // Just move your ass...
-        if(vec[0] == 0.0 && vec[1] == 0.0){
-            vec[0] = world.computeBoardCenter(this.position.pos());
-        }
-        Point2D destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getY() + vec[1]);
-        world.moveAgent(this,destination);*/
-
-        //TODO there sould be world.boardCenterY, so agent would go to the center of the board
-        // czy to, jak zrobiłem tą zmianę, jest w jakiś tajemniczy sposób niepoprawne?
-        goToPoint(new Point2D(world.boardCenterX,world.boardCenterY));
     }
 
     protected abstract void attack(AID enemy, AgentInTree position);
@@ -214,4 +151,15 @@ public abstract class CannonFodder extends AgentWithPosition {
     public void setSpeedVector(double angle, double radius) {
         super.setSpeedVector(angle, Math.min(radius, speed));
     }
+
+    public AID getCommander() {
+        return commander;
+    }
+    public void setCommander(AID commander) {
+        this.commander = commander;
+    }
+
+    /*public unitType getType() {
+        return type;
+    }*/
 }

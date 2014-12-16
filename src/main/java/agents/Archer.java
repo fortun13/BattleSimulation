@@ -3,6 +3,7 @@ package main.java.agents;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import main.java.utils.AgentInTree;
+import main.java.agents.World.AgentType;
 
 /**
  * Created by Jakub Fortunka on 19.11.14.
@@ -13,6 +14,7 @@ public class Archer extends CannonFodder {
 
     public void setup() {
         super.setup();
+        this.getPosition().type= AgentType.ARCHER;
     }
 
     protected void takeDown() {
@@ -32,7 +34,6 @@ public class Archer extends CannonFodder {
             send(msg);
         }
     }
-
 
     public int getAttackRange() {
         return attackRange;

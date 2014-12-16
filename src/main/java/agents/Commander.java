@@ -4,6 +4,9 @@ import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import main.java.utils.AgentInTree;
 
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Commander extends CannonFodder {
@@ -48,12 +51,25 @@ public class Commander extends CannonFodder {
 	}
 
 	@Override
-	protected boolean enemyInRangeOfAttack(AgentInTree enemy) {
-		return (position.p.distance(enemy.p) < 2);
+	public boolean enemyInRangeOfAttack(AgentInTree enemy) {
+		return position.pos().distance(enemy.pos()) < attackRange;
 	}
 
 	@Override
 	public void reactToAttack(ACLMessage msg) {
+		if (position.isDead) {
+			try {
+				Clip clip = AudioSystem.getClip();
+				File stream = new File("res/die_fast.wav");
+				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(stream);
+				clip.open(audioInputStream);
+				clip.start();
+			} catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
+				System.out.println("Nie będzie muzyki");
+			}
+			sendMessageToEnemy(msg.createReply());
+			return ;
+		}
 		String content = msg.getContent();
 		String[] el = content.split(":");
 		int cond = Integer.valueOf(el[0]);
@@ -79,9 +95,7 @@ public class Commander extends CannonFodder {
 			world.killAgent(this);
 		} else {
 			// I'm still alive
-			position.condition = position.condition-str;
+			position.condition = position.condition - str;
 		}
-		
 	}
-
 }

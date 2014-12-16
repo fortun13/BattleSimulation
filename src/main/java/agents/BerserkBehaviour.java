@@ -25,7 +25,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                 //TODO probably will have to check if this turn message was send to server (boolean?)
                 myAgent.removeBehaviour(new BerserkBehaviour());
                 myAgent.addBehaviour(new CommanderMinionBehaviour());
-                commander = msg.getSender();
+                ((CannonFodder)myAgent).setCommander(msg.getSender());
                 state = 2;
                 break;
         }
@@ -49,8 +49,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                     state = FOLLOWIN;
                 }
                 else {
-                    //moveSomewhere
-                    agent.keepPosition();
+                    ((CannonFodder) myAgent).goToPoint(((CannonFodder) myAgent).world.returnBoardCenter());
                 }
                 break;
             case FOLLOWIN:
@@ -78,7 +77,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                     agent.gotoEnemy(enemyPosition);
 
                     if (Math.random() > 0.001) break;
-                    try {
+                try {
                         Clip c = AudioSystem.getClip();
 
                         File stream = new File("res/cast.wav");

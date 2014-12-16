@@ -3,66 +3,93 @@ package main.java.agents;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import javafx.geometry.Point2D;
+
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by fortun on 03.12.14.
  *
  */
 public class CommanderBehaviour extends ReactiveBehaviour {
+    private static final int FOLLOWIN = 1;
+    private static final int SEARCH = 0;
+    private static final int LIMIT = 10;
 
-    private ArrayList<AID> minions = new ArrayList<>();
+    private ArrayList<AID> minions = new ArrayList<AID>();
 
     public void decideOnNextStep() {
         CannonFodder agent = (CannonFodder) myAgent;
         double posX = ((CannonFodder) myAgent).getPosition().pos().getX();
         double posY = ((CannonFodder) myAgent).getPosition().pos().getY();
-        //System.out.println("Gromadzę miniony " + state + " " + myAgent.getLocalName());
-        switch (state) {
-            case 0:
-                //TODO - get some limit for controlled minions
-                minions = ((AgentWithPosition) myAgent).getMinionsWithinRange((Commander)myAgent);
-                ACLMessage commanderAddMessage = new ACLMessage(ACLMessage.REQUEST);
-                commanderAddMessage.setConversationId("commander-init");
-                commanderAddMessage.setContent(myAgent.getName());
-                commanderAddMessage.addUserDefinedParameter("commanderPosX", String.valueOf(posX));
-                commanderAddMessage.addUserDefinedParameter("commanderPosY", String.valueOf(posY));
-                minions.forEach(commanderAddMessage::addReceiver);
-                agent.send(commanderAddMessage);
-                state++;
-                break;
-            case 1:
-                ACLMessage fightingStance = new ACLMessage(ACLMessage.REQUEST);
-                fightingStance.setContent(myAgent.getName());
-                fightingStance.addUserDefinedParameter("commanderPosX", String.valueOf(posX));
-                fightingStance.addUserDefinedParameter("commanderPosY", String.valueOf(posY));
-                minions.forEach(fightingStance::addReceiver);
+        if (minions.size() < LIMIT) {
+            //TODO - get some limit for controlled minions
+            ArrayList<AID> minions_pom = ((AgentWithPosition) myAgent).getMinionsWithinRange((Commander) myAgent);
+            int i = 0;
+            while (i < minions_pom.size() && minions.size() < LIMIT) {
+                if (!minions.contains(minions_pom.get(i)))
+                    minions.add(minions_pom.get(i));
+                ++i;
+            }
+            ACLMessage commanderAddMessage = new ACLMessage(ACLMessage.REQUEST);
+            commanderAddMessage.setConversationId("commander-init");
+            commanderAddMessage.setContent(myAgent.getName());
+            commanderAddMessage.addUserDefinedParameter("commanderPosX", String.valueOf(posX));
+            commanderAddMessage.addUserDefinedParameter("commanderPosY", String.valueOf(posY));
+            minions.forEach(commanderAddMessage::addReceiver);
+            agent.send(commanderAddMessage);
+        }
 
-                enemyPosition = ((Commander) myAgent).getNearestEnemy();
+        ACLMessage fightingStance = new ACLMessage(ACLMessage.REQUEST);
+        fightingStance.setContent(myAgent.getName());
+        fightingStance.addUserDefinedParameter("commanderPosX", String.valueOf(posX));
+        fightingStance.addUserDefinedParameter("commanderPosY", String.valueOf(posY));
+        minions.forEach(fightingStance::addReceiver);
+
+        if (enemyPosition == null || enemyPosition.isDead)
+            state = SEARCH;
+        switch (state) {
+            case SEARCH:
+                enemyPosition = agent.getNearestEnemy();
                 if (enemyPosition != null) {
                     fightingStance.setConversationId("stance-fight");
-                    AID enemy = new AID(enemyPosition.getAgentName(), true);
+                    enemy = new AID(enemyPosition.getAgentName(), true);
                     agent.gotoEnemy(enemyPosition);
-                    if (agent.enemyInRangeOfAttack(enemyPosition)) {
-                        agent.setSpeedVector(0, 0);
-                        agent.attack(enemy, enemyPosition);
-                    }
-                    //System.out.println("Uderzam! " + myAgent.getLocalName());
-                }
-                else {
+                    state = FOLLOWIN;
+                } else {
                     fightingStance.setConversationId("stance-march");
-                    double speedVec = agent.world.computeBoardCenter(agent.position.pos());
-                    fightingStance.addUserDefinedParameter("speedVecXVal", String.valueOf(speedVec));
-                    Point2D thisPosition = agent.getPosition().pos();
-                    Point2D destination = new Point2D(thisPosition.getX() + speedVec, thisPosition.getY());
-                    agent.world.moveAgent(agent, destination);
+                    /* Zakomentowanie poniższej linii sprawi że Commander na początku bitwy stoi w miejscu
+                    Przydatene do obserwowania jak rozmieszczają się miniony
+                     */
+                    ((Commander) myAgent).goToPoint(((Commander) myAgent).world.returnBoardCenter());
                 }
-                agent.send(fightingStance);
+                break;
+            case FOLLOWIN:
+                fightingStance.setConversationId("stance-fight");
+                if (agent.enemyInRangeOfAttack(enemyPosition)) {
+                    agent.setSpeedVector(0, 0);
+                    agent.attack(enemy, enemyPosition);
+                } else {
+                    agent.gotoEnemy(enemyPosition);
+                    break;
+                }
                 break;
         }
+        agent.send(fightingStance);
     }
 
     @Override
     public void handleMessage(ACLMessage msg) {
+        switch(msg.getConversationId()) {
+            case "minion-dead":
+                minions.remove(msg.getSender());
+                break;
+        }
     }
 }

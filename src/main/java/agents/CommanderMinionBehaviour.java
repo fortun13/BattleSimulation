@@ -1,24 +1,25 @@
 package main.java.agents;
 
-import edu.wlu.cs.levy.CG.KeySizeException;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
-import main.java.gui.BoardPanel;
-import main.java.utils.AgentInTree;
 import javafx.geometry.Point2D;
-
-import java.util.ArrayList;
 
 /**
  * Created by Fortun on 2014-12-03.
  *
  */
 public class CommanderMinionBehaviour extends ReactiveBehaviour {
+    //Stałe opisujące bieżące działania
+    private static final int ATTACKING = 1;
+    private static final int SEARCHING = 0;
+    //Stałe opisujące postawę żołnierza
+    private static final int BERSERK = 2;
+    private static final int FIGHTING = 1;
+    private static final int FOLLOWING = 0;
 
-    boolean stance = false;
+    int stance = FOLLOWING;
     Double commanderPosX = new Double(0);
     Double commanderPosY = new Double(0);
-    double speedVec;
 
     @Override
     public void handleMessage(ACLMessage msg) {
@@ -26,19 +27,23 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
             case "stance-fight":
                 commanderPosX = Double.parseDouble(msg.getUserDefinedParameter("commanderPosX"));
                 commanderPosY = Double.parseDouble(msg.getUserDefinedParameter("commanderPosY"));
-                stance = true;
+                stance = FIGHTING;
                 break;
             case "stance-march":
                 commanderPosX = Double.parseDouble(msg.getUserDefinedParameter("commanderPosX"));
                 commanderPosY = Double.parseDouble(msg.getUserDefinedParameter("commanderPosY"));
-                stance = false;
-                speedVec = Double.parseDouble(msg.getUserDefinedParameter("speedVecXVal"));
+                stance = FOLLOWING;
                 break;
             case "commander-dead":
-                ((CannonFodder)myAgent).morale -= 10;
-                myAgent.removeBehaviour(new CommanderMinionBehaviour());
-                myAgent.addBehaviour(new BerserkBehaviour());
-                commander = null;
+                ((CannonFodder)myAgent).position.morale -= 10;
+                stance = BERSERK;
+                commanderPosX = ((CannonFodder) myAgent).world.returnBoardCenter().getX();
+                commanderPosY = ((CannonFodder) myAgent).world.returnBoardCenter().getY();
+                ((CannonFodder)myAgent).setCommander(null);
+                break;
+            case "commander-init":
+                ((CannonFodder)myAgent).setCommander(msg.getSender());
+                stance = FOLLOWING;
                 break;
         }
     }
@@ -46,29 +51,40 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
     @Override
     public void decideOnNextStep() {
         CannonFodder agent = (CannonFodder) myAgent;
-        if(stance) {
-            enemyPosition = ((CannonFodder) myAgent).getNearestEnemy();
-            if (enemyPosition == null) {
-                if(commanderPosX != null && commanderPosY != null){
-                    Point2D destination = new Point2D(commanderPosX, commanderPosY);
-                    System.out.println("ide " + myAgent.getLocalName());
-                    agent.world.moveAgent(agent, destination);
+        switch (stance) {
+            case FOLLOWING:
+                gotoCommander();
+                break;
+            case FIGHTING:
+            case BERSERK:
+                if (enemyPosition == null || enemyPosition.isDead) {
+                    state = SEARCHING;
                 }
-            }
-            else {
-                if (((CannonFodder) myAgent).enemyInRangeOfAttack(enemyPosition))
-                    doAction(() -> ((CannonFodder) myAgent).attack(enemy, enemyPosition));
-                else
-                    doAction(() -> ((CannonFodder) myAgent).gotoEnemy(enemyPosition));
-            }
-        }
-        else {
-            if(commanderPosX != null && commanderPosY != null){
-                System.out.println(commanderPosX + " " + commanderPosY);
-                Point2D destination = new Point2D(commanderPosX, commanderPosY);
-                System.out.println("ide " + myAgent.getLocalName());
-                agent.world.moveAgent(agent, destination);
-            }
+                switch (state) {
+                    case SEARCHING:
+                        enemyPosition = agent.getNearestEnemy();
+                        if (enemyPosition != null) {
+                            enemy = new AID(enemyPosition.getAgentName(), true);
+                            agent.gotoEnemy(enemyPosition);
+                            state = ATTACKING;
+                        } else {
+                            if(stance == FIGHTING){
+                                gotoCommander();
+                            }
+                            else if (stance == BERSERK)
+                                ((CannonFodder) myAgent).goToPoint(((CannonFodder) myAgent).world.returnBoardCenter());
+                        }
+                        break;
+                    case ATTACKING:
+                        if (agent.enemyInRangeOfAttack(enemyPosition)) {
+                            agent.setSpeedVector(0, 0);
+                            agent.attack(enemy, enemyPosition);
+                        }
+                        else
+                            //agent.gotoEnemy(enemyPosition);
+                            gotoCommander();
+                        break;
+                }
         }
     }
 
@@ -80,5 +96,29 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
             return ;
         }
         action.run();
+    }
+
+    private void gotoCommander() {
+        Point2D destination;
+        int centerDirection;
+        centerDirection = (int)(((CannonFodder)myAgent).world.returnBoardCenter().getX() - commanderPosX);
+        switch (((CannonFodder)myAgent).getPosition().type) {
+            case WARRIOR:
+                if(centerDirection >= 0)
+                    destination = new Point2D(commanderPosX + 20, commanderPosY);
+                else
+                    destination = new Point2D(commanderPosX - 20, commanderPosY);
+                break;
+            case ARCHER:
+                if(centerDirection >= 0)
+                    destination = new Point2D(commanderPosX - 20, commanderPosY);
+                else
+                    destination = new Point2D(commanderPosX + 20, commanderPosY);
+                break;
+            default:
+                destination = new Point2D(commanderPosX, commanderPosY);
+                break;
+        }
+        ((CannonFodder) myAgent).goToPoint(destination);
     }
 }
