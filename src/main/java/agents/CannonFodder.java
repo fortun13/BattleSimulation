@@ -59,8 +59,8 @@ public abstract class CannonFodder extends AgentWithPosition {
     public void goToPoint(Point2D pos) {
         Point2D mp = currentState.pos();
 
-        double size = (Integer) world.server.getFrame().getOptionsPanel().as.getValue();
-        setSpeedHV(pos.getX() - mp.getX(), pos.getY() - mp.getY(), size);
+        BoidOptions options = world.server.getFrame().getOptionsPanel().options;
+        setSpeedHV(pos.getX() - mp.getX(), pos.getY() - mp.getY(), options.getAgentSize());
 
         final double[] key = {mp.getX(), mp.getY()};
         double angle = currentState.getAngle();
@@ -96,7 +96,7 @@ public abstract class CannonFodder extends AgentWithPosition {
             setSpeedVector(angle, speed);
 
             // agent stara się być w środku grupy
-            final double COMweight = 0.1;
+            final double seekCenterWeight = options.getSeekCenterWeight();
             double[] HVSpeed = getSpeedHV().clone();
             double meanDst = Math.sqrt(neighbours.parallelStream().mapToDouble(a -> sqrDst(mp, a.pos())).average().orElse(0));
             neighbours.forEach(n -> {
@@ -109,7 +109,7 @@ public abstract class CannonFodder extends AgentWithPosition {
 
             // utrzymanie minimalnej dległości od wszystkiego oprócz obranego celu
             double min = options.getMinimalDistance();
-            List<AgentInTree> anything = world.getAgentsTree().nearest(key, 20, ait -> ait.p != ep).parallelStream()
+            List<AgentInTree> anything = world.getAgentsTree().nearest(key, 20, ait -> ait.p != pos).parallelStream()
                     .filter(agentInTree -> {
                         Point2D p2 = agentInTree.pos();
                         if (p2 != mp) if (sqrDst(mp, p2) < 3*min)
