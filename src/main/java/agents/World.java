@@ -283,12 +283,14 @@ public class World {
     }
 
     public AgentInTree getNearestEnemy(AgentWithPosition agent) {
-        double[] key = {agent.position.p.getX(), agent.position.p.getY()};
         try {
-            List<AgentInTree> t = agentsTree.nearest(key, 1, v -> v.side != agent.position.side && v.side != AgentsSides.Obstacle);
-            if (t != null)
-                if (!t.isEmpty())
-                    return t.get(0);
+            List<AgentInTree> l = agentsTree
+                    .nearestEuclidean(new double[] {agent.position.p.getX(), agent.position.p.getY()},agent.fieldOfView)
+                    .parallelStream()
+                    .filter(a -> a.side != agent.position.side && a.side != AgentsSides.Obstacle)
+                    .collect(Collectors.toList());
+            if (l != null && !l.isEmpty())
+                return l.get(0);
         } catch (KeySizeException e) {
             e.printStackTrace();
         }

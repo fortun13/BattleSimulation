@@ -47,8 +47,8 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
     public void decideOnNextStep() {
         CannonFodder agent = (CannonFodder) myAgent;
         if(stance) {
-            ArrayList<AID> enemiesInRange = ((CannonFodder) myAgent).enemyInRange(agent);
-            if (enemiesInRange.size() == 0) {
+            enemyPosition = ((CannonFodder) myAgent).getNearestEnemy();
+            if (enemyPosition == null) {
                 if(commanderPosX != null && commanderPosY != null){
                     Point2D destination = new Point2D(commanderPosX, commanderPosY);
                     System.out.println("ide " + myAgent.getLocalName());
@@ -56,7 +56,6 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                 }
             }
             else {
-                enemyPosition = ((CannonFodder)myAgent).getNearestEnemy();
                 if (((CannonFodder) myAgent).enemyInRangeOfAttack(enemyPosition))
                     doAction(() -> ((CannonFodder) myAgent).attack(enemy, enemyPosition));
                 else
