@@ -13,6 +13,7 @@ public class Archer extends CannonFodder {
 
     public void setup() {
         super.setup();
+        this.type = unitType.ARCHER;
     }
 
     protected void takeDown() {
@@ -32,7 +33,6 @@ public class Archer extends CannonFodder {
             send(msg);
         }
     }
-
 
     public int getAttackRange() {
         return attackRange;

@@ -37,7 +37,6 @@ public class CommanderBehaviour extends ReactiveBehaviour {
                     minions.add(minions_pom.get(i));
                 ++i;
             }
-
             ACLMessage commanderAddMessage = new ACLMessage(ACLMessage.REQUEST);
             commanderAddMessage.setConversationId("commander-init");
             commanderAddMessage.setContent(myAgent.getName());
@@ -65,6 +64,9 @@ public class CommanderBehaviour extends ReactiveBehaviour {
                     state = FOLLOWIN;
                 } else {
                     fightingStance.setConversationId("stance-march");
+                    /* Zakomentowanie poniższej linii sprawi że Commander na początku bitwy stoi w miejscu
+                    Przydatene do obserwowania jak rozmieszczają się miniony
+                     */
                     ((Commander) myAgent).goToPoint(((Commander) myAgent).world.returnBoardCenter());
                 }
                 break;

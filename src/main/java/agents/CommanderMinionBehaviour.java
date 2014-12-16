@@ -49,7 +49,24 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
         CannonFodder agent = (CannonFodder) myAgent;
         switch (stance) {
             case FOLLOWING:
-                destination = new Point2D(commanderPosX, commanderPosY);
+                int pom = (int)(((CannonFodder)myAgent).world.returnBoardCenter().getX() - commanderPosX);
+                switch (((CannonFodder)myAgent).type) {
+                    case WARRIOR:
+                        if(pom >= 0)
+                            destination = new Point2D(commanderPosX + 20, commanderPosY);
+                        else
+                            destination = new Point2D(commanderPosX - 20, commanderPosY);
+                        break;
+                    case ARCHER:
+                        if(pom >= 0)
+                            destination = new Point2D(commanderPosX - 20, commanderPosY);
+                        else
+                            destination = new Point2D(commanderPosX + 20, commanderPosY);
+                        break;
+                    default:
+                        destination = new Point2D(commanderPosX, commanderPosY);
+                        break;
+                }
                 ((CannonFodder) myAgent).goToPoint(destination);
                 break;
             case ATTACKING:

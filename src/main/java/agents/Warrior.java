@@ -12,6 +12,7 @@ import main.java.utils.AgentInTree;
 public class Warrior extends CannonFodder {
     public void setup() {
         super.setup();
+        this.type = unitType.WARRIOR;
     }
 
     @Override
