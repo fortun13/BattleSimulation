@@ -102,7 +102,7 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
         Point2D destination;
         int centerDirection;
         centerDirection = (int)(((CannonFodder)myAgent).world.returnBoardCenter().getX() - commanderPosX);
-        switch (((CannonFodder)myAgent).type) {
+        switch (((CannonFodder)myAgent).getPosition().type) {
             case WARRIOR:
                 if(centerDirection >= 0)
                     destination = new Point2D(commanderPosX + 20, commanderPosY);

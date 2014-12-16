@@ -16,7 +16,6 @@ public abstract class CannonFodder extends AgentWithPosition {
 
     protected int strength, speed, accuracy, attackRange;
     protected AID commander;
-    protected World.AgentType type;
 
     public void setup() {
         // 0 - behaviour

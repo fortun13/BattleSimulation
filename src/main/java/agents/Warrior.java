@@ -13,7 +13,7 @@ import main.java.agents.World.AgentType;
 public class Warrior extends CannonFodder {
     public void setup() {
         super.setup();
-        this.type = AgentType.WARRIOR;
+        this.getPosition().type = AgentType.WARRIOR;
     }
 
     @Override

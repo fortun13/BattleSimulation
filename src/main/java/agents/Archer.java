@@ -14,7 +14,7 @@ public class Archer extends CannonFodder {
 
     public void setup() {
         super.setup();
-        this.type = AgentType.ARCHER;
+        this.getPosition().type= AgentType.ARCHER;
     }
 
     protected void takeDown() {
