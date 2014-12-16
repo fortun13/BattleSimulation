@@ -14,11 +14,9 @@ import java.util.stream.Collectors;
  */
 public abstract class CannonFodder extends AgentWithPosition {
 
-    protected enum unitType { WARRIOR, ARCHER }
-
     protected int strength, speed, accuracy, attackRange;
     protected AID commander;
-    protected unitType type;
+    protected World.AgentType type;
 
     public void setup() {
         // 0 - behaviour

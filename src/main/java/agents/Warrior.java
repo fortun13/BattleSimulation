@@ -3,6 +3,7 @@ package main.java.agents;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import main.java.utils.AgentInTree;
+import main.java.agents.World.AgentType;
 
 /**
  * Created by Marek on 2014-11-11.
@@ -12,7 +13,7 @@ import main.java.utils.AgentInTree;
 public class Warrior extends CannonFodder {
     public void setup() {
         super.setup();
-        this.type = unitType.WARRIOR;
+        this.type = AgentType.WARRIOR;
     }
 
     @Override
