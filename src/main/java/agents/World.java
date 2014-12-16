@@ -33,13 +33,14 @@ public class World {
     public ArrayList<AID> bluesAgents = new ArrayList<>();
     public ArrayList<AID> redsAgents = new ArrayList<>();
     public ServerAgent server;
-    public int boardCenterX;
+    public int boardCenterX, boardCenterY;
     public ArrayList<AID> redsCorpses = new ArrayList<>();
     public ArrayList<AID> bluesCorpses = new ArrayList<>();
 
     public World(ServerAgent serverAgent, ArrayList<Pair<AgentType, Integer>> blues, ArrayList<Pair<AgentType, Integer>> reds) {
         this.server = serverAgent;
-        this.boardCenterX = (int) server.getFrame().getFRAME_WIDTH()/2;
+        this.boardCenterX = server.getFrame().getFRAME_WIDTH() /2;
+        this.boardCenterY = server.getFrame().getFRAME_HEIGHT() /2;
 
         Director generator = new Director();
 
@@ -169,9 +170,7 @@ public class World {
         AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle, new Point2D(obstacle.getInt("x"), obstacle.getInt("y")), World.AgentType.OBSTACLE, null);
         try {
             agentsTree.insert(new double[] {obstacle.getInt("x"),obstacle.getInt("y")},obs);
-        } catch (KeySizeException e) {
-            e.printStackTrace();
-        } catch (KeyDuplicateException e) {
+        } catch (KeySizeException | KeyDuplicateException e) {
             e.printStackTrace();
         }
     }
@@ -306,7 +305,9 @@ public class World {
             //if (agentsTree.nearestEuclidean(oldPos,agent.position.type.getSize()-15).size() > 1)
             //    return false;
             //System.out.println("Move");
-            if (agentsTree.search(newPos) != null)
+            if (agentsTree.search(newPos) != null &&
+                    newPos[0] > 0 && newPos[0] < server.getFrame().getFRAME_WIDTH() &&
+                    newPos[1] > 0 && newPos[1] < server.getFrame().getFRAME_HEIGHT())
                 return false;
         } catch (KeySizeException e) {
             e.printStackTrace();
@@ -361,7 +362,7 @@ public class World {
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
-        return new ArrayList<AgentInTree>();
+        return new ArrayList<>();
     }
 
     public void killAgent(AgentWithPosition agent) {

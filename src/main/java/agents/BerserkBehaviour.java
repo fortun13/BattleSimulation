@@ -78,7 +78,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                     agent.gotoEnemy(enemyPosition);
 
                     if (Math.random() > 0.001) break;
-                try {
+                    try {
                         Clip c = AudioSystem.getClip();
 
                         File stream = new File("res/cast.wav");

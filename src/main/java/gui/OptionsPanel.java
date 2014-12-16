@@ -12,15 +12,8 @@ import java.util.ArrayList;
 public class OptionsPanel extends JPanel {
 
 	private final JButton btnSaveToFile;
+	public final BoidOptions options = new BoidOptions();
 	private JSpinner timeStepSpinner;
-	public JSpinner as;
-	public JSpinner aov;
-	public JSpinner rov;
-	public JSpinner t;
-	public JSpinner dosw;
-	public JSpinner comw;
-	public JSpinner aw;
-	public JSpinner mind;
 	private JSpinner turnsLimitSpinner;
 	private JCheckBox limitButton;
 	private JSpinner boardWidth;
@@ -82,15 +75,8 @@ public class OptionsPanel extends JPanel {
 		timeStepSpinner = new JSpinner(new SpinnerNumberModel(40, 1, 1000, 1));
 		timeStepP.add(timeStepSpinner);
 		timeOptionsPanel.add(timeStepP);
-		
-		JPanel smth = new JPanel();
-		JLabel lblSmth = new JLabel(Messages.getString("OptionsPanel.lblSmth.text")); //$NON-NLS-1$
-		smth.add(lblSmth);
-		as = new JSpinner();
-		as.setValue(20);
-		smth.add(as);
-		timeOptionsPanel.add(smth);
-		
+
+		timeOptionsPanel.add(options);
 
 		JPanel turnsLimitPanel = new JPanel();
 		JLabel lblTurnsLimit = new JLabel(Messages.getString("OptionsPanel.turnsLimit.text"));
@@ -165,10 +151,6 @@ public class OptionsPanel extends JPanel {
 		return (int)timeStepSpinner.getValue();
 	}
 
-    public JSpinner getBoardWidth() {
-        return boardWidth;
-    }
-
 	public void setBoardSize(int boardWidth, int boardHeight) {
 		this.boardHeight.setValue(boardHeight);
 		this.boardWidth.setValue(boardWidth);
@@ -176,4 +158,6 @@ public class OptionsPanel extends JPanel {
 
 	public JCheckBox getLimitButton() {	return limitButton;	}
 	public JSpinner getTurnsLimitSpinner() { return turnsLimitSpinner; }
+
+
 }

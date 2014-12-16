@@ -5,7 +5,6 @@ import main.java.agents.World.AgentType;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
-
 import java.awt.*;
 import java.util.HashMap;
 
@@ -38,9 +37,6 @@ public class SideOptionPanel extends JPanel {
 
 	private JSpinner commandersNumber;
 	private JSlider commandersSlider;
-	private JPanel warriorsNumberPanel;
-	private JPanel archersNumberPanel;
-	private JPanel commandersNumberPanel;
 
 
 	public SideOptionPanel(String identifier) {
@@ -53,7 +49,7 @@ public class SideOptionPanel extends JPanel {
 		add(warriorsSliderPanel);
 		warriorsSliderPanel.setLayout(new BoxLayout(warriorsSliderPanel, BoxLayout.Y_AXIS));
 
-		warriorsNumberPanel = new JPanel();
+		JPanel warriorsNumberPanel = new JPanel();
 		warriorsSliderPanel.add(warriorsNumberPanel);
 		//warriorsSliderPanel.setLayout(new BoxLayout(warriorsSliderPanel, BoxLayout.Y_AXIS));
 
@@ -75,7 +71,7 @@ public class SideOptionPanel extends JPanel {
 
 		archersSliderPanel.setLayout(new BoxLayout(archersSliderPanel, BoxLayout.Y_AXIS));
 
-		archersNumberPanel = new JPanel();
+		JPanel archersNumberPanel = new JPanel();
 		archersSliderPanel.add(archersNumberPanel);
 
 		archersNumber = new JSpinner(new SpinnerNumberModel(10, 0, 500, 1));
@@ -94,7 +90,7 @@ public class SideOptionPanel extends JPanel {
 		add(commandersSliderPanel);
 		commandersSliderPanel.setLayout(new BoxLayout(commandersSliderPanel, BoxLayout.Y_AXIS));
 
-		commandersNumberPanel = new JPanel();
+		JPanel commandersNumberPanel = new JPanel();
 		commandersSliderPanel.add(commandersNumberPanel);
 
 		commandersNumber = new JSpinner(new SpinnerNumberModel(1, 0, 500, 1));
