@@ -4,10 +4,6 @@ import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import main.java.utils.AgentInTree;
 
-import javax.sound.sampled.*;
-import java.io.File;
-import java.io.IOException;
-
 /**
  * Created by Marek on 2014-11-11.
  * Represents a Warrior
@@ -68,7 +64,7 @@ public class Warrior extends CannonFodder {
     @Override
     public void reactToAttack(ACLMessage msg) {
         if (position.isDead) {
-            try {
+            /*try {
                 Clip clip = AudioSystem.getClip();
                 File stream = new File("res/die_fast.wav");
                 AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(stream);
@@ -76,7 +72,7 @@ public class Warrior extends CannonFodder {
                 clip.start();
             } catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
                 System.out.println("Nie będzie muzyki");
-            }
+            }*/
             sendMessageToEnemy(msg.createReply());
             return ;
         }

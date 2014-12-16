@@ -2,14 +2,6 @@ package main.java.agents;
 
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
-import javafx.geometry.Point2D;
-
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by Jakub Fortunka on 18.11.14.
@@ -55,7 +47,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                 break;
             case FOLLOWIN:
                 if (agent.enemyInRangeOfAttack(enemyPosition)) {
-                    try {
+                    /*try {
                         Clip c = AudioSystem.getClip();
 
                         File stream = new File("res/" + (Math.random() > 0.5 ? "one_" : "") + "shot0.wav");
@@ -70,15 +62,15 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                         c.start();
                     } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
                         System.out.println("nie będzie muzyki");
-                    }
+                    }*/
 
                     agent.setSpeedVector(0, 0);
                     agent.attack(enemy, enemyPosition);
                 } else {
                     agent.gotoEnemy(enemyPosition);
 
-                    if (Math.random() > 0.001) break;
-                try {
+                    //if (Math.random() > 0.001) break;
+                /*try {
                         Clip c = AudioSystem.getClip();
 
                         File stream = new File("res/cast.wav");
@@ -93,7 +85,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                         c.start();
                     } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
                         System.out.println("nie będzie muzyki");
-                    }
+                    }*/
                 }
                 break;
         }

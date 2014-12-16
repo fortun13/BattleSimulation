@@ -405,7 +405,7 @@ public class World {
         }
         return lst;
     }
-    
+
     public void updateTree(List<BoardPanel.MyAgent> changed) {
         for (BoardPanel.MyAgent a : changed) {
             AgentInTree position = a.getAgent();

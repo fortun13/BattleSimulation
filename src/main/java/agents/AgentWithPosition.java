@@ -63,6 +63,9 @@ public abstract class AgentWithPosition extends Agent {
         int [] count;
         count = world.countFriendFoe(this);
         //System.out.println("Friends: " + count[0] + " Enemies: " + count[1]);
+        if (position.morale > 50)
+            return true;
+
         if (count[1] == 0) {
             position.morale += 4;
             return position.morale > 0;
