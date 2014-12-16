@@ -13,7 +13,7 @@ import main.java.agents.World.AgentType;
 public class Warrior extends CannonFodder {
     public void setup() {
         super.setup();
-        this.getPosition().type = AgentType.WARRIOR;
+        this.getCurrentState().type = AgentType.WARRIOR;
     }
 
     @Override
@@ -44,12 +44,12 @@ public class Warrior extends CannonFodder {
 
     @Override
     public boolean enemyInRangeOfAttack(AgentInTree enemy) {
-        return position.pos().distance(enemy.pos()) < attackRange;
+        return currentState.pos().distance(enemy.pos()) < attackRange;
     }
 
     @Override
     public void reactToAttack(ACLMessage msg) {
-        if (position.isDead) {
+        if (currentState.isDead) {
             /*try {
                 Clip clip = AudioSystem.getClip();
                 File stream = new File("res/die_fast.wav");
@@ -68,8 +68,8 @@ public class Warrior extends CannonFodder {
         int str = Integer.valueOf(el[1]);
         int spe = Integer.valueOf(el[2]);
         int acc = Integer.valueOf(el[3]);
-        if (position.condition <= str) {
-            position.condition-=str;
+        if (currentState.condition <= str) {
+            currentState.condition-=str;
             ACLMessage toCommander = new ACLMessage(ACLMessage.INFORM);
             toCommander.addReceiver(this.commander);
             toCommander.setConversationId("minion-dead");
@@ -77,7 +77,7 @@ public class Warrior extends CannonFodder {
             killYourself(msg.createReply());
         } else {
             // I'm still alive
-            position.condition = position.condition-str;
+            currentState.condition = currentState.condition-str;
         }
     }
 }

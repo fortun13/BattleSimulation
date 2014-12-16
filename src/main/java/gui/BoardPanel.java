@@ -118,6 +118,10 @@ public class BoardPanel extends JPanel {
         return Collections.unmodifiableList(agentsList);
     }
 
+    public Point2D getBoardSize() {
+        return new Point2D(innerBoard.getPreferredSize().getWidth(),innerBoard.getPreferredSize().getHeight());
+    }
+
     public class Board extends JPanel {
         @Override
         //TODO Pojawiają się wyjątki sygnalizujące rysowanie poza planszą (javax.swing.JComponent.paintToOffscreen)

@@ -35,8 +35,8 @@ public abstract class CannonFodder extends AgentWithPosition {
         this.speed = (int) parameters[3];
         this.accuracy = (int) parameters[4];
         this.world = (World) parameters[5];
-        this.position = (AgentInTree) parameters[6];
-        this.position.condition = (int) parameters[1];
+        this.currentState = (AgentInTree) parameters[6];
+        this.currentState.condition = (int) parameters[1];
         this.attackRange = (int) parameters[7];
     }
 
@@ -56,15 +56,15 @@ public abstract class CannonFodder extends AgentWithPosition {
         goToPoint(enemy.p);
     }
 
-    private void goToPoint(Point2D ep) {
-        Point2D mp = position.pos();
+    public void goToPoint(Point2D pos) {
+        Point2D mp = currentState.pos();
 
-        BoidOptions options = world.server.getFrame().getOptionsPanel().options;
-        setSpeedHV(ep.getX() - mp.getX(2), ep.getY() - mp.getY(), options.getAgentSize());
+        double size = (Integer) world.server.getFrame().getOptionsPanel().as.getValue();
+        setSpeedHV(pos.getX() - mp.getX(), pos.getY() - mp.getY(), size);
 
         final double[] key = {mp.getX(), mp.getY()};
-        double angle = position.getAngle();
-        double speed = position.getSpeed();
+        double angle = currentState.getAngle();
+        double speed = currentState.getSpeed();
         try {
             // agent szuka sąsiadów
             // zakres widzenia jest kwadratem, zeby nie liczyc niepotrzenie pierwiastka w obliczeniach ponizej
@@ -72,7 +72,7 @@ public abstract class CannonFodder extends AgentWithPosition {
             final double rayOfView = fieldOfView*fieldOfView;
             final double angleOfView = Math.toRadians(options.getAngleOfView() / 2); // po pol na strone
             final double finalAngle = angle;
-            List<AgentInTree> neighbours = world.getAgentsTree().nearest(key, 20, agentInTree -> agentInTree.side == position.side).parallelStream().filter(agentInTree -> {
+            List<AgentInTree> neighbours = world.getAgentsTree().nearest(key, 20, agentInTree -> agentInTree.side == currentState.side).parallelStream().filter(agentInTree -> {
                 Point2D p2 = agentInTree.pos();
                 if (p2 != mp) if (sqrDst(mp, p2) < rayOfView)
                     if (Math.abs(Math.atan2(p2.getY() - mp.getY(), p2.getX() - mp.getX()) - finalAngle) < angleOfView)

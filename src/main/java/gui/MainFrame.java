@@ -21,7 +21,7 @@ public class MainFrame extends JFrame {
     private final JButton btnStartSimulation;
     private final JButton spawnAgents;
     private final JLabel lblConditionState;
-    private final JLabel lblspeedState;
+    //private final JLabel lblspeedState;
     private final JLabel lblMorale;
     private final int FRAME_WIDTH = 1200;
     private final int FRAME_HEIGHT = 700;
@@ -80,11 +80,11 @@ public class MainFrame extends JFrame {
         lblConditionState = new JLabel("");
         statisticsPanel.add(lblConditionState);
         
-        JLabel lblSpeed = new JLabel(Messages.getString("MainFrame.lblSpeed.text")); //$NON-NLS-1$
-        statisticsPanel.add(lblSpeed);
+        //JLabel lblSpeed = new JLabel(Messages.getString("MainFrame.lblSpeed.text")); //$NON-NLS-1$
+        //statisticsPanel.add(lblSpeed);
         
-        lblspeedState = new JLabel("");
-        statisticsPanel.add(lblspeedState);
+        //lblspeedState = new JLabel("");
+        //statisticsPanel.add(lblspeedState);
 
         JLabel lblMor = new JLabel(Messages.getString("MainFrame.lblMorale.text"));
         statisticsPanel.add(lblMor);
@@ -162,10 +162,10 @@ public class MainFrame extends JFrame {
             return;
         lblConditionState.setText(String.valueOf(clickedAgent.getAgent().condition));
         lblConditionState.setForeground(Color.RED);
-        String vec1 = String.valueOf(clickedAgent.getAgent().speed[0]);
-        String vec2 = String.valueOf(clickedAgent.getAgent().speed[1]);
-        lblspeedState.setText("(" + vec1 + "," + vec2 + ")");
-        lblspeedState.setForeground(Color.RED);
+        //String vec1 = String.valueOf(clickedAgent.getAgent().speed[0]);
+        //String vec2 = String.valueOf(clickedAgent.getAgent().speed[1]);
+        //lblspeedState.setText("(" + vec1 + "," + vec2 + ")");
+        //lblspeedState.setForeground(Color.RED);
         lblMorale.setText(String.valueOf(clickedAgent.getAgent().morale));
         lblMorale.setForeground(Color.RED);
     }
@@ -173,7 +173,7 @@ public class MainFrame extends JFrame {
     public void cleanStatistics() {
         clickedAgent = null;
         lblConditionState.setText("");
-        lblspeedState.setText("");
+        //lblspeedState.setText("");
         lblMorale.setText("");
     }
 

@@ -2,16 +2,8 @@ package main.java.agents;
 
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
-import javafx.geometry.Point2D;
 
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Created by fortun on 03.12.14.
@@ -22,12 +14,12 @@ public class CommanderBehaviour extends ReactiveBehaviour {
     private static final int SEARCH = 0;
     private static final int LIMIT = 10;
 
-    private ArrayList<AID> minions = new ArrayList<AID>();
+    private ArrayList<AID> minions = new ArrayList<>();
 
     public void decideOnNextStep() {
         CannonFodder agent = (CannonFodder) myAgent;
-        double posX = ((CannonFodder) myAgent).getPosition().pos().getX();
-        double posY = ((CannonFodder) myAgent).getPosition().pos().getY();
+        double posX = ((CannonFodder) myAgent).getCurrentState().pos().getX();
+        double posY = ((CannonFodder) myAgent).getCurrentState().pos().getY();
         if (minions.size() < LIMIT) {
             //TODO - get some limit for controlled minions
             ArrayList<AID> minions_pom = ((AgentWithPosition) myAgent).getMinionsWithinRange((Commander) myAgent);

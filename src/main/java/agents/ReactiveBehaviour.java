@@ -30,7 +30,7 @@ public abstract class ReactiveBehaviour extends Behaviour {
                 case "new-turn":
                     AgentWithPosition agentWithPosition = (AgentWithPosition) myAgent;
 
-                    if (agentWithPosition.position.isDead) ;
+                    if (agentWithPosition.currentState.isDead) ;
                         //state = 2;
                     else if (agentWithPosition.isMotivated()) {
                         decideOnNextStep();

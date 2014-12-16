@@ -22,7 +22,7 @@ public abstract class AgentWithPosition extends Agent {
 
     protected World world;
 
-    protected AgentInTree position;
+    protected AgentInTree currentState;
 
     protected abstract boolean enemyInRangeOfAttack(AgentInTree enemy);
 
@@ -30,23 +30,23 @@ public abstract class AgentWithPosition extends Agent {
 
     protected abstract void gotoEnemy(AgentInTree enemy);
 
-    public AgentInTree getPosition() {
-        return position;
+    public AgentInTree getCurrentState() {
+        return currentState;
     }
 
     public ArrayList<AID> getMinionsWithinRange(Commander agent) {
         ArrayList<AgentInTree> list = new ArrayList<>();
         try {
             world.getAgentsTree()
-                    .nearestEuclidean(new double[]{agent.position.p.getX(), agent.position.p.getY()},agent.attractionForce)
+                    .nearestEuclidean(new double[]{agent.currentState.p.getX(), agent.currentState.p.getY()},agent.attractionForce)
                     .stream()
-                    .filter(a -> a.side==agent.position.side)
+                    .filter(a -> a.side==agent.currentState.side)
                     .forEach(list::add);
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
-        if(list.contains(agent.position))
-            list.remove(agent.position);
+        if(list.contains(agent.currentState))
+            list.remove(agent.currentState);
         ArrayList<AID> ans = new ArrayList<>();
         for (AgentInTree a :
                 list) {
@@ -61,31 +61,31 @@ public abstract class AgentWithPosition extends Agent {
         int [] count;
         count = world.countFriendFoe(this);
         //System.out.println("Friends: " + count[0] + " Enemies: " + count[1]);
-        if (position.morale > 50)
+        if (currentState.morale > 50)
             return true;
 
         if (count[1] == 0) {
-            position.morale += 4;
-            return position.morale > 0;
+            currentState.morale += 4;
+            return currentState.morale > 0;
         } else if (count[0] == 0) {
-            position.morale -= 4;
-            return position.morale > 0;
+            currentState.morale -= 4;
+            return currentState.morale > 0;
         }
         double ratio = ((double)count[0])/((double)count[1]);
         //System.out.println("Ratio: " + ratio);
         if (ratio < psychologicalResistance && ratio < previousRatio)
-            position.morale -= (1/ratio +2);
-        if (ratio >= 1 && position.morale<50)
-            position.morale += ratio;
+            currentState.morale -= (1/ratio +2);
+        if (ratio >= 1 && currentState.morale<50)
+            currentState.morale += ratio;
         previousRatio = ratio;
         //System.out.println(getLocalName() + " Morale: " + morale);
-        return position.morale > 0;
+        return currentState.morale > 0;
     }
 
     protected abstract void killYourself(ACLMessage msgToSend);
 
     public double[] getSpeedHV() {
-        double angle = position.speed[0], r = position.speed[1];
+        double angle = currentState.speed[0], r = currentState.speed[1];
         return new double[]{r * Math.cos(angle), r * Math.sin(angle)};
     }
 
@@ -98,12 +98,12 @@ public abstract class AgentWithPosition extends Agent {
     }
 
     public void setSpeedVector(double angle, double radius) {
-        position.speed[0] = angle;
-        position.speed[1] = radius;
+        currentState.speed[0] = angle;
+        currentState.speed[1] = radius;
     }
 
     protected Point2D gesDestination() {
-        Point2D pos = position.pos();
+        Point2D pos = currentState.pos();
         double[] s = getSpeedHV();
         return new Point2D(pos.getX() + s[0], pos.getY() + s[1]);
     }
