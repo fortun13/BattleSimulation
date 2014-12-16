@@ -102,7 +102,7 @@ public abstract class CannonFodder extends AgentWithPosition {
             setSpeedHV(HVSpeed[0], HVSpeed[1]);
 
             // utrzymanie minimalnej dległości od wszystkiego oprócz obranego celu
-            double min =30;
+            double min = 30;
             List<AgentInTree> anything = world.getAgentsTree().nearest(key, 20, ait -> ait != enemy).parallelStream()
                     .filter(agentInTree -> {
                         Point2D p2 = agentInTree.pos();
@@ -133,6 +133,31 @@ public abstract class CannonFodder extends AgentWithPosition {
             e.printStackTrace();
         }
 
+    }
+
+    protected void followAgent(AgentInTree leader) {
+        Point2D mp = position.pos();
+        Point2D ep = leader.pos();
+
+        double size = (Integer) world.server.getFrame().getOptionsPanel().as.getValue();
+        setSpeedHV(ep.getX() - mp.getX(), ep.getY() - mp.getY(), size);
+
+        final double[] key = {mp.getX(), mp.getY()};
+        double angle = position.getAngle();
+        double speed = position.getSpeed();
+
+        // agent stara się nie wychodzić przed szereg:
+        final double temporize = 0.4;
+        speed *= temporize + Math.random()*(1-temporize);
+        setSpeedVector(angle, speed);
+
+        // agent dostosowuje prędkość i kierunek do innych
+        angle = leader.getAngle();
+        speed = leader.getSpeed();
+        setSpeedVector(angle, speed);
+        if (!world.moveAgent(this, gesDestination())) {
+            setSpeedVector(angle, 0);
+        }
     }
 
     private double sqrDst(Point2D mp, Point2D p2) {

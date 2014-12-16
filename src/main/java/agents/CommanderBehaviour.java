@@ -17,12 +17,11 @@ public class CommanderBehaviour extends ReactiveBehaviour {
         CannonFodder agent = (CannonFodder) myAgent;
         double posX = ((CannonFodder) myAgent).getPosition().pos().getX();
         double posY = ((CannonFodder) myAgent).getPosition().pos().getY();
-
+        //System.out.println("Gromadzę miniony " + state + " " + myAgent.getLocalName());
         switch (state) {
             case 0:
                 //TODO - get some limit for controlled minions
                 minions = ((AgentWithPosition) myAgent).getMinionsWithinRange((Commander)myAgent);
-                //System.out.println("Gromadzę miniony " + myAgent.getLocalName());
                 ACLMessage commanderAddMessage = new ACLMessage(ACLMessage.REQUEST);
                 commanderAddMessage.setConversationId("commander-init");
                 commanderAddMessage.setContent(myAgent.getName());
@@ -33,21 +32,23 @@ public class CommanderBehaviour extends ReactiveBehaviour {
                 state++;
                 break;
             case 1:
-                enemyPosition = ((CannonFodder)myAgent).getNearestEnemy();
-
                 ACLMessage fightingStance = new ACLMessage(ACLMessage.REQUEST);
                 fightingStance.setContent(myAgent.getName());
                 fightingStance.addUserDefinedParameter("commanderPosX", String.valueOf(posX));
                 fightingStance.addUserDefinedParameter("commanderPosY", String.valueOf(posY));
                 minions.forEach(fightingStance::addReceiver);
-                if (enemyPosition != null) {
+
+                ArrayList<AID> enemiesInRange = ((CannonFodder) myAgent).enemyInRange(agent);
+                if (enemiesInRange.size() != 0) {
                     fightingStance.setConversationId("stance-fight");
+                    enemyPosition = ((CannonFodder)myAgent).getNearestEnemy();
                     AID enemy = new AID(enemyPosition.getAgentName(), true);
                     agent.gotoEnemy(enemyPosition);
                     if (agent.enemyInRangeOfAttack(enemyPosition)) {
                         agent.setSpeedVector(0, 0);
                         agent.attack(enemy, enemyPosition);
                     }
+                    //System.out.println("Uderzam! " + myAgent.getLocalName());
                 }
                 else {
                     fightingStance.setConversationId("stance-march");
