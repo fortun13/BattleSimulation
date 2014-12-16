@@ -54,11 +54,11 @@ public abstract class CannonFodder extends AgentWithPosition {
         goToPoint(enemy.p);
     }
 
-    public void goToPoint(Point2D ep) {
+    public void goToPoint(Point2D pos) {
         Point2D mp = position.pos();
 
         double size = (Integer) world.server.getFrame().getOptionsPanel().as.getValue();
-        setSpeedHV(ep.getX() - mp.getX(), ep.getY() - mp.getY(), size);
+        setSpeedHV(pos.getX() - mp.getX(), pos.getY() - mp.getY(), size);
 
         final double[] key = {mp.getX(), mp.getY()};
         double angle = position.getAngle();
@@ -106,7 +106,7 @@ public abstract class CannonFodder extends AgentWithPosition {
 
             // utrzymanie minimalnej dległości od wszystkiego oprócz obranego celu
             double min = 30;
-            List<AgentInTree> anything = world.getAgentsTree().nearest(key, 20, ait -> ait.p != ep).parallelStream()
+            List<AgentInTree> anything = world.getAgentsTree().nearest(key, 20, ait -> ait.p != pos).parallelStream()
                     .filter(agentInTree -> {
                         Point2D p2 = agentInTree.pos();
                         if (p2 != mp) if (sqrDst(mp, p2) < 3*min)

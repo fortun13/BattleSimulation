@@ -10,7 +10,7 @@ import java.io.IOException;
 
 /**
  * Created by Marek on 2014-11-11.
- * Represents an Warrior
+ * Represents a Warrior
  */
 @SuppressWarnings("UnusedDeclaration")
 public class Warrior extends CannonFodder {
@@ -80,7 +80,6 @@ public class Warrior extends CannonFodder {
             sendMessageToEnemy(msg.createReply());
             return ;
         }
-        //System.out.println("I'm attacked!! " + getName());
         String content = msg.getContent();
         String[] el = content.split(":");
         int cond = Integer.valueOf(el[0]);
