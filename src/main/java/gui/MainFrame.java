@@ -1,8 +1,5 @@
 package main.java.gui;
 
-import edu.wlu.cs.levy.CG.KDTree;
-import edu.wlu.cs.levy.CG.KeySizeException;
-import javafx.util.Pair;
 import main.java.adapters.Controller;
 import main.java.agents.ServerAgent;
 import main.java.utils.AgentInTree;
@@ -25,6 +22,7 @@ public class MainFrame extends JFrame {
     private final JButton spawnAgents;
     private final JLabel lblConditionState;
     private final JLabel lblspeedState;
+    private final JLabel lblMorale;
     private final int FRAME_WIDTH = 1200;
     private final int FRAME_HEIGHT = 700;
 
@@ -88,6 +86,12 @@ public class MainFrame extends JFrame {
         lblspeedState = new JLabel("");
         statisticsPanel.add(lblspeedState);
 
+        JLabel lblMor = new JLabel(Messages.getString("MainFrame.lblMorale.text"));
+        statisticsPanel.add(lblMor);
+
+        lblMorale = new JLabel("");
+        statisticsPanel.add(lblMorale);
+
         boardTabPanel.add(lowerPanel,BorderLayout.SOUTH);
         
         JPanel buttonsPanel = new JPanel();
@@ -128,16 +132,8 @@ public class MainFrame extends JFrame {
 
     }
 
-    public void redrawBoard(KDTree<AgentInTree> agents) {
-        Pair<Integer,Integer> bsize = optionsPanel.getBoardSize();
-        double[] upperKey = {bsize.getValue()*boardPanel.SQUARESIZE,bsize.getKey()*boardPanel.SQUARESIZE};
-        List<AgentInTree> lst = null;
-        try {
-            lst = agents.range(new double[] {0,0},upperKey);
-        } catch (KeySizeException e) {
-            e.printStackTrace();
-        }
-        boardPanel.drawAgents(lst);
+    public void redrawBoard(List<AgentInTree> agents) {
+        boardPanel.drawAgents(agents);
     }
 
     public void spawnAgentsAddActionListener(ActionListener listener) {
@@ -170,12 +166,15 @@ public class MainFrame extends JFrame {
         String vec2 = String.valueOf(clickedAgent.getAgent().speed[1]);
         lblspeedState.setText("(" + vec1 + "," + vec2 + ")");
         lblspeedState.setForeground(Color.RED);
+        lblMorale.setText(String.valueOf(clickedAgent.getAgent().morale));
+        lblMorale.setForeground(Color.RED);
     }
 
     public void cleanStatistics() {
         clickedAgent = null;
         lblConditionState.setText("");
         lblspeedState.setText("");
+        lblMorale.setText("");
     }
 
     public int getFRAME_WIDTH() {

@@ -1,18 +1,17 @@
 package main.java.agents;
 
-import edu.wlu.cs.levy.CG.KeyDuplicateException;
-import edu.wlu.cs.levy.CG.KeyMissingException;
-import edu.wlu.cs.levy.CG.KeySizeException;
-import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import javafx.util.Pair;
 import main.java.gui.BoardPanel;
 import main.java.gui.MainFrame;
-import main.java.utils.AgentInTree;
 import org.json.JSONObject;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +38,11 @@ public class ServerAgent extends Agent {
         int stepsCounter = 0;
 
         long time;
+
+        World.AgentsSides[] sides = {World.AgentsSides.Blues, World.AgentsSides.Reds};
+        World.AgentType[] types = {World.AgentType.WARRIOR, World.AgentType.ARCHER, World.AgentType.COMMANDER};
+
+        BufferedWriter stats;
 
         long interval = 300;
         private ACLMessage newTurn;
@@ -86,10 +90,18 @@ public class ServerAgent extends Agent {
                             send(endBattle);
                         }
 
-                        m_frame.redrawBoard(world.getAgentsTree());
+                        m_frame.redrawBoard(world.getAllAgents());
+                        try {
+                            generateStatistics();
+                            stats.flush();
+                            stats.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         break;
                     }
                     send(newTurn);
+                    generateStatistics();
                     time = System.currentTimeMillis();
                     state = 1;
                     System.out.println("Turn: " + stepsCounter);
@@ -103,7 +115,7 @@ public class ServerAgent extends Agent {
                                 agentsCounter = 0;
                                 stepsCounter++;
 
-                                m_frame.redrawBoard(world.getAgentsTree());
+                                m_frame.redrawBoard(world.getAllAgents());
                                 m_frame.updateStatistics();
                                 while (System.currentTimeMillis() - time < interval)
                                     block(interval - (System.currentTimeMillis() - time));
@@ -121,6 +133,31 @@ public class ServerAgent extends Agent {
             }
         }
 
+        private void generateStatistics() {
+            String line = "";
+            for (World.AgentsSides s : sides) {
+                line += s.toString() + ": ";
+                for (World.AgentType t : types) {
+                    line += t.toString() + ": " + world
+                            .getAllAgents()
+                            .parallelStream()
+                            .filter(a->a.side == s && a.type == t)
+                            .count() + " ";
+                }
+            }
+            line += ";";
+            saveStatsToFile(line);
+        }
+
+        private void saveStatsToFile(String line) {
+            try {
+                stats.write(line);
+                stats.newLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         @Override
         public boolean done() {
                 return state == 2;
@@ -132,7 +169,16 @@ public class ServerAgent extends Agent {
             world.redsAgents.forEach(newTurn::addReceiver);
             newTurn.setConversationId("new-turn");
             interval = getTimestep();
+            initStatisticsFile();
             //System.out.println("Interval: " + interval);
+        }
+
+        private void initStatisticsFile() {
+            try {
+                stats = new BufferedWriter(new FileWriter(new File(String.valueOf(System.currentTimeMillis()) + ".dat")));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         public void reset() {
@@ -181,7 +227,7 @@ public class ServerAgent extends Agent {
             world = new World(this,map,boardWidth);
 
         serverBehaviour.reset();
-        m_frame.redrawBoard(world.getAgentsTree());
+        m_frame.redrawBoard(world.getAllAgents());
     }
 
     public void startSimulation() {
@@ -203,19 +249,7 @@ public class ServerAgent extends Agent {
                 .filter(e -> !e.getAgent().p.equals(e.getPoint()))
                 .collect(Collectors.toList());
 
-        for (BoardPanel.MyAgent a : changed) {
-            AgentInTree position = a.getAgent();
-            double[] oldPos = {position.p.getX(), position.p.getY()};
-            double[] newPos = {a.getPoint().getX(), a.getPoint().getY()};
-
-            position.setPosition(a.getPoint());
-            try {
-                world.getAgentsTree().delete(oldPos);
-                world.getAgentsTree().insert(newPos, position);
-            } catch (KeySizeException | KeyDuplicateException | KeyMissingException e) {
-                e.printStackTrace();
-            }
-        }
+        world.updateTree(changed);
     }
 
     protected double computeVictoryCondition() {
