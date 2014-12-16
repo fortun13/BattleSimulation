@@ -33,13 +33,15 @@ public class World {
     public ArrayList<AID> bluesAgents = new ArrayList<>();
     public ArrayList<AID> redsAgents = new ArrayList<>();
     public ServerAgent server;
-    public int boardCenterX;
+    public double boardCenterX;
+    public double boardCenterY;
     public ArrayList<AID> redsCorpses = new ArrayList<>();
     public ArrayList<AID> bluesCorpses = new ArrayList<>();
 
     public World(ServerAgent serverAgent, ArrayList<Pair<AgentType, Integer>> blues, ArrayList<Pair<AgentType, Integer>> reds) {
         this.server = serverAgent;
-        this.boardCenterX = (int) server.getFrame().getFRAME_WIDTH()/2;
+        this.boardCenterX = server.getFrame().getBoardPanel().getWidth()/2;
+        this.boardCenterY = server.getFrame().getBoardPanel().getHeight()/2;
 
         Director generator = new Director();
 
@@ -390,12 +392,8 @@ public class World {
         }
     }
 
-    public double computeBoardCenter(Point2D position) {
-        double X = position.getX();
-        double returnVal;
-        returnVal = (boardCenterX - X);
-        if (returnVal != 0)
-            returnVal = returnVal / Math.abs(returnVal);
+    public double[] returnBoardCenter() {
+        double returnVal[] = {boardCenterX, boardCenterY};
         return returnVal;
     }
 

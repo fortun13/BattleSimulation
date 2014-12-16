@@ -18,7 +18,7 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
     boolean stance = false;
     Double commanderPosX = new Double(0);
     Double commanderPosY = new Double(0);
-    double speedVec;
+    double [] speedVec = new double[2];
 
     @Override
     public void handleMessage(ACLMessage msg) {
@@ -32,7 +32,6 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                 commanderPosX = Double.parseDouble(msg.getUserDefinedParameter("commanderPosX"));
                 commanderPosY = Double.parseDouble(msg.getUserDefinedParameter("commanderPosY"));
                 stance = false;
-                speedVec = Double.parseDouble(msg.getUserDefinedParameter("speedVecXVal"));
                 break;
             case "commander-dead":
                 ((CannonFodder)myAgent).morale -= 10;
@@ -51,8 +50,7 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
             if (enemyPosition == null) {
                 if(commanderPosX != null && commanderPosY != null){
                     Point2D destination = new Point2D(commanderPosX, commanderPosY);
-                    System.out.println("ide " + myAgent.getLocalName());
-                    agent.world.moveAgent(agent, destination);
+                    ((CannonFodder) myAgent).goToPoint(destination);
                 }
             }
             else {
@@ -64,10 +62,8 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
         }
         else {
             if(commanderPosX != null && commanderPosY != null){
-                System.out.println(commanderPosX + " " + commanderPosY);
                 Point2D destination = new Point2D(commanderPosX, commanderPosY);
-                System.out.println("ide " + myAgent.getLocalName());
-                agent.world.moveAgent(agent, destination);
+                ((CannonFodder) myAgent).goToPoint(destination);
             }
         }
     }

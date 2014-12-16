@@ -17,7 +17,6 @@ public class CommanderBehaviour extends ReactiveBehaviour {
         CannonFodder agent = (CannonFodder) myAgent;
         double posX = ((CannonFodder) myAgent).getPosition().pos().getX();
         double posY = ((CannonFodder) myAgent).getPosition().pos().getY();
-        //System.out.println("Gromadzę miniony " + state + " " + myAgent.getLocalName());
         switch (state) {
             case 0:
                 //TODO - get some limit for controlled minions
@@ -47,15 +46,12 @@ public class CommanderBehaviour extends ReactiveBehaviour {
                         agent.setSpeedVector(0, 0);
                         agent.attack(enemy, enemyPosition);
                     }
-                    //System.out.println("Uderzam! " + myAgent.getLocalName());
                 }
                 else {
                     fightingStance.setConversationId("stance-march");
-                    double speedVec = agent.world.computeBoardCenter(agent.position.pos());
-                    fightingStance.addUserDefinedParameter("speedVecXVal", String.valueOf(speedVec));
-                    Point2D thisPosition = agent.getPosition().pos();
-                    Point2D destination = new Point2D(thisPosition.getX() + speedVec, thisPosition.getY());
-                    agent.world.moveAgent(agent, destination);
+                    double [] center = ((Commander) myAgent).world.returnBoardCenter();
+                    Point2D destination = new Point2D(center[0], center[1]);
+                    ((Commander) myAgent).goToPoint(destination);
                 }
                 agent.send(fightingStance);
                 break;

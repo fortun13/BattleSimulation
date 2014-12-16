@@ -54,7 +54,7 @@ public abstract class CannonFodder extends AgentWithPosition {
         goToPoint(enemy.p);
     }
 
-    private void goToPoint(Point2D ep) {
+    public void goToPoint(Point2D ep) {
         Point2D mp = position.pos();
 
         double size = (Integer) world.server.getFrame().getOptionsPanel().as.getValue();
@@ -194,13 +194,13 @@ public abstract class CannonFodder extends AgentWithPosition {
         if (vec[1] != 0) vec[1] = vec[1]/Math.abs(vec[1]);
         // Just move your ass...
         if(vec[0] == 0.0 && vec[1] == 0.0){
-            vec[0] = world.computeBoardCenter(this.position.pos());
+            vec[0] = world.returnBoardCenter(this.position.pos());
         }
         Point2D destination = new Point2D(thisPosition.getX() + vec[0], thisPosition.getY() + vec[1]);
         world.moveAgent(this,destination);*/
 
         //TODO there sould be world.boardCenterY, so agent would go to the center of the board
-        goToPoint(new Point2D(world.boardCenterX,world.boardCenterX));
+        goToPoint(new Point2D(world.boardCenterX,world.boardCenterY));
     }
 
     protected abstract void attack(AID enemy, AgentInTree position);
