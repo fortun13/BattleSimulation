@@ -54,7 +54,7 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                 break;
             case FOLLOWING:
                 if (agent.enemyInRangeOfAttack(enemyPosition)) {
-                    agent.setSpeedVector(0, 0);
+                    agent.setSpeedVector2(0, 0);
                     agent.attack(enemy, enemyPosition);
                 } else {
                     agent.gotoEnemy(enemyPosition);

@@ -21,7 +21,6 @@ public class CommanderBehaviour extends ReactiveBehaviour {
         double posX = agent.getCurrentState().pos().getX();
         double posY = agent.getCurrentState().pos().getY();
         if (minions.size() < LIMIT) {
-            //TODO - get some limit for controlled minions
             ArrayList<AID> minions_pom = ((Commander) myAgent).getMinionsWithinRange((Commander) myAgent);
             int i = 0;
             while (i < minions_pom.size() && minions.size() < LIMIT) {
@@ -65,7 +64,7 @@ public class CommanderBehaviour extends ReactiveBehaviour {
             case FOLLOWIN:
                 fightingStance.setConversationId("stance-fight");
                 if (agent.enemyInRangeOfAttack(enemyPosition)) {
-                    agent.setSpeedVector(0, 0);
+                    agent.setSpeedVector2(0, 0);
                     agent.attack(enemy, enemyPosition);
                 } else {
                     agent.gotoEnemy(enemyPosition);

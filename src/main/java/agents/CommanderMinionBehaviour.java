@@ -77,7 +77,7 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                         break;
                     case ATTACKING:
                         if (agent.enemyInRangeOfAttack(enemyPosition)) {
-                            agent.setSpeedVector(0, 0);
+                            agent.setSpeedVector2(0, 0);
                             agent.attack(enemy, enemyPosition);
                         }
                         else
