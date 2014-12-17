@@ -18,8 +18,8 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
     private static final int FOLLOWING = 0;
 
     int stance = FOLLOWING;
-    Double commanderPosX = new Double(0);
-    Double commanderPosY = new Double(0);
+    Double commanderPosX = (double) 0;
+    Double commanderPosY = (double) 0;
 
     @Override
     public void handleMessage(ACLMessage msg) {
@@ -71,13 +71,12 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                             if(stance == FIGHTING){
                                 gotoCommander();
                             }
-                            else if (stance == BERSERK)
-                                agent.goToPoint(agent.world.returnBoardCenter());
+                            else agent.goToPoint(agent.world.returnBoardCenter());
                         }
                         break;
                     case ATTACKING:
                         if (agent.enemyInRangeOfAttack(enemyPosition)) {
-                            agent.setSpeedVector2(0, 0);
+                            agent.setSpeedVector(0, 0);
                             agent.attack(enemy, enemyPosition);
                         }
                         else

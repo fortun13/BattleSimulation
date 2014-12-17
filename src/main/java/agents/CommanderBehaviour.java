@@ -64,7 +64,7 @@ public class CommanderBehaviour extends ReactiveBehaviour {
             case FOLLOWIN:
                 fightingStance.setConversationId("stance-fight");
                 if (agent.enemyInRangeOfAttack(enemyPosition)) {
-                    agent.setSpeedVector2(0, 0);
+                    agent.setSpeedVector(0, 0);
                     agent.attack(enemy, enemyPosition);
                 } else {
                     agent.gotoEnemy(enemyPosition);

@@ -175,7 +175,7 @@ public abstract class AgentWithPosition extends Agent {
             final double temporize = options.getTemporize();
             if (neighbours.size() == 0)
                 speed *= temporize + Math.random()*(1-temporize);
-            setSpeedVector2(angle, speed);
+            setSpeedVector(angle, speed);
 
             // agent dostosowuje prędkość i kierunek do innych
             final double folowingWeight = options.getFollowingWeight();
@@ -184,7 +184,7 @@ public abstract class AgentWithPosition extends Agent {
 
             angle = angle + folowingWeight * (avgAngle - angle);
             speed = speed + folowingWeight*(avgSpeed - speed);
-            setSpeedVector2(angle, speed);
+            setSpeedVector(angle, speed);
 
             // agent stara się być w środku grupy
             final double seekCenterWeight = options.getSeekCenterWeight();
@@ -224,7 +224,7 @@ public abstract class AgentWithPosition extends Agent {
 //            }
             // jeśli ruch jest nie dozwolony przez świat, to agent się zatrzymuje
             if (!world.moveAgent(this, gesDestination())) {
-                setSpeedVector2(angle, 0);
+                setSpeedVector(angle, 0);
             }
         } catch (KeySizeException e) {
             e.printStackTrace();
@@ -236,14 +236,14 @@ public abstract class AgentWithPosition extends Agent {
         return (p2.getX() - mp.getX()) * (p2.getX() - mp.getX()) + (p2.getY() - mp.getY()) * (p2.getY() - mp.getY());
     }
 
-
-    public void setSpeedVector2(double angle, double radius) {
-        setSpeedVector(angle, Math.min(radius, speed));
-    }
+//
+//    public void setSpeedVector(double angle, double radius) {
+//        setSpeedVector(angle, Math.min(radius, speed));
+//    }
 
     public void setSpeedVector(double angle, double radius) {
         currentState.speed[0] = angle;
-        currentState.speed[1] = radius;
+        currentState.speed[1] = Math.min(radius, speed);
     }
 
     public double[] getSpeedHV() {
