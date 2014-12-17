@@ -9,7 +9,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 
 /**
- * Created by Fortun on 2014-12-12.
+ * Created by Jakub Fortunka on 2014-12-12.
  */
 public class BoardMouseWheelListener implements MouseWheelListener {
 
@@ -23,6 +23,10 @@ public class BoardMouseWheelListener implements MouseWheelListener {
         board = b;
     }
 
+    /**
+     * method is responsible for reacting on event: ctrl is pressed and mouse wheel is moved - board is rescaled
+     * @param e
+     */
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         //System.out.println("event");

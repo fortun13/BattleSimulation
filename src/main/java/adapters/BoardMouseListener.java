@@ -36,27 +36,6 @@ public class BoardMouseListener extends MouseAdapter {
             public void mousePressed(MouseEvent e) {
                 //show dialog for creating obstacle
                 popup.setVisible(false);
-                /*String maybeInt = JOptionPane.showInputDialog(board,Messages.getString("BoardMouseListener.dialogText"),
-                        Messages.getString("BoardMouseListener.dialogTitle"),JOptionPane.PLAIN_MESSAGE);
-                if (maybeInt != null) {
-                    try {
-                        Integer size = Integer.parseInt(maybeInt);
-                        if (size <= 0)
-                            showErrorMessage();
-
-                        //create obstacle with this size (for now it will be only circle); add it to a tree; show it on board
-
-
-                    } catch (NumberFormatException ex) {
-                        showErrorMessage();
-                    } catch (KeyDuplicateException e1) {
-                        e1.printStackTrace();
-                    } catch (KeySizeException e1) {
-                        e1.printStackTrace();
-                    }
-                }*/
-
-
                 try {
                     AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle, new Point2D(popupPosition[0], popupPosition[1]), World.AgentType.OBSTACLE, null);
                     MainFrame f = ((MainFrame)board.getTopLevelAncestor());

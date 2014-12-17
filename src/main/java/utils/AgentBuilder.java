@@ -11,6 +11,10 @@ import main.java.agents.World;
  * Created by Jakub Fortunka on 21.11.14.
  *
  */
+
+/**
+ * Abstract builder for agents
+ */
 public abstract class AgentBuilder {
     protected PlatformController platform;
     protected Object[] parameters = new Object[9];

@@ -3,21 +3,18 @@ package main.java.agents;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.File;
-import java.io.IOException;
-
 /**
  * Created by Jakub Fortunka on 18.11.14.
  * Behaviour presented in a frenzy of battle
  */
 public class BerserkBehaviour extends ReactiveBehaviour {
-    private static final int FOLLOWIN = 1;
+    private static final int FOLLOWING = 1;
     private static final int BORED = 0;
 
+    /**
+     * {@inheritDoc}
+     * @param msg message to which we want to react
+     */
     @Override
     public void handleMessage(ACLMessage msg) {
         switch (msg.getConversationId()) {
@@ -25,15 +22,18 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                 //TODO probably will have to check if this turn message was send to server (boolean?)
                 myAgent.removeBehaviour(new BerserkBehaviour());
                 myAgent.addBehaviour(new CommanderMinionBehaviour());
-                ((CannonFodder)myAgent).setCommander(msg.getSender());
+                ((AgentWithPosition)myAgent).setCommander(msg.getSender());
                 state = 2;
                 break;
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void decideOnNextStep() {
-        CannonFodder agent = (CannonFodder) myAgent;
+        AgentWithPosition agent = (AgentWithPosition) myAgent;
         if (agent.currentState.condition <= 0) {
             return ;
         }
@@ -46,53 +46,18 @@ public class BerserkBehaviour extends ReactiveBehaviour {
                 if (enemyPosition != null) {
                     enemy = new AID(enemyPosition.getAgentName(),true);
                     agent.gotoEnemy(enemyPosition);
-                    state = FOLLOWIN;
+                    state = FOLLOWING;
                 }
                 else {
-                    ((CannonFodder) myAgent).goToPoint(((CannonFodder) myAgent).world.returnBoardCenter());
+                    agent.goToPoint(agent.world.returnBoardCenter());
                 }
                 break;
-            case FOLLOWIN:
+            case FOLLOWING:
                 if (agent.enemyInRangeOfAttack(enemyPosition)) {
-                    try {
-                        Clip c = AudioSystem.getClip();
-
-                        File stream = new File("res/" + (Math.random() > 0.5 ? "one_" : "") + "shot0.wav");
-                        c.open(AudioSystem.getAudioInputStream(stream));
-//                        c.addLineListener(event -> {
-//                            if (event.getType().equals(LineEvent.Type.STOP))
-//                            {
-//                                Line soundClip = event.getLine();
-//                                soundClip.close();
-//                            }
-//                        });
-                        c.start();
-                    } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
-                        System.out.println("nie będzie muzyki");
-                    }
-
-                    agent.setSpeedVector(0, 0);
+                    agent.setSpeedVector2(0, 0);
                     agent.attack(enemy, enemyPosition);
                 } else {
                     agent.gotoEnemy(enemyPosition);
-
-                    if (Math.random() > 0.001) break;
-                try {
-                        Clip c = AudioSystem.getClip();
-
-                        File stream = new File("res/cast.wav");
-                        c.open(AudioSystem.getAudioInputStream(stream));
-//                        c.addLineListener(event -> {
-//                            if (event.getType().equals(LineEvent.Type.STOP))
-//                            {
-//                                Line soundClip = event.getLine();
-//                                soundClip.close();
-//                            }
-//                        });
-                        c.start();
-                    } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
-                        System.out.println("nie będzie muzyki");
-                    }
                 }
                 break;
         }

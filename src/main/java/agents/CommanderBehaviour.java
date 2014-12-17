@@ -17,12 +17,11 @@ public class CommanderBehaviour extends ReactiveBehaviour {
     private ArrayList<AID> minions = new ArrayList<>();
 
     public void decideOnNextStep() {
-        CannonFodder agent = (CannonFodder) myAgent;
-        double posX = ((CannonFodder) myAgent).getCurrentState().pos().getX();
-        double posY = ((CannonFodder) myAgent).getCurrentState().pos().getY();
+        AgentWithPosition agent = (AgentWithPosition) myAgent;
+        double posX = agent.getCurrentState().pos().getX();
+        double posY = agent.getCurrentState().pos().getY();
         if (minions.size() < LIMIT) {
-            //TODO - get some limit for controlled minions
-            ArrayList<AID> minions_pom = ((AgentWithPosition) myAgent).getMinionsWithinRange((Commander) myAgent);
+            ArrayList<AID> minions_pom = ((Commander) myAgent).getMinionsWithinRange((Commander) myAgent);
             int i = 0;
             while (i < minions_pom.size() && minions.size() < LIMIT) {
                 if (!minions.contains(minions_pom.get(i)))
@@ -65,7 +64,7 @@ public class CommanderBehaviour extends ReactiveBehaviour {
             case FOLLOWIN:
                 fightingStance.setConversationId("stance-fight");
                 if (agent.enemyInRangeOfAttack(enemyPosition)) {
-                    agent.setSpeedVector(0, 0);
+                    agent.setSpeedVector2(0, 0);
                     agent.attack(enemy, enemyPosition);
                 } else {
                     agent.gotoEnemy(enemyPosition);

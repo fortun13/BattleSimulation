@@ -12,11 +12,14 @@ import main.java.utils.AgentInTree;
 public abstract class ReactiveBehaviour extends Behaviour {
 
     public static final String DELETE = "DELETE";
-    private static final int WAITN = 3;
+    private static final int WAITING = 3;
     protected int state = 0;
     protected AgentInTree enemyPosition;
     protected AID enemy;
 
+    /**
+     * main method of behaviour, responsible (in our case) for processing basic messages
+     */
     @Override
     public void action() {
         ACLMessage msg = myAgent.receive();
@@ -41,18 +44,18 @@ public abstract class ReactiveBehaviour extends Behaviour {
                     break;
                 case "battle-ended-victory":
                     System.out.println("WE'VE WON!");
-                    state = WAITN;
+                    state = WAITING;
                     break;
                 case "battle-ended-loss":
                     System.out.println("WE'VE LOST...");
-                    state = WAITN;
+                    state = WAITING;
                     break;
                 case "battle-ended-draw":
                     System.out.println("DRAW");
-                    state = WAITN;
+                    state = WAITING;
                     break;
                 case "attack":
-                    ((CannonFodder) myAgent).reactToAttack(msg);
+                    ((AgentWithPosition) myAgent).reactToAttack(msg);
                     break;
                 case DELETE:
                     myAgent.doDelete();
@@ -65,6 +68,10 @@ public abstract class ReactiveBehaviour extends Behaviour {
         }
     }
 
+    /**
+     * method sends information to server that agent ended his "thinking" for this turn
+     * @param msg message from server about "next turn" for which we are replaying
+     */
     protected void computationEnded(ACLMessage msg) {
         ACLMessage m = msg.createReply();
         m.setConversationId("ended-computation");
@@ -76,7 +83,14 @@ public abstract class ReactiveBehaviour extends Behaviour {
         return state == 2;
     }
 
+    /**
+     * method which (when overriden) will allow behaviour to react for more variety of messages
+     * @param msg message to which we want to react
+     */
     public abstract void handleMessage(ACLMessage msg);
 
+    /**
+     * method which is responsible for computing agent behaviour for next step
+     */
     public abstract void decideOnNextStep();
 }

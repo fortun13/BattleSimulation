@@ -3,25 +3,26 @@ package main.java.agents;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import main.java.utils.AgentInTree;
-import main.java.agents.World.AgentType;
 
 /**
  * Created by Marek on 2014-11-11.
  * Represents a Warrior
  */
 @SuppressWarnings("UnusedDeclaration")
-public class Warrior extends CannonFodder {
+/**
+ * Class which represents Warriors
+ */
+public class Warrior extends AgentWithPosition {
     public void setup() {
         super.setup();
-        this.getCurrentState().type = AgentType.WARRIOR;
     }
 
     @Override
-    protected void attack(AID enemy, AgentInTree position) {
+    protected void attack(AID enemy, AgentInTree currentState) {
         if (Math.random() * 100 <= accuracy) {
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setConversationId("attack");
-            String msgContent = position.condition + ":" + strength + ":" + speed + ":" + accuracy;
+            String msgContent = currentState.condition + ":" + strength + ":" + speed + ":" + accuracy;
             msg.setContent(msgContent);
             msg.addReplyTo(getAID());
             msg.addReceiver(enemy);
@@ -37,6 +38,10 @@ public class Warrior extends CannonFodder {
         world.killAgent(this);
     }
 
+    /**
+     * sends message to enemy about his death
+     * @param msgToSend message to enemy
+     */
     protected void sendMessageToEnemy(ACLMessage msgToSend) {
         msgToSend.setConversationId("enemy-dead");
         send(msgToSend);
@@ -50,15 +55,6 @@ public class Warrior extends CannonFodder {
     @Override
     public void reactToAttack(ACLMessage msg) {
         if (currentState.isDead) {
-            /*try {
-                Clip clip = AudioSystem.getClip();
-                File stream = new File("res/die_fast.wav");
-                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(stream);
-                clip.open(audioInputStream);
-                clip.start();
-            } catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
-                System.out.println("Nie będzie muzyki");
-            }*/
             sendMessageToEnemy(msg.createReply());
             return ;
         }

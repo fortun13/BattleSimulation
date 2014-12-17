@@ -3,30 +3,36 @@ package main.java.agents;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import main.java.utils.AgentInTree;
-import main.java.agents.World.AgentType;
 
 /**
  * Created by Jakub Fortunka on 19.11.14.
  *
  */
 @SuppressWarnings("unused")
-public class Archer extends CannonFodder {
+/**
+ * Class representing Archers
+ */
+public class Archer extends AgentWithPosition {
 
     public void setup() {
         super.setup();
-        this.getCurrentState().type= AgentType.ARCHER;
     }
 
     protected void takeDown() {
 
     }
 
+    /**
+     * {@inheritDoc}
+     * @param enemy AID of enemy
+     * @param currentState current state of agent (position etc.)
+     */
     @Override
-    protected void attack(AID enemy, AgentInTree position) {
-        if (Math.random() * 100 <= (accuracy - position.p.distance(position.p)*2)) {
+    protected void attack(AID enemy, AgentInTree currentState) {
+        if (Math.random() * 100 <= (accuracy - currentState.p.distance(currentState.p)*2)) {
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setConversationId("attack");
-            String msgContent = position.condition + ":" + strength + ":" + speed + ":" + accuracy;
+            String msgContent = currentState.condition + ":" + strength + ":" + speed + ":" + accuracy;
             msg.setContent(msgContent);
             msg.addReplyTo(getAID());
             msg.addReceiver(enemy);
@@ -39,11 +45,20 @@ public class Archer extends CannonFodder {
         return attackRange;
     }
 
+    /**
+     * {@inheritDoc}
+     * @param enemy Object representing enemy
+     * @return
+     */
     @Override
     public boolean enemyInRangeOfAttack(AgentInTree enemy) {
         return getCurrentState().pos().distance(enemy.pos()) < (2+getAttackRange());
     }
 
+    /**
+     * {@inheritDoc}
+     * @param msg message from enemy with his parameters
+     */
     @Override
     public void reactToAttack(ACLMessage msg) {
         String content = msg.getContent();
@@ -62,6 +77,7 @@ public class Archer extends CannonFodder {
             currentState.condition = currentState.condition-str;
         }
     }
+
 
     @Override
     protected void killYourself(ACLMessage msgToSend) {

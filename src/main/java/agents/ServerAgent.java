@@ -211,6 +211,13 @@ public class ServerAgent extends Agent {
         m_frame = new MainFrame(this);
     }
 
+    /**
+     * method resposible for preparing simulation (populates the world etc.)
+     * @param blues list of agents of blue side, which we want in the world
+     * @param reds list of agents of red side which we want in the world
+     * @param map if reading from file then map is used and lists are null; otherwise - list are used and map is null
+     * @param timestep time of every turn (in milliseconds)
+     */
     public void prepareSimulation(ArrayList<Pair<World.AgentType,Integer>> blues,
                                   ArrayList<Pair<World.AgentType,Integer>> reds,
                                   HashMap<String,ArrayList<JSONObject>> map,
@@ -229,6 +236,9 @@ public class ServerAgent extends Agent {
         m_frame.redrawBoard(world.getAllAgents());
     }
 
+    /**
+     * method which starts the simulation
+     */
     public void startSimulation() {
         updateTree();
         System.out.println("Simulation started");
@@ -240,6 +250,9 @@ public class ServerAgent extends Agent {
         return timestep;
     }
 
+    /**
+     * method which updates tree in world
+     */
     public void updateTree() {
         List<BoardPanel.MyAgent> changed = m_frame
                 .getBoardPanel()
