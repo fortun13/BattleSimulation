@@ -171,9 +171,7 @@ public class World {
         AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle, new Point2D(obstacle.getInt("x"), obstacle.getInt("y")), World.AgentType.OBSTACLE, null);
         try {
             agentsTree.insert(new double[] {obstacle.getInt("x"),obstacle.getInt("y")},obs);
-        } catch (KeySizeException e) {
-            e.printStackTrace();
-        } catch (KeyDuplicateException e) {
+        } catch (KeySizeException | KeyDuplicateException e) {
             e.printStackTrace();
         }
     }
@@ -305,12 +303,10 @@ public class World {
         double[] newPos = {destination.getX(), destination.getY()};
 
         try {
-            //if (agentsTree.nearestEuclidean(oldPos,agent.currentState.type.getSize()-15).size() > 1)
-            //    return false;
-            //System.out.println("Move");
+            Point2D boardSize = server.getFrame().getBoardPanel().getBoardSize();
             if (agentsTree.search(newPos) != null &&
-                    newPos[0] > 0 && newPos[0] < server.getFrame().getFRAME_WIDTH() &&
-                    newPos[1] > 0 && newPos[1] < server.getFrame().getFRAME_HEIGHT())
+                    newPos[0] > 0 && newPos[0] < boardSize.getX() &&
+                    newPos[1] > 0 && newPos[1] < boardSize.getY())
                 return false;
         } catch (KeySizeException e) {
             e.printStackTrace();
