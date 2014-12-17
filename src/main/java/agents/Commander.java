@@ -1,12 +1,16 @@
 package main.java.agents;
 
+import edu.wlu.cs.levy.CG.KeySizeException;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import main.java.utils.AgentInTree;
 
 import java.util.ArrayList;
 
-public class Commander extends CannonFodder {
+/**
+ * Class which represents Commanders
+ */
+public class Commander extends AgentWithPosition {
 	
 	protected int attractionForce;
 	
@@ -18,12 +22,39 @@ public class Commander extends CannonFodder {
 		attractionForce = (int)p[8];
 	}
 
+	/**
+	 * Method is used by Commander to get list of agents that are in his field of view - so he can command them
+	 *
+	 * @param agent Object of Commander class which represents Commander which is asking for minions
+	 * @return list of agents in field of view of Commander
+	 */
+	public ArrayList<AID> getMinionsWithinRange(Commander agent) {
+		ArrayList<AgentInTree> list = new ArrayList<>();
+		try {
+			world.getAgentsTree()
+					.nearestEuclidean(new double[]{agent.currentState.p.getX(), agent.currentState.p.getY()},agent.attractionForce)
+					.stream()
+					.filter(a -> a.side==agent.currentState.side)
+					.forEach(list::add);
+		} catch (KeySizeException e) {
+			e.printStackTrace();
+		}
+		if(list.contains(agent.currentState))
+			list.remove(agent.currentState);
+		ArrayList<AID> ans = new ArrayList<>();
+		for (AgentInTree a :
+				list) {
+			ans.add(new AID(a.getAgentName(),true));
+		}
+		return ans;
+	}
+
     @Override
-    protected void attack(AID enemy, AgentInTree position) {
+    protected void attack(AID enemy, AgentInTree currentState) {
         if (Math.random() * 100 <= accuracy) {
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setConversationId("attack");
-            String msgContent = position.condition + ":" + strength + ":" + speed + ":" + accuracy;
+            String msgContent = currentState.condition + ":" + strength + ":" + speed + ":" + accuracy;
             msg.setContent(msgContent);
             msg.addReplyTo(getAID());
             msg.addReceiver(enemy);
@@ -36,9 +67,6 @@ public class Commander extends CannonFodder {
 	protected void killYourself(ACLMessage msgToSend) {
 		System.out.println("I'm dead :( " + getLocalName());
 		sendMessageToEnemy(msgToSend);
-		//msgToSend.setConversationId("enemy-dead");
-		//msgToSend.addReceiver(world.server.getAID());
-		//send(msgToSend);
 		world.killAgent(this);
 	}
 
@@ -55,15 +83,6 @@ public class Commander extends CannonFodder {
 	@Override
 	public void reactToAttack(ACLMessage msg) {
 		if (currentState.isDead) {
-			/*try {
-				Clip clip = AudioSystem.getClip();
-				File stream = new File("res/die_fast.wav");
-				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(stream);
-				clip.open(audioInputStream);
-				clip.start();
-			} catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
-				System.out.println("Nie będzie muzyki");
-			}*/
 			sendMessageToEnemy(msg.createReply());
 			return ;
 		}

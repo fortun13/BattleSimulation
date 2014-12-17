@@ -30,6 +30,9 @@ import java.util.stream.Collectors;
 public class World {
 
     private static int offset = 0;
+    /**
+     *  Object of KDTree<AgentInTree> in which we are holding positions of all our agents
+     */
     private final KDTree<AgentInTree> agentsTree = new KDTree<>(2);
     public ArrayList<AID> bluesAgents = new ArrayList<>();
     public ArrayList<AID> redsAgents = new ArrayList<>();
@@ -38,6 +41,13 @@ public class World {
     public ArrayList<AID> redsCorpses = new ArrayList<>();
     public ArrayList<AID> bluesCorpses = new ArrayList<>();
 
+    /**
+     * Contructor for this class - mainly it populates world with agents
+     *
+     * @param serverAgent reference to server agent - needed to sending information about ending computation so next turn can be started
+     * @param blues  list of Pairs of AgentType and Integer (their number) of blue side - all agents for blue sides are created given this informations
+     * @param reds list of Pairs of AgentType and Integer (their number) of red side - all agents for red sides are created given this informations
+     */
     public World(ServerAgent serverAgent, ArrayList<Pair<AgentType, Integer>> blues, ArrayList<Pair<AgentType, Integer>> reds) {
         this.server = serverAgent;
         Point2D p = server.getFrame().getBoardPanel().getBoardSize();
@@ -116,6 +126,12 @@ public class World {
 
     }
 
+    /**
+     * Constructor for creating the world from file
+     *
+     * @param server reference to server agent - needed to sending information about ending computation so next turn can be started
+     * @param map map of String -> ArrayList<JSONObject>. Key of map (String) is representing type of agent (Warrior, Archer etc.), ArrayList - all agents of that type
+     */
     public World(ServerAgent server, HashMap<String,ArrayList<JSONObject>> map) {
         int counter = 0;
         this.server = server;
@@ -250,8 +266,10 @@ public class World {
         return agentsTree;
     }
 
+    /**
+     * cleans up world before next simulation
+     */
     public void clean() {
-        //if ((bluesAgents.size() | redsAgents.size()) != 0) {
             ACLMessage m = new ACLMessage(ACLMessage.REQUEST);
             m.setConversationId(ReactiveBehaviour.DELETE);
             bluesAgents.forEach(m::addReceiver);
@@ -259,12 +277,12 @@ public class World {
             redsCorpses.forEach(m::addReceiver);
             bluesCorpses.forEach(m::addReceiver);
             server.send(m);
-            //bluesAgents.clear();
-            //redsAgents.clear();
-            //corpses.clear();
-        //}
     }
 
+    /**
+     * removes agent from world
+     * @param agent reference to agent which will be removed
+     */
     public void removeAgent(AgentWithPosition agent) {
         if (!agent.currentState.isDead) {
             try {
@@ -281,9 +299,14 @@ public class World {
                     break;
             }
         }
-        //server.updateState();
     }
 
+    /**
+     * Method returns nearest enemy for agent (or null if there is no enemy in agents field of view)
+     *
+     * @param agent agent which want to find nearest enemy
+     * @return object representing nearest enemy; null if no enemy was found
+     */
     public AgentInTree getNearestEnemy(AgentWithPosition agent) {
         try {
             List<AgentInTree> l = agentsTree
@@ -299,7 +322,14 @@ public class World {
         return null;
     }
 
-    public synchronized boolean moveAgent(CannonFodder agent, Point2D destination) {
+    /**
+     * Method changes position of agent in tree
+     *
+     * @param agent agent which want to change his position
+     * @param destination new desired position of agent
+     * @return true if changing position was possible and been done; false if desired position is already taken
+     */
+    public synchronized boolean moveAgent(AgentWithPosition agent, Point2D destination) {
         AgentInTree position = agent.getCurrentState();
         double[] oldPos = {position.p.getX(), position.p.getY()};
         double[] newPos = {destination.getX(), destination.getY()};
@@ -327,6 +357,12 @@ public class World {
 
     }
 
+    /**
+     * Counts number of friends and foes in field of view of agent
+     *
+     * @param agent agent which want to know how many friends/foes are in his field of view
+     * @return int[0] - number of friends; int[1] - number of foes
+     */
     public int[] countFriendFoe(AgentWithPosition agent) {
 
         int vec[] = new int[2];
@@ -341,41 +377,21 @@ public class World {
                     .filter(l -> l.side == agent.currentState.side)
                     .count();
             vec[1] = lst.size() - vec[0];
-            //vec[0] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.currentState.side == a.side).count();
         } catch (KeySizeException e) {
             e.printStackTrace();
         }
-
-        /*try {
-            vec[1] = (int) agentsTree.nearestEuclidean(key, agent.fieldOfView).stream().filter(a -> agent.currentState.side != a.side && a.side != AgentsSides.Obstacle).count();
-        } catch (KeySizeException e) {
-            e.printStackTrace();
-        }*/
-
         return vec;
     }
 
-    public List<AgentInTree> getNeighborFriends(AgentWithPosition agent) {
-        //List<AgentInTree> friendlyNeighbors = new ArrayList<>();
-        try {
-            return agentsTree
-                    .nearestEuclidean(new double[] {agent.currentState.p.getX(), agent.currentState.p.getY()}, agent.fieldOfView)
-                    .parallelStream()
-                    .filter(a -> a.side == agent.currentState.side).collect(Collectors.toList());
-        } catch (KeySizeException e) {
-            e.printStackTrace();
-        }
-        return new ArrayList<>();
-    }
-
+    /**
+     *
+     * @param agent
+     */
     public void killAgent(AgentWithPosition agent) {
         if (agent.currentState.isDead)
             return;
-    	
+
         agent.currentState.isDead = true;
-
-        //agents.rmPoint(agent.getCurrentState());
-
         try {
             double[] agentKey = {agent.currentState.p.getX(), agent.currentState.p.getY()};
             if (agentsTree.search(agentKey) != null) {
@@ -398,6 +414,11 @@ public class World {
         return boardCenter;
     }
 
+    /**
+     *
+     *
+     * @return all of the agents in tree
+     */
     public List<AgentInTree> getAllAgents() {
         Pair<Integer, Integer> bsize = server.m_frame.getOptionsPanel().getBoardSize();
         double[] upperKey = {bsize.getValue() * server.m_frame.getBoardPanel().SQUARESIZE, bsize.getKey() * server.m_frame.getBoardPanel().SQUARESIZE};
@@ -410,6 +431,11 @@ public class World {
         return lst;
     }
 
+    /**
+     * Method updates positions of agents which been dragged & dropped in some place on board
+     *
+     * @param changed list of agents which position have been changed
+     */
     public void updateTree(List<BoardPanel.MyAgent> changed) {
         for (BoardPanel.MyAgent a : changed) {
             AgentInTree position = a.getAgent();
@@ -426,6 +452,9 @@ public class World {
         }
     }
 
+    /**
+     * Enum representing side of conflict (also - obstacles)
+     */
     public enum AgentsSides {
         Blues("Blues"), Reds("Reds"), Obstacle("Obstacle");
 
@@ -440,6 +469,9 @@ public class World {
         }
     }
 
+    /**
+     * enum representing types of agents (warior etc.) (also - obstacles)
+     */
     public enum AgentType {
         WARRIOR("res" + File.separator + "warrior.png",20, "Warrior"),
         ARCHER("res" + File.separator + "archer.png",20, "Archer"),

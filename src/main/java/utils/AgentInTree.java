@@ -8,6 +8,10 @@ import main.java.agents.World;
  * Created by Fortun on 2014-12-07.
  *
  */
+
+/**
+ * Class which represents state of our agent - it's
+ */
 public class AgentInTree implements KdTree.Placed {
 
     public Point2D p;

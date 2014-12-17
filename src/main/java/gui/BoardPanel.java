@@ -1,7 +1,5 @@
 package main.java.gui;
 
-//import javafx.geometry.Point2D;
-
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
 import main.java.agents.World;
@@ -48,6 +46,11 @@ public class BoardPanel extends JPanel {
         innerBoard = new Board();
     }
 
+    /**
+     * method generates new board
+     * @param height height of new board
+     * @param width width of new board
+     */
     public void generateBoard(int height, int width) {
         at = new AffineTransform();
         //at.scale(0.19, 0.19);
@@ -61,13 +64,20 @@ public class BoardPanel extends JPanel {
         innerBoard.repaint();
     }
 
+    /**
+     * method resets scale of AffineTransform which is used to rescaling board
+     */
     public void resetScale() {
         at = new AffineTransform();
         at.scale(1,1);
         innerBoard.revalidate();
         innerBoard.repaint();
     }
-    
+
+    /**
+     * method responsible for drawing agents on board
+     * @param agents
+     */
     public void drawAgents(java.util.List<AgentInTree> agents) {
         ArrayList<MyAgent> lst = new ArrayList<>();
         for (AgentInTree agent : agents) {
@@ -98,9 +108,6 @@ public class BoardPanel extends JPanel {
                         case Reds:
                             lst.add(new MyAgent(Color.RED, agent));
                             break;
-                    /*case Obstacle:
-                        lst.add(new MyAgent(Color.GREEN, agent));
-                        break;*/
                         default:
                             break;
                     }
@@ -138,6 +145,9 @@ public class BoardPanel extends JPanel {
         }
     }
 
+    /**
+     * Class which represents agent on board (holds color and reference to his state (position))
+     */
     public class MyAgent extends JComponent {
         private Color c;
         private AgentInTree agent;

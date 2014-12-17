@@ -35,14 +35,14 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                 stance = FOLLOWING;
                 break;
             case "commander-dead":
-                ((CannonFodder)myAgent).currentState.morale -= 10;
+                ((AgentWithPosition)myAgent).currentState.morale -= 10;
                 stance = BERSERK;
-                commanderPosX = ((CannonFodder) myAgent).world.returnBoardCenter().getX();
-                commanderPosY = ((CannonFodder) myAgent).world.returnBoardCenter().getY();
-                ((CannonFodder)myAgent).setCommander(null);
+                commanderPosX = ((AgentWithPosition) myAgent).world.returnBoardCenter().getX();
+                commanderPosY = ((AgentWithPosition) myAgent).world.returnBoardCenter().getY();
+                ((AgentWithPosition)myAgent).setCommander(null);
                 break;
             case "commander-init":
-                ((CannonFodder)myAgent).setCommander(msg.getSender());
+                ((AgentWithPosition)myAgent).setCommander(msg.getSender());
                 stance = FOLLOWING;
                 break;
         }
@@ -50,7 +50,7 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
 
     @Override
     public void decideOnNextStep() {
-        CannonFodder agent = (CannonFodder) myAgent;
+        AgentWithPosition agent = (AgentWithPosition) myAgent;
         switch (stance) {
             case FOLLOWING:
                 gotoCommander();
@@ -72,7 +72,7 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                                 gotoCommander();
                             }
                             else if (stance == BERSERK)
-                                ((CannonFodder) myAgent).goToPoint(((CannonFodder) myAgent).world.returnBoardCenter());
+                                agent.goToPoint(agent.world.returnBoardCenter());
                         }
                         break;
                     case ATTACKING:
@@ -101,8 +101,8 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
     private void gotoCommander() {
         Point2D destination;
         int centerDirection;
-        centerDirection = (int)(((CannonFodder)myAgent).world.returnBoardCenter().getX() - commanderPosX);
-        switch (((CannonFodder)myAgent).getCurrentState().type) {
+        centerDirection = (int)(((AgentWithPosition)myAgent).world.returnBoardCenter().getX() - commanderPosX);
+        switch (((AgentWithPosition)myAgent).getCurrentState().type) {
             case WARRIOR:
                 if(centerDirection >= 0)
                     destination = new Point2D(commanderPosX + 20, commanderPosY);
@@ -119,6 +119,6 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                 destination = new Point2D(commanderPosX, commanderPosY);
                 break;
         }
-        ((CannonFodder) myAgent).goToPoint(destination);
+        ((AgentWithPosition) myAgent).goToPoint(destination);
     }
 }

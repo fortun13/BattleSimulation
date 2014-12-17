@@ -21,7 +21,6 @@ public class MainFrame extends JFrame {
     private final JButton btnStartSimulation;
     private final JButton spawnAgents;
     private final JLabel lblConditionState;
-    //private final JLabel lblspeedState;
     private final JLabel lblMorale;
     private final int FRAME_WIDTH = 1200;
     private final int FRAME_HEIGHT = 700;
@@ -53,10 +52,6 @@ public class MainFrame extends JFrame {
 
         JTabbedPane tabs = new JTabbedPane();
 
-        //JSplitPane splitPane = new JSplitPane();
-        //splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        //getContentPane().add(splitPane);
-        
         boardPanel = new BoardPanel();
         JScrollPane scrollPane = new JScrollPane(boardPanel);
 
@@ -79,12 +74,6 @@ public class MainFrame extends JFrame {
         
         lblConditionState = new JLabel("");
         statisticsPanel.add(lblConditionState);
-        
-        //JLabel lblSpeed = new JLabel(Messages.getString("MainFrame.lblSpeed.text")); //$NON-NLS-1$
-        //statisticsPanel.add(lblSpeed);
-        
-        //lblspeedState = new JLabel("");
-        //statisticsPanel.add(lblspeedState);
 
         JLabel lblMor = new JLabel(Messages.getString("MainFrame.lblMorale.text"));
         statisticsPanel.add(lblMor);
@@ -97,20 +86,16 @@ public class MainFrame extends JFrame {
         JPanel buttonsPanel = new JPanel();
         lowerPanel.add(buttonsPanel);
                         
-                                spawnAgents = new JButton(Messages.getString("MainFrame.spawnAgents.text")); //$NON-NLS-1$
-                                buttonsPanel.add(spawnAgents);
-                                spawnAgents.setAlignmentX(Component.CENTER_ALIGNMENT);
+        spawnAgents = new JButton(Messages.getString("MainFrame.spawnAgents.text")); //$NON-NLS-1$
+        buttonsPanel.add(spawnAgents);
+        spawnAgents.setAlignmentX(Component.CENTER_ALIGNMENT);
                 
-                        btnStartSimulation = new JButton(Messages.getString("MainFrame.btnStartSimulation.text"));
-                        buttonsPanel.add(btnStartSimulation);
+        btnStartSimulation = new JButton(Messages.getString("MainFrame.btnStartSimulation.text"));
+        buttonsPanel.add(btnStartSimulation);
 
         tabs.addTab(Messages.getString("MainFrame.tab1.tabName"),null, boardTabPanel,Messages.getString("MainFrame.tab1.tabTooltip"));
 
-
-        //splitPane.setLeftComponent(scrollPane);
-        
         optionsPanel = new OptionsPanel();
-        //splitPane.setRightComponent(optionsPanel);
 
         tabs.addTab(Messages.getString("MainFrame.tab2.tabName"),null,optionsPanel,Messages.getString("MainFrame.tab2.tabTooltip"));
 
@@ -152,20 +137,24 @@ public class MainFrame extends JFrame {
         btnStartSimulation.addActionListener(listener);
     }
 
+    /**
+     * Method updates statistics of clicked agent to the panel below board
+     *
+     * @param agent clicked agent
+     */
     public void updateStatistics(BoardPanel.MyAgent agent) {
         clickedAgent = agent;
         updateStatistics();
     }
 
+    /**
+     * Updates showed statistics of clicked agent
+     */
     public void updateStatistics() {
         if (clickedAgent == null)
             return;
         lblConditionState.setText(String.valueOf(clickedAgent.getAgent().condition));
         lblConditionState.setForeground(Color.RED);
-        //String vec1 = String.valueOf(clickedAgent.getAgent().speed[0]);
-        //String vec2 = String.valueOf(clickedAgent.getAgent().speed[1]);
-        //lblspeedState.setText("(" + vec1 + "," + vec2 + ")");
-        //lblspeedState.setForeground(Color.RED);
         lblMorale.setText(String.valueOf(clickedAgent.getAgent().morale));
         lblMorale.setForeground(Color.RED);
     }
@@ -173,15 +162,14 @@ public class MainFrame extends JFrame {
     public void cleanStatistics() {
         clickedAgent = null;
         lblConditionState.setText("");
-        //lblspeedState.setText("");
         lblMorale.setText("");
     }
 
-    public int getFRAME_WIDTH() {
+    public double getFRAME_WIDTH() {
         return FRAME_WIDTH;
     }
 
-    public int getFRAME_HEIGHT() {
+    public double getFRAME_HEIGHT() {
         return FRAME_HEIGHT;
     }
 }

@@ -54,11 +54,6 @@ public class BoardMouseMotionListener extends MouseMotionAdapter {
     }
 
     public void mouseMoved(MouseEvent e) {
-
-        //if (simulationStarted)
-        //    return ;
-        //System.out.println("Mouse moved");
-
         Point2D p = new Point2D(e.getX(),e.getY());
         Point2D tmp = new Point2D(0,0);
         if (!board.getMyAgents().isEmpty()) {
