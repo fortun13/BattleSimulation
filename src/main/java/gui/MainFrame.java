@@ -5,7 +5,6 @@ import javafx.util.Pair;
 import main.java.adapters.BoardMouseListener;
 import main.java.adapters.BoardMouseMotionListener;
 import main.java.adapters.BoardMouseWheelListener;
-import main.java.adapters.Controller;
 import main.java.agents.ServerAgent;
 import main.java.utils.AgentInTree;
 import org.json.JSONArray;
@@ -51,6 +50,8 @@ public class MainFrame extends JFrame {
         } catch (ClassNotFoundException | InstantiationException | UnsupportedLookAndFeelException | IllegalAccessException e) {
             e.printStackTrace();
         }
+
+        server = s;
 
         setTitle(Messages.getString("MainFrame.this.title")); //$NON-NLS-1$
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -99,17 +100,13 @@ public class MainFrame extends JFrame {
         buttonsPanel.add(btnStartSimulation);
 
         tabs.addTab(Messages.getString("MainFrame.tab1.tabName"),null, boardTabPanel,Messages.getString("MainFrame.tab1.tabTooltip"));
-
         optionsPanel = new OptionsPanel();
-
         tabs.addTab(Messages.getString("MainFrame.tab2.tabName"),null,optionsPanel,Messages.getString("MainFrame.tab2.tabTooltip"));
-
         getContentPane().add(tabs);
         
         setVisible( true );
         validate();
 
-        server = s;
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -132,16 +129,7 @@ public class MainFrame extends JFrame {
             this.server.startSimulation();
         });
 
-        /*this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                server.doDelete();
-                super.windowClosing(e);
-            }
-        });*/
-
         createOpenFileActionListener();
-
         createSaveToFileActionListener();
 
         this.getOptionsPanel().setSidePanelsSliderListener(e -> {
