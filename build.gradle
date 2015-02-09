@@ -1,0 +1,28 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'lib'
+    }
+}
+
+dependencies {
+    compile group: 'com.tilab.jade', name: 'jade', version:'4.3.3'
+    compile name: 'kd'
+    compile group: 'org.json', name: 'json', version: '20141113'
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Battle Simulation',  
+            'Implementation-Version': 1.0,
+            'Main-Class': 'jade.Boot'
+    }
+    baseName = project.name
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+task run(dependsOn: jar) << {
+    ant.java(jar:"${libsDir}${File.separator}${archivesBaseName}.jar",fork:true)
+}

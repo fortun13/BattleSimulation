@@ -469,10 +469,10 @@ public class World {
      * enum representing types of agents (warior etc.) (also - obstacles)
      */
     public enum AgentType {
-        WARRIOR("res" + File.separator + "warrior.png",20, "Warrior"),
-        ARCHER("res" + File.separator + "archer.png",20, "Archer"),
-        COMMANDER("res" + File.separator + "commander.png",20, "Commander"),
-        OBSTACLE("res" + File.separator + "obstacle.png",40, "Obstacle");
+        WARRIOR("main/resources/images/warrior.png",20, "Warrior"),
+        ARCHER("main/resources/images/archer.png",20, "Archer"),
+        COMMANDER("main/resources/images/commander.png",20, "Commander"),
+        OBSTACLE("main/resources/images/obstacle.png",40, "Obstacle");
 
         private String imagePath;
         private int size;

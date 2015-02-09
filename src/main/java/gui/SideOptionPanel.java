@@ -140,7 +140,7 @@ public class SideOptionPanel extends JPanel {
 		}
 
         if (type == AgentType.COMMANDER) {
-            JLabel l = new JLabel(Messages.getString("sideOptionPanel.commanderAttractionForceLabel"), JLabel.TRAILING);
+            JLabel l = new JLabel(Messages.getString("SideOptionPanel.commanderAttractionForceLabel"), JLabel.TRAILING);
             options[labels.length] = new JSpinner();
             options[labels.length].setValue(100);
             row.add(l);

@@ -11,3 +11,9 @@ Create run configuration like this:
   program arguments: -gui server:main.java.agents.ServerAgent
   
 (and now it should work)
+
+Running: 
+```
+  java -jar BattleSimulation.jar -local-port 30123 server:main.java.agents.ServerAgent
+```
+
