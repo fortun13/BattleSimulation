@@ -24,7 +24,6 @@ public class Controller {
 
     private BoardMouseMotionListener motionListener = null;
     private BoardMouseListener mouseListener = null;
-
     private BoardMouseWheelListener mouseWheelListener = null;
 	
 	public Controller(MainFrame f) {
