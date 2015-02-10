@@ -10,12 +10,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ResourceBundle;
 
 /**
  * Created by Jakub Fortunka on 08.11.14.
@@ -193,7 +191,7 @@ public class BoardPanel extends JPanel {
                 BufferedImage image;
                 if (!images.stream().anyMatch(p -> p.getKey().equals(agent.type))) {
                     ClassLoader cl = this.getClass().getClassLoader();
-                    System.out.println("Type: " + agent.type.getImagePath());
+                    //System.out.println("Type: " + agent.type.getImagePath());
                     image = ImageIO.read(cl.getResource(agent.type.getImagePath()));
 //                    image = ImageIO.read(new File(agent.type.getImagePath()));
                     images.add(new Pair<>(agent.type,image));

@@ -10,7 +10,6 @@ import main.java.utils.AgentInTree;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
-import sun.applet.Main;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -29,7 +28,7 @@ import java.util.Scanner;
  *
  */
 public class MainFrame extends JFrame {
-    public ServerAgent server;
+    private ServerAgent server;
     private BoardPanel.MyAgent clickedAgent;
 
     private BoardMouseMotionListener motionListener = null;
@@ -176,11 +175,8 @@ public class MainFrame extends JFrame {
         return optionsPanel;
     }
 
-    public double getFRAME_WIDTH() {
-        return FRAME_WIDTH;
-    }
-    public double getFRAME_HEIGHT() {
-        return FRAME_HEIGHT;
+    public ServerAgent getServer() {
+        return server;
     }
 
     /* Prywatna klasa do przygotowania listenerów */

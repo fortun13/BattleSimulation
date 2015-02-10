@@ -51,23 +51,23 @@ public class CommanderBehaviour extends ReactiveBehaviour {
                 if (enemyPosition != null) {
                     fightingStance.setConversationId("stance-fight");
                     enemy = new AID(enemyPosition.getAgentName(), true);
-                    agent.gotoEnemy(enemyPosition);
+                    //agent.gotoEnemy(enemyPosition);
                     state = FOLLOWIN;
                 } else {
                     fightingStance.setConversationId("stance-march");
                     /* Zakomentowanie poniższej linii sprawi że Commander na początku bitwy stoi w miejscu
                     Przydatene do obserwowania jak rozmieszczają się miniony
                      */
-                    ((Commander) myAgent).goToPoint(((Commander) myAgent).world.returnBoardCenter());
+                    //((Commander) myAgent).goToPoint(((Commander) myAgent).world.returnBoardCenter());
                 }
                 break;
             case FOLLOWIN:
                 fightingStance.setConversationId("stance-fight");
                 if (agent.enemyInRangeOfAttack(enemyPosition)) {
                     agent.setSpeedVector(0, 0);
-                    agent.attack(enemy, enemyPosition);
+                    //agent.attack(enemy, enemyPosition);
                 } else {
-                    agent.gotoEnemy(enemyPosition);
+                    //agent.gotoEnemy(enemyPosition);
                     break;
                 }
                 break;

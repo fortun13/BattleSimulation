@@ -12,12 +12,11 @@ import jade.wrapper.PlatformController;
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
 import main.java.gui.BoardPanel;
-import main.java.gui.OptionsPanel;
+import main.java.gui.BoidOptions;
 import main.java.gui.SideOptionPanel;
 import main.java.utils.*;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,10 +35,16 @@ public class World {
     private final KDTree<AgentInTree> agentsTree = new KDTree<>(2);
     public ArrayList<AID> bluesAgents = new ArrayList<>();
     public ArrayList<AID> redsAgents = new ArrayList<>();
-    public ServerAgent server;
+//    public ServerAgent server;
     private Point2D boardCenter;
     public ArrayList<AID> redsCorpses = new ArrayList<>();
     public ArrayList<AID> bluesCorpses = new ArrayList<>();
+
+    //TODO it should be here? Maybe keep it somewhere else?
+    Point2D boardSize;
+
+    //TODO waiting for splitting JPanel from actual options - for now, i just want it to compile
+    private BoidOptions boidOptions;
 
     /**
      * Contructor for this class - mainly it populates world with agents
@@ -49,52 +54,54 @@ public class World {
      * @param reds list of Pairs of AgentType and Integer (their number) of red side - all agents for red sides are created given this informations
      */
     public World(ServerAgent serverAgent, ArrayList<Pair<AgentType, Integer>> blues, ArrayList<Pair<AgentType, Integer>> reds) {
-        this.server = serverAgent;
-        Point2D p = server.getFrame().getBoardPanel().getBoardSize();
+//        this.server = serverAgent;
+        Point2D p = serverAgent.getFrame().getBoardPanel().getBoardSize();
         boardCenter = new Point2D((p.getX()-1)/2,(p.getY()-1)/2);
         Director generator = new Director();
 
-        iterateOverAgentsList("agentBlue_", blues, generator,10, AgentsSides.Blues);
-        iterateOverAgentsList("agentRed_",reds,generator,(int)(p.getX()/server.getFrame().getBoardPanel().SQUARESIZE)-10, AgentsSides.Reds);
-    }
+        boardSize = serverAgent.getFrame().getBoardPanel().getBoardSize();
 
-    private void iterateOverAgentsList(String agentPrefix, ArrayList<Pair<AgentType,Integer>> list, Director generator, int xPosition, AgentsSides agentSide) {
+        boidOptions = serverAgent.getFrame().getOptionsPanel().options;
+
         int counter = 1;
-        for (Pair<AgentType, Integer> p : list) {
-            OptionsPanel panel = server.m_frame.getOptionsPanel();
-            AgentBuilder builder = chooseBuilder(p.getKey(), agentSide == AgentsSides.Reds ? panel.redPanel : panel.bluePanel);
-            PlatformController container = server.getContainerController();
-            generator.setAgentBuilder(builder);
-            generator.setPlatform(container);
-            for (int i=0;i<p.getValue();i++) {
-                addAgentsToWorld(builder,p.getKey(),agentSide,generator,counter,agentPrefix, xPosition*p.getKey().getSize());
-                counter++;
-            }
+
+        for (Pair<AgentType,Integer> pair : blues) {
+            addAgentsToWorld(serverAgent,pair,generator,AgentsSides.Blues,10,"agentBlues_",counter);
+            counter += pair.getValue();
         }
-        offset += counter;
+
+        counter = 1;
+
+        for (Pair<AgentType,Integer> pair : reds) {
+            addAgentsToWorld(serverAgent,pair,generator, AgentsSides.Reds,(int) (p.getX()/20)-10,"agentReds_",counter);
+            counter += pair.getValue();
+        }
+
+//        blues.forEach((Pair<AgentType, Integer> pair) -> {
+//            addAgentsToWorld(serverAgent, pair, generator, AgentsSides.Blues, 10, "agentBlues_");
+//        });
+//
+//        reds.forEach((Pair<AgentType, Integer> pair) -> {
+//            addAgentsToWorld(serverAgent, pair, generator, AgentsSides.Reds, (int) (p.getX() / 20) - 10, "agentReds_");
+//        });
+
+        //TODO do we need to use SQUARESIZE?
     }
 
-    private AgentBuilder chooseBuilder(AgentType type, SideOptionPanel sideOptionPanel) {
-        AgentBuilder.Settings s = new AgentBuilder.Settings();
-        s.server = server.getAID();
-        s.world = this;
-        s.condition = sideOptionPanel.getCondition(type);
-        s.speed = sideOptionPanel.getSpeed(type);
-        s.strength = sideOptionPanel.getStrength(type);
-        s.accuracy = sideOptionPanel.getAccuracy(type);
-        s.attackRange = sideOptionPanel.getRange(type);
-        switch (type) {
-            case ARCHER:
-                return new ArcherBuilder(s, BerserkBehaviour.class);
-            case COMMANDER:
-                s.attractionForce = sideOptionPanel.getAttractionForce();
-                return new CommanderBuilder(s, CommanderBehaviour.class);
-            default:
-                return new WarriorBuilder(s, BerserkBehaviour.class);
+    private void addAgentsToWorld(ServerAgent serverAgent,Pair<AgentType,Integer> pair, Director generator, AgentsSides side, int xPos,String prefix, int counter) {
+        AgentBuilder builder = prepareBuilder(pair.getKey(),
+                side == AgentsSides.Blues ? serverAgent.getFrame().getOptionsPanel().bluePanel : serverAgent.getFrame().getOptionsPanel().redPanel,
+                serverAgent);
+        PlatformController container = serverAgent.getContainerController();
+        generator.setAgentBuilder(builder);
+        generator.setPlatform(container);
+        for (int i=0;i<pair.getValue();i++) {
+            addAgentToWorld(builder,pair.getKey(),side,generator,i+1+counter,prefix, xPos*pair.getKey().getSize());
         }
+        offset += pair.getValue();
     }
 
-    private void addAgentsToWorld(AgentBuilder builder, AgentType type, AgentsSides agentSide, Director generator, int counter, String agentPrefix, int xPosition) {
+    private void addAgentToWorld(AgentBuilder builder, AgentType type, AgentsSides agentSide, Director generator, int counter, String agentPrefix, int xPosition) {
         AgentBuilder.Settings s = builder.getSettings();
         s.name = agentPrefix + (counter + offset);
         AgentInTree ait = new AgentInTree("", agentSide, new Point2D(xPosition, counter * type.getSize()), type, builder.getBehaviour());
@@ -105,9 +112,7 @@ public class World {
         try {
             agent = generator.getAgent();
             ait.setAgentName(agent.getName());
-
             agent.start();
-
             switch (agentSide) {
                 case Blues:
                     bluesAgents.add(new AID(agent.getName(), true));
@@ -126,6 +131,39 @@ public class World {
 
     }
 
+    private AgentBuilder prepareBuilder(AgentType type, SideOptionPanel sideOptionPanel,ServerAgent sa) {
+        //TODO can't use ServerAgent - it's temporary (until better design is implemented)
+        AgentBuilder.Settings s = new AgentBuilder.Settings();
+        s.server = sa.getAID();
+        s.world = this;
+        s.condition = sideOptionPanel.getCondition(type);
+        s.speed = sideOptionPanel.getSpeed(type);
+        s.strength = sideOptionPanel.getStrength(type);
+        s.accuracy = sideOptionPanel.getAccuracy(type);
+        s.attackRange = sideOptionPanel.getRange(type);
+        Class<? extends ReactiveBehaviour> behaviour;
+        if (type == AgentType.COMMANDER) {
+            s.attractionForce = sideOptionPanel.getAttractionForce();
+            behaviour = CommanderBehaviour.class;
+        }
+        else
+            behaviour = BerserkBehaviour.class;
+        return chooseBuilder(type,s, behaviour);
+    }
+
+    private AgentBuilder chooseBuilder(AgentType type, AgentBuilder.Settings settings, Class<? extends ReactiveBehaviour> behaviour) {
+        switch(type) {
+            case WARRIOR:
+                return new WarriorBuilder(settings,behaviour);
+            case ARCHER:
+                return new ArcherBuilder(settings,behaviour);
+            case COMMANDER:
+                return new CommanderBuilder(settings,behaviour);
+            default:
+                return new WarriorBuilder(settings,behaviour);
+        }
+    }
+
     /**
      * Constructor for creating the world from file
      *
@@ -134,50 +172,60 @@ public class World {
      */
     public World(ServerAgent server, HashMap<String,ArrayList<JSONObject>> map) {
         int counter = 0;
-        this.server = server;
+//        this.server = server;
         Point2D p = server.getFrame().getBoardPanel().getBoardSize();
         boardCenter = new Point2D((p.getX()-1)/2,(p.getY()-1)/2);
         PlatformController container = server.getContainerController();
         Director generator = new Director();
 
-        AgentBuilder.Settings s = new AgentBuilder.Settings();
-        s.server = server.getAID();
-        s.world = this;
-
-        AgentBuilder warrior = new WarriorBuilder(s, null);
-        AgentBuilder archer = new ArcherBuilder(s, null);
-        AgentBuilder commander = new CommanderBuilder(s, null);
-
         for (String type : map.keySet()) {
             ArrayList<JSONObject> list = map.get(type);
+            AgentType t = null;
             switch (type.toLowerCase()) {
                 case "warrior":
-                    generator.setAgentBuilder(warrior);
-                    generator.setPlatform(container);
-                    for (JSONObject agent : list) {
-                        addAgentToWorld(agent, warrior, AgentType.WARRIOR, generator, counter);
-                        counter++;
-                    }
+                    t = AgentType.WARRIOR;
+//                    generator.setAgentBuilder(warrior);
+//                    generator.setPlatform(container);
+//                    for (JSONObject agent : list) {
+//                        addAgentToWorld(agent, warrior, AgentType.WARRIOR, generator, counter);
+//                        counter++;
+//                    }
                     break;
                 case "archer":
-                    generator.setAgentBuilder(archer);
-                    generator.setPlatform(container);
-                    for (JSONObject agent : list) {
-                        addAgentToWorld(agent, archer, AgentType.ARCHER, generator, counter);
-                        counter++;
-                    }
+                    t = AgentType.ARCHER;
+//                    generator.setAgentBuilder(archer);
+//                    generator.setPlatform(container);
+//                    for (JSONObject agent : list) {
+//                        addAgentToWorld(agent, archer, AgentType.ARCHER, generator, counter);
+//                        counter++;
+//                    }
                     break;
                 case "commander":
-                    generator.setAgentBuilder(commander);
-                    generator.setPlatform(container);
-                    for (JSONObject agent : list) {
-                        addAgentToWorld(agent, commander, AgentType.COMMANDER, generator, counter);
-                        counter++;
-                    }
+                    t = AgentType.COMMANDER;
+//                    generator.setAgentBuilder(commander);
+//                    generator.setPlatform(container);
+//                    for (JSONObject agent : list) {
+//                        addAgentToWorld(agent, commander, AgentType.COMMANDER, generator, counter);
+//                        counter++;
+//                    }
                     break;
                 case "obstacle":
                     list.forEach(this::addObstacleToWorld);
+                    continue;
             }
+
+            //TODO waiting for flyweight to make applying setting efficient and readable (so for now - reading from file is NOT WORKING)
+
+            AgentBuilder.Settings settings = new AgentBuilder.Settings();
+            settings.server = server.getAID();
+            settings.world = this;
+
+            AgentBuilder builder = chooseBuilder(t,settings,null);
+
+            list.forEach((JSONObject o) -> {
+                //addAgentToWorld(o,builder,t,generator);
+            });
+
         }
 
         offset += counter + 1;
@@ -192,62 +240,61 @@ public class World {
         }
     }
 
-    private void addAgentToWorld(JSONObject agent, AgentBuilder builder, AgentType type, Director generator, int counter) {
-        setBehaviourByFile(builder, agent.get("behaviour").toString());
-        AgentsSides side;
-        switch (agent.get("side").toString().toLowerCase()) {
-            case "blues":
-                side = AgentsSides.Blues;
-                break;
-            case "reds":
-                side = AgentsSides.Reds;
-                break;
-            default:
-                side = AgentsSides.Obstacle;
-                break;
-        }
-        AgentBuilder.Settings s = builder.getSettings();
-        s.name = "agent_" + (counter + offset);
-        SideOptionPanel sideOptionPanel = (side == AgentsSides.Blues) ? server.m_frame.getOptionsPanel().bluePanel : server.m_frame.getOptionsPanel().redPanel;
-        s.condition = sideOptionPanel.getCondition(type);
-        s.speed = sideOptionPanel.getSpeed(type);
-        s.strength = sideOptionPanel.getStrength(type);
-        s.accuracy = sideOptionPanel.getAccuracy(type);
-        s.attackRange = sideOptionPanel.getRange(type);
-        if (type == AgentType.COMMANDER)
-            s.attractionForce = sideOptionPanel.getAttractionForce();
-
-        AgentInTree ait = new AgentInTree("", side, new Point2D(agent.getInt("x"), agent.getInt("y")), type, builder.getBehaviour());
-        s.position = ait;
-
-        builder.setSettings(s);
-
-        generator.constructAgent();
-
-        try {
-            AgentController a = generator.getAgent();
-
-            ait.setAgentName(a.getName());
-            a.start();
-            switch (side) {
-                case Blues:
-                    bluesAgents.add(new AID(a.getName(), true));
-                    break;
-                case Reds:
-                    redsAgents.add(new AID(a.getName(), true));
-                    break;
-                default:
-                    break;
-            }
-            try {
-                agentsTree.insert(new double[] {ait.p.getX(), ait.p.getY()}, ait);
-            } catch (KeySizeException | KeyDuplicateException e) {
-                e.printStackTrace();
-            }
-        } catch (ControllerException e) {
-            e.printStackTrace();
-        }
-    }
+    //TODO change this so it would be more civilized (and more functional-like :) )
+//    private void addAgentToWorld(JSONObject agent, AgentBuilder builder, AgentType type, Director generator, int counter) {
+//        setBehaviourByFile(builder, agent.get("behaviour").toString());
+//        AgentsSides side = null;
+//        switch (agent.get("side").toString().toLowerCase()) {
+//            case "blues":
+//                side = AgentsSides.Blues;
+//                break;
+//            case "reds":
+//                side = AgentsSides.Reds;
+//                break;
+//        }
+//        AgentBuilder.Settings s = builder.getSettings();
+//        //TODO
+//        s.name = "agent_" + (counter + offset);
+//        SideOptionPanel sideOptionPanel = (side == AgentsSides.Blues) ? server.m_frame.getOptionsPanel().bluePanel : server.m_frame.getOptionsPanel().redPanel;
+//        s.condition = sideOptionPanel.getCondition(type);
+//        s.speed = sideOptionPanel.getSpeed(type);
+//        s.strength = sideOptionPanel.getStrength(type);
+//        s.accuracy = sideOptionPanel.getAccuracy(type);
+//        s.attackRange = sideOptionPanel.getRange(type);
+//        if (type == AgentType.COMMANDER)
+//            s.attractionForce = sideOptionPanel.getAttractionForce();
+//
+//        AgentInTree ait = new AgentInTree("", side, new Point2D(agent.getInt("x"), agent.getInt("y")), type, builder.getBehaviour());
+//        s.position = ait;
+//
+//        builder.setSettings(s);
+//
+//        generator.constructAgent();
+//
+//        try {
+//            AgentController a = generator.getAgent();
+//
+//            ait.setAgentName(a.getName());
+//            a.start();
+//            switch (side) {
+//                case Blues:
+//                    bluesAgents.add(new AID(a.getName(), true));
+//                    break;
+//                case Reds:
+//                    redsAgents.add(new AID(a.getName(), true));
+//                    break;
+//                default:
+//                    break;
+//            }
+//            try {
+//                agentsTree.insert(new double[] {ait.p.getX(), ait.p.getY()}, ait);
+//            } catch (KeySizeException | KeyDuplicateException e) {
+//                e.printStackTrace();
+//            }
+//        } catch (ControllerException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private void setBehaviourByFile(AgentBuilder b, String behaviour) {
         switch (behaviour.toLowerCase()) {
@@ -268,13 +315,14 @@ public class World {
      * cleans up world before next simulation
      */
     public void clean() {
-            ACLMessage m = new ACLMessage(ACLMessage.REQUEST);
-            m.setConversationId(ReactiveBehaviour.DELETE);
-            bluesAgents.forEach(m::addReceiver);
-            redsAgents.forEach(m::addReceiver);
-            redsCorpses.forEach(m::addReceiver);
-            bluesCorpses.forEach(m::addReceiver);
-            server.send(m);
+        //TODO how to make clean up without "server"? 
+        ACLMessage m = new ACLMessage(ACLMessage.REQUEST);
+        m.setConversationId(ReactiveBehaviour.DELETE);
+        bluesAgents.forEach(m::addReceiver);
+        redsAgents.forEach(m::addReceiver);
+        redsCorpses.forEach(m::addReceiver);
+        bluesCorpses.forEach(m::addReceiver);
+        //server.send(m);
     }
 
     /**
@@ -333,7 +381,7 @@ public class World {
         double[] newPos = {destination.getX(), destination.getY()};
 
         try {
-            Point2D boardSize = server.getFrame().getBoardPanel().getBoardSize();
+            //Point2D boardSize = server.getFrame().getBoardPanel().getBoardSize();
             if (agentsTree.search(newPos) != null &&
                     newPos[0] > 0 && newPos[0] < boardSize.getX() &&
                     newPos[1] > 0 && newPos[1] < boardSize.getY())
@@ -411,23 +459,6 @@ public class World {
     }
 
     /**
-     *
-     *
-     * @return all of the agents in tree
-     */
-    public List<AgentInTree> getAllAgents() {
-        Pair<Integer, Integer> bsize = server.m_frame.getOptionsPanel().getBoardSize();
-        double[] upperKey = {bsize.getValue() * server.m_frame.getBoardPanel().SQUARESIZE, bsize.getKey() * server.m_frame.getBoardPanel().SQUARESIZE};
-        List<AgentInTree> lst = null;
-        try {
-            lst = agentsTree.range(new double[]{0, 0}, upperKey);
-        } catch (KeySizeException e) {
-            e.printStackTrace();
-        }
-        return lst;
-    }
-
-    /**
      * Method updates positions of agents which been dragged & dropped in some place on board
      *
      * @param changed list of agents which position have been changed
@@ -446,6 +477,10 @@ public class World {
                 e.printStackTrace();
             }
         }
+    }
+
+    public BoidOptions getBoidOptions() {
+        return boidOptions;
     }
 
     /**

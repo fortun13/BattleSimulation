@@ -9,7 +9,7 @@ import java.awt.*;
  */
 public class BoidOptions extends JPanel {
     BoidOptions() {
-        setBorder(BorderFactory.createTitledBorder(Messages.getString("OptionsPanel.parametersBorderName")));
+        setBorder(BorderFactory.createTitledBorder(Messages.getString("BoidOptions.parametersBorderName")));
         GridLayout gridLayout = new GridLayout((int) Math.ceil(BoidOptions.labels.length / 2.), 4);
         setLayout(gridLayout);
 
@@ -27,14 +27,14 @@ public class BoidOptions extends JPanel {
     }
 
     private static final String[] labels = {
-            Messages.getString("OptionsPanel.lblAS.text"),
-            Messages.getString("OptionsPanel.lblROV.text"),
-            Messages.getString("OptionsPanel.lblAOV.text"),
-            Messages.getString("OptionsPanel.lblT.text"),
-            Messages.getString("OptionsPanel.lblFW.text"),
-            Messages.getString("OptionsPanel.lblSCW.text"),
-            Messages.getString("OptionsPanel.lblAW.text"),
-            Messages.getString("OptionsPanel.lblMD.text")};
+            Messages.getString("BoidOptions.lblAS.text"),
+            Messages.getString("BoidOptions.lblROV.text"),
+            Messages.getString("BoidOptions.lblAOV.text"),
+            Messages.getString("BoidOptions.lblT.text"),
+            Messages.getString("BoidOptions.lblFW.text"),
+            Messages.getString("BoidOptions.lblSCW.text"),
+            Messages.getString("BoidOptions.lblAW.text"),
+            Messages.getString("BoidOptions.lblMD.text")};
     private static final int[] vals = {20, 300, 120, 80, 10, 10, 80, 40};
     private static final int AS = 0, AOV = 1,ROV = 2,T = 3,FW = 4,SCW = 5,AW = 6,MD = 7;
     private final JSpinner[] options = new JSpinner[BoidOptions.labels.length];

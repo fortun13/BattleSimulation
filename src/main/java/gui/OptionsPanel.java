@@ -126,6 +126,14 @@ public class OptionsPanel extends JPanel {
 		return new Pair<>((Integer)boardHeight.getValue(),(Integer)boardWidth.getValue());
 	}
 
+    public int getTurnsLimit() {
+        return (int)turnsLimitSpinner.getValue();
+    }
+
+    public boolean getTurnsLimitCheckboxState() {
+        return limitButton.isSelected();
+    }
+
 	private ArrayList<Pair<World.AgentType,Integer>> getListWithNumberOfAgentsByType(SideOptionPanel panel) {
 		ArrayList<Pair<World.AgentType,Integer>> list = new ArrayList<>();
 		list.add(new Pair<>(World.AgentType.WARRIOR,panel.getWarriorsNumber()));

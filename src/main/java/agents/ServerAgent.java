@@ -1,11 +1,14 @@
 package main.java.agents;
 
+import edu.wlu.cs.levy.CG.KeyDuplicateException;
+import edu.wlu.cs.levy.CG.KeySizeException;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import javafx.util.Pair;
 import main.java.gui.BoardPanel;
 import main.java.gui.MainFrame;
+import main.java.utils.AgentInTree;
 import org.json.JSONObject;
 
 import java.io.BufferedWriter;
@@ -90,7 +93,11 @@ public class ServerAgent extends Agent {
                             send(endBattle);
                         }
 
-                        m_frame.redrawBoard(world.getAllAgents());
+                        try {
+                            m_frame.redrawBoard(getAllAgents());
+                        } catch (KeySizeException e) {
+                            e.printStackTrace();
+                        }
                         try {
                             generateStatistics();
                             stats.flush();
@@ -115,7 +122,11 @@ public class ServerAgent extends Agent {
                                 agentsCounter = 0;
                                 stepsCounter++;
 
-                                m_frame.redrawBoard(world.getAllAgents());
+                                try {
+                                    m_frame.redrawBoard(getAllAgents());
+                                } catch (KeySizeException e) {
+                                    e.printStackTrace();
+                                }
                                 m_frame.updateStatistics();
                                 while (System.currentTimeMillis() - time < interval)
                                     block(interval - (System.currentTimeMillis() - time));
@@ -138,11 +149,14 @@ public class ServerAgent extends Agent {
             for (World.AgentsSides s : sides) {
                 line += s.toString() + ": ";
                 for (World.AgentType t : types) {
-                    line += t.toString() + ": " + world
-                            .getAllAgents()
-                            .parallelStream()
-                            .filter(a->a.side == s && a.type == t)
-                            .count() + " ";
+                    try {
+                        line += t.toString() + ": " + getAllAgents()
+                                .parallelStream()
+                                .filter(a -> a.side == s && a.type == t)
+                                .count() + " ";
+                    } catch (KeySizeException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             line += ";";
@@ -233,7 +247,11 @@ public class ServerAgent extends Agent {
             world = new World(this,map);
 
         serverBehaviour.reset();
-        m_frame.redrawBoard(world.getAllAgents());
+        try {
+            m_frame.redrawBoard(getAllAgents());
+        } catch (KeySizeException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -282,5 +300,17 @@ public class ServerAgent extends Agent {
 
     public World getWorld() {
         return world;
+    }
+
+    public List<AgentInTree> getAllAgents() throws KeySizeException {
+        Pair<Integer,Integer> size = m_frame.getOptionsPanel().getBoardSize();
+        //TODO 20 is SQUARESIZE; can actually get this info from here (using m_frame), but do we really want to?
+        double[] upperKey = {size.getValue()*20,size.getKey()*20};
+        double[] dk = {0,0};
+        return world.getAgentsTree().range(dk,upperKey);
+    }
+
+    public void insertNewAgentToTree(double[] key, AgentInTree obs) throws KeySizeException, KeyDuplicateException {
+        world.getAgentsTree().insert(key,obs);
     }
 }
