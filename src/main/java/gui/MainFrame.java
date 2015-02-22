@@ -7,6 +7,7 @@ import main.java.adapters.BoardMouseMotionListener;
 import main.java.adapters.BoardMouseWheelListener;
 import main.java.agents.ServerAgent;
 import main.java.utils.AgentInTree;
+import main.java.utils.SquareSize;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -302,7 +303,7 @@ public class MainFrame extends JFrame {
                         frame.server.updateTree();
 
                         double[] testKey = {0,0};
-                        double[] upperKey = {size.getValue()*frame.getBoardPanel().SQUARESIZE,size.getKey()*frame.getBoardPanel().SQUARESIZE};
+                        double[] upperKey = {size.getValue()*SquareSize.getInstance(),size.getKey()*SquareSize.getInstance()};
                         try {
                             java.util.List<AgentInTree> lst = frame.server.getWorld().getAgentsTree().range(testKey, upperKey);
                             w.key("agents");

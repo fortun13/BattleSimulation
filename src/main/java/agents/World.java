@@ -73,7 +73,7 @@ public class World {
         counter = 1;
 
         for (Pair<AgentType,Integer> pair : reds) {
-            addAgentsToWorld(serverAgent,pair,generator, AgentsSides.Reds,(int) (p.getX()/20)-10,"agentReds_",counter);
+            addAgentsToWorld(serverAgent,pair,generator, AgentsSides.Reds,(int) (p.getX()/SquareSize.getInstance())-10,"agentReds_",counter);
             counter += pair.getValue();
         }
 

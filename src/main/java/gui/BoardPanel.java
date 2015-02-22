@@ -4,6 +4,7 @@ import javafx.geometry.Point2D;
 import javafx.util.Pair;
 import main.java.agents.World;
 import main.java.utils.AgentInTree;
+import main.java.utils.SquareSize;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -21,7 +22,7 @@ import java.util.List;
  */
 public class BoardPanel extends JPanel {
 
-    public final int SQUARESIZE = 20;
+    //public final int SQUARESIZE = 20;
     public Cursor cursor;
     public AffineTransform at = new AffineTransform();
     private ArrayList<Pair<World.AgentType,BufferedImage>> images = new ArrayList<>();
@@ -54,9 +55,9 @@ public class BoardPanel extends JPanel {
         at = new AffineTransform();
         //at.scale(0.19, 0.19);
         at.scale(1,1);
-    	setPreferredSize(new Dimension(width*(SQUARESIZE)+10, height*(SQUARESIZE)+10));
+    	setPreferredSize(new Dimension(width*(SquareSize.getInstance())+10, height*(SquareSize.getInstance())+10));
 
-        innerBoard.setPreferredSize(new Dimension(width*(SQUARESIZE)+1, height*(SQUARESIZE)+1));
+        innerBoard.setPreferredSize(new Dimension(width*(SquareSize.getInstance())+1, height*(SquareSize.getInstance())+1));
         add(innerBoard);
 
         innerBoard.revalidate();
