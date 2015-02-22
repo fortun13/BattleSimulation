@@ -9,6 +9,7 @@ import javafx.util.Pair;
 import main.java.gui.BoardPanel;
 import main.java.gui.MainFrame;
 import main.java.utils.AgentInTree;
+import main.java.utils.SquareSize;
 import org.json.JSONObject;
 
 import java.io.BufferedWriter;
@@ -305,7 +306,7 @@ public class ServerAgent extends Agent {
     public List<AgentInTree> getAllAgents() throws KeySizeException {
         Pair<Integer,Integer> size = m_frame.getOptionsPanel().getBoardSize();
         //TODO 20 is SQUARESIZE; can actually get this info from here (using m_frame), but do we really want to?
-        double[] upperKey = {size.getValue()*20,size.getKey()*20};
+        double[] upperKey = {size.getValue()* SquareSize.getInstance(),size.getKey()*SquareSize.getInstance()};
         double[] dk = {0,0};
         return world.getAgentsTree().range(dk,upperKey);
     }

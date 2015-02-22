@@ -22,7 +22,6 @@ import java.util.List;
  */
 public class BoardPanel extends JPanel {
 
-    //public final int SQUARESIZE = 20;
     public Cursor cursor;
     public AffineTransform at = new AffineTransform();
     private ArrayList<Pair<World.AgentType,BufferedImage>> images = new ArrayList<>();
