@@ -194,4 +194,28 @@ public class SideOptionPanel extends JPanel {
     public Integer getAttractionForce() {
         return (Integer) optionsPerType.get(AgentType.COMMANDER)[ATRACTIONFORCE].getValue();
     }
+
+    public void setCondition(World.AgentType type, int val) {
+        optionsPerType.get(type)[HP].setValue(val);
+    }
+
+    public void setStrength(World.AgentType type, int val) {
+        optionsPerType.get(type)[STR].setValue(val);
+    }
+
+    public void setSpeed(World.AgentType type, int val) {
+        optionsPerType.get(type)[SPD].setValue(val);
+    }
+
+    public void setAccuracy(World.AgentType type, int val) {
+        optionsPerType.get(type)[ACC].setValue(val);
+    }
+
+    public void setRange(World.AgentType type, int val) {
+        optionsPerType.get(type)[ROA].setValue(val);
+    }
+
+    public void setAttractionForce(int val) {
+        optionsPerType.get(AgentType.COMMANDER)[ATRACTIONFORCE].setValue(val);
+    }
 }

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class OptionsPanel extends JPanel {
 
 	private final JButton btnSaveToFile;
-	public final BoidOptions options = new BoidOptions();
+	public final BoidOptions boidOptions = new BoidOptions();
 	private JSpinner timeStepSpinner;
 	private JSpinner turnsLimitSpinner;
 	private JCheckBox limitButton;
@@ -76,7 +76,7 @@ public class OptionsPanel extends JPanel {
 		timeStepP.add(timeStepSpinner);
 		timeOptionsPanel.add(timeStepP);
 
-		timeOptionsPanel.add(options);
+		timeOptionsPanel.add(boidOptions);
 
 		JPanel turnsLimitPanel = new JPanel();
 		JLabel lblTurnsLimit = new JLabel(Messages.getString("OptionsPanel.turnsLimit.text"));
@@ -126,12 +126,11 @@ public class OptionsPanel extends JPanel {
 		return new Pair<>((Integer)boardHeight.getValue(),(Integer)boardWidth.getValue());
 	}
 
+    /**
+     * @return number of turns to which simulation is limited
+     */
     public int getTurnsLimit() {
         return (int)turnsLimitSpinner.getValue();
-    }
-
-    public boolean getTurnsLimitCheckboxState() {
-        return limitButton.isSelected();
     }
 
 	private ArrayList<Pair<World.AgentType,Integer>> getListWithNumberOfAgentsByType(SideOptionPanel panel) {
@@ -155,6 +154,9 @@ public class OptionsPanel extends JPanel {
         bluePanel.setSliderChangeListener(listener);
     }
 
+    /**
+     * @return size of timestep (in milliseconds)
+     */
 	public int getTimeStep() {
 		return (int)timeStepSpinner.getValue();
 	}
@@ -164,8 +166,22 @@ public class OptionsPanel extends JPanel {
 		this.boardWidth.setValue(boardWidth);
 	}
 
-	public JCheckBox getLimitButton() {	return limitButton;	}
-	public JSpinner getTurnsLimitSpinner() { return turnsLimitSpinner; }
+    /**
+     * @return true if user choosed to limit number of turns
+     */
+    public boolean limitIsActive() {
+        return limitButton.isSelected();
+    }
 
+    public void setTimestep(int val) {
+        timeStepSpinner.setValue(val);
+    }
 
+    public void setLimitCheckbox(boolean b) {
+        limitButton.setSelected(b);
+    }
+
+    public void setTurnNumber(int val) {
+        timeStepSpinner.setValue(val);
+    }
 }

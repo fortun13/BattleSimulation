@@ -60,8 +60,8 @@ public class ServerAgent extends Agent {
             switch (state) {
                 case 0:
                     if ((world.redsAgents.size() == 0 || world.bluesAgents.size() == 0)
-                            || (m_frame.getOptionsPanel().getLimitButton().isSelected()
-                            && (int)m_frame.getOptionsPanel().getTurnsLimitSpinner().getValue() <= stepsCounter)) {
+                            || (m_frame.getOptionsPanel().limitIsActive()
+                            && (int)m_frame.getOptionsPanel().getTurnsLimit() <= stepsCounter)) {
                         state = 2;
                         System.out.println("Turn: " + stepsCounter);
                         //obliczanie stosunku strat do l. początkowej
@@ -230,23 +230,35 @@ public class ServerAgent extends Agent {
      * method resposible for preparing simulation (populates the world etc.)
      * @param blues list of agents of blue side, which we want in the world
      * @param reds list of agents of red side which we want in the world
-     * @param map if reading from file then map is used and lists are null; otherwise - list are used and map is null
      * @param timestep time of every turn (in milliseconds)
      */
     public void prepareSimulation(ArrayList<Pair<World.AgentType,Integer>> blues,
                                   ArrayList<Pair<World.AgentType,Integer>> reds,
-                                  HashMap<String,ArrayList<JSONObject>> map,
                                   long timestep) {
+
+        prepare(timestep);
+        world = new World(this,blues,reds);
+        start();
+    }
+
+    public void prepareSimulation(HashMap<World.AgentType,ArrayList<JSONObject>> blues,
+                                  HashMap<World.AgentType,ArrayList<JSONObject>> reds,
+                                  ArrayList<JSONObject> obstacles,
+                                  long timestep) {
+        prepare(timestep);
+        world = new World(this,blues,reds,obstacles);
+        start();
+    }
+
+    private void prepare(long timestep) {
         this.timestep = timestep;
         if (world != null) {
             world.clean();
             doWait(100);
         }
-        if (map == null)
-            world = new World(this,blues,reds);
-        else
-            world = new World(this,map);
+    }
 
+    private void start() {
         serverBehaviour.reset();
         try {
             m_frame.redrawBoard(getAllAgents());

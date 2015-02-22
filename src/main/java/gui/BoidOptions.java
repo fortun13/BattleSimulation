@@ -64,4 +64,29 @@ public class BoidOptions extends JPanel {
         return (Integer) options[MD].getValue();
     }
 
+    public void setAgentSize(double val) {
+        options[AS].setValue(val);
+    }
+    public void setAngleOfView(double val) {
+        options[AOV].setValue(val);
+    }
+    public void setRangeOfView(double val) {
+        options[ROV].setValue(val);
+    }
+    public void setTemporize(double val) {
+        options[T].setValue(val);
+    }
+    public void setFollowingWeight(double val) {
+        options[FW].setValue(val);
+    }
+    public void setSeekCenterWeight(double val) {
+        options[SCW].setValue(val);
+    }
+    public void setAvoidingWeight(double val) {
+        options[AW].setValue(val);
+    }
+    public void setMinimalDistance(double val) {
+        options[MD].setValue(val);
+    }
+
 }

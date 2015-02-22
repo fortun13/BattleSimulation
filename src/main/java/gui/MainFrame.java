@@ -6,6 +6,7 @@ import main.java.adapters.BoardMouseListener;
 import main.java.adapters.BoardMouseMotionListener;
 import main.java.adapters.BoardMouseWheelListener;
 import main.java.agents.ServerAgent;
+import main.java.agents.World;
 import main.java.utils.AgentInTree;
 import main.java.utils.SquareSize;
 import org.json.JSONArray;
@@ -187,6 +188,20 @@ public class MainFrame extends JFrame {
             this.frame = frame;
         }
 
+        private static final int BoardWidth = 0, BoardHeight = 1, StepSize = 2, RoundsNumber = 3, RoundsLimit = 4;
+
+        private String[] basicParameters = {"boardWidth","boardHeight","step-size","rounds-number","rounds-limit"};
+
+        private static final int AgentSize = 0,AngleOfView = 1, RangeOfView = 2, Temporize = 3, FollowingWeight = 4, SeekCenterWeight = 5,
+                AvoidingWeight = 6, MinimalDistance = 7;
+
+        private String[] boidsParametersNames = {"agent-size","angle-of-view","range-of-view","temporize","following-weight",
+                "seek-center-weight", "avoiding-weight","minimal-distance"};
+
+        private static final int Condition = 0,Strength = 1,Speed = 2, Accuracy = 3,Range = 4,AttractionForce=5;
+
+        private String[] parametersNames = {"condition","strength","speed","accuracy","range","attraction-force"};
+
         public void PrepareToListen() {
             createOpenFileActionListener();
             createSaveToFileActionListener();
@@ -214,7 +229,7 @@ public class MainFrame extends JFrame {
             frame.spawnAgentsAddActionListener((e) -> {
                 Pair<Integer, Integer> size = frame.getOptionsPanel().getBoardSize();
                 prepareMouseListenersAndBoard(size.getValue(), size.getKey());
-                frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgents(), frame.getOptionsPanel().getRedsAgents(), null, frame.getOptionsPanel().getTimeStep());
+                frame.server.prepareSimulation(frame.getOptionsPanel().getBluesAgents(), frame.getOptionsPanel().getRedsAgents(), frame.getOptionsPanel().getTimeStep());
             });
         }
 
@@ -260,25 +275,35 @@ public class MainFrame extends JFrame {
 
                         scanner.close();
                         JSONObject obj = new JSONObject(content);
+
+                        setBasicParametersFromJson(obj);
+                        setBoidsParametersFromJson(obj);
+                        setAgentParametersFromJson(obj);
+
                         JSONArray agents = obj.getJSONArray("agents");
 
-                        HashMap<String, ArrayList<JSONObject>> map = new HashMap<>();
+                        HashMap<World.AgentType, ArrayList<JSONObject>> blues = new HashMap<>();
+
+                        HashMap<World.AgentType, ArrayList<JSONObject>> reds = new HashMap<>();
+                        ArrayList<JSONObject> obstacles = new ArrayList<>();
 
                         for (int i = 0; i < agents.length(); i++) {
                             JSONObject agent = agents.getJSONObject(i);
-
-                            if (map.containsKey(agent.get("type").toString()))
-                                map.get(agent.get("type").toString()).add(agent);
-                            else {
-                                ArrayList<JSONObject> lst = new ArrayList<>();
-                                lst.add(agent);
-                                map.put(agent.get("type").toString(), lst);
+                            World.AgentsSides as = World.AgentsSides.valueOf(agent.getString("side"));
+                            switch (as) {
+                                case Blues:
+                                    addAgentToProperList(blues, agent);
+                                    break;
+                                case Reds:
+                                    addAgentToProperList(reds, agent);
+                                    break;
+                                case Obstacle:
+                                    obstacles.add(agent);
+                                    break;
                             }
                         }
-                        prepareMouseListenersAndBoard(obj.getInt("boardWidth"),obj.getInt("boardHeight"));
-                        //frame.server.prepareSimulation(null,null,map, obj.getInt("boardWidth"),frame.getOptionsPanel().getTimeStep());
-                        frame.server.prepareSimulation(null,null,map,frame.getOptionsPanel().getTimeStep());
-                        frame.getOptionsPanel().setBoardSize(obj.getInt("boardWidth"),obj.getInt("boardHeight"));
+                        frame.server.prepareSimulation(blues, reds, obstacles, optionsPanel.getTimeStep());
+
                     } catch (FileNotFoundException e1) {
                         e1.printStackTrace();
                     }
@@ -286,47 +311,82 @@ public class MainFrame extends JFrame {
             });
         }
 
+        private void addAgentToProperList(HashMap<World.AgentType,ArrayList<JSONObject>> side, JSONObject agent) {
+            World.AgentType key = World.AgentType.valueOf(agent.getString("type").toUpperCase());
+            ArrayList<JSONObject> l = side.get(key);
+            if (l==null)
+                l = new ArrayList<>();
+            l.add(agent);
+            side.put(key, l);
+        }
+
+        private void setBasicParametersFromJson(JSONObject o) {
+            int bw = o.getInt(basicParameters[BoardWidth]);
+            int bh = o.getInt(basicParameters[BoardHeight]);
+            optionsPanel.setBoardSize(bw, bh);
+            optionsPanel.setTimestep(o.getInt(basicParameters[StepSize]));
+            optionsPanel.setTurnNumber(o.getInt(basicParameters[RoundsNumber]));
+            optionsPanel.setLimitCheckbox(o.getBoolean(basicParameters[RoundsLimit]));
+            prepareMouseListenersAndBoard(bw, bh);
+        }
+
+        private void setBoidsParametersFromJson(JSONObject o) {
+            JSONObject parameters = o.getJSONObject("boids");
+            BoidOptions bo = optionsPanel.boidOptions;
+            bo.setAgentSize(parameters.getInt(boidsParametersNames[AgentSize]));
+            bo.setAngleOfView(parameters.getInt(boidsParametersNames[AngleOfView]));
+            bo.setAvoidingWeight(parameters.getInt(boidsParametersNames[AvoidingWeight]));
+            bo.setFollowingWeight(parameters.getInt(boidsParametersNames[FollowingWeight]));
+            bo.setMinimalDistance(parameters.getInt(boidsParametersNames[MinimalDistance]));
+            bo.setSeekCenterWeight(parameters.getInt(boidsParametersNames[SeekCenterWeight]));
+            bo.setRangeOfView(parameters.getInt(boidsParametersNames[RangeOfView]));
+            bo.setTemporize(parameters.getInt(boidsParametersNames[Temporize]));
+        }
+
+        public void setAgentParametersFromJson(JSONObject o) {
+            JSONArray a = o.getJSONArray("parameters");
+            for (int i=0;i<a.length();i++) {
+                JSONObject side = a.getJSONObject(i);
+                SideOptionPanel op = (side.getString("side").equals("Blues")) ? optionsPanel.bluePanel : optionsPanel.redPanel;
+                JSONArray state = side.getJSONArray("state");
+                for (int j=0;j<state.length();j++) {
+                    JSONObject type = state.getJSONObject(j);
+                    World.AgentType at = World.AgentType.valueOf(type.getString("type").toUpperCase());
+                    op.setCondition(at,type.getInt(parametersNames[Condition]));
+                    op.setStrength(at,type.getInt(parametersNames[Strength]));
+                    op.setSpeed(at,type.getInt(parametersNames[Speed]));
+                    op.setAccuracy(at,type.getInt(parametersNames[Accuracy]));
+                    op.setRange(at,type.getInt(parametersNames[Range]));
+                    if (at == World.AgentType.COMMANDER)
+                        op.setAttractionForce(type.getInt(parametersNames[AttractionForce]));
+                }
+            }
+        }
+
         private void createSaveToFileActionListener() {
             frame.getOptionsPanel().saveToFileAddActionListener(e -> {
-                int returnVal = frame.getOptionsPanel().getFileChooser().showSaveDialog(frame);
+                int returnVal = optionsPanel.getFileChooser().showSaveDialog(frame);
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File f = frame.getOptionsPanel().getFileChooser().getSelectedFile();
                     try {
                         FileWriter fw = new FileWriter(f);
-                        Pair<Integer,Integer> size = frame.getOptionsPanel().getBoardSize();
+                        Pair<Integer,Integer> size = optionsPanel.getBoardSize();
                         JSONWriter w = new JSONWriter(fw);
-                        w.object();
-                        w.key("boardWidth").value(size.getValue());
-                        w.key("boardHeight").value(size.getKey());
 
-                        frame.server.updateTree();
+                        // Basic Parameters
+                        saveBasicParametersToJson(w,size);
+                        // Boids parameters
+                        saveBoidsParametersToJson(w);
+                        // Agents parameters
+                        saveAgentsParametersToJson(w);
 
-                        double[] testKey = {0,0};
-                        double[] upperKey = {size.getValue()*SquareSize.getInstance(),size.getKey()*SquareSize.getInstance()};
-                        try {
-                            java.util.List<AgentInTree> lst = frame.server.getWorld().getAgentsTree().range(testKey, upperKey);
-                            w.key("agents");
-                            w.array();
-                            for (AgentInTree a : lst) {
-                                w.object();
-                                w.key("x").value(a.p.getX());
-                                w.key("y").value(a.p.getY());
-                                w.key("type").value(a.type);
-                                w.key("side").value(a.side);
-                                if (a.behaviourClass != null) {
-                                    String b = a.behaviourClass.getName();
-                                    w.key("behaviour").value(b.substring(b.lastIndexOf('.')+1));
-                                }
-                                else
-                                    w.key("behaviour").value("");
-                                w.endObject();
-                            }
-                            w.endArray();
-                            //w.endObject();
-                        } catch (KeySizeException e1) {
-                            e1.printStackTrace();
-                        }
+                        // in case user added some obstacles
+                        server.updateTree();
+
+                        // Agents
+                        saveAgentsToJson(w, size);
+
                         w.endObject();
                         fw.flush();
                         fw.close();
@@ -337,6 +397,119 @@ public class MainFrame extends JFrame {
                 }
             });
         }
+
+        private void saveBasicParametersToJson(JSONWriter w, Pair<Integer,Integer> size) {
+            int[] parameters = new int[basicParameters.length-1];
+            parameters[BoardHeight] = size.getKey();
+            parameters[BoardWidth] = size.getValue();
+            parameters[StepSize] = optionsPanel.getTimeStep();
+            parameters[RoundsNumber] = optionsPanel.getTurnsLimit();
+            w.object();
+            for (int i=0;i<parameters.length;i++)
+                w.key(basicParameters[i]).value(parameters[i]);
+            w.key(basicParameters[RoundsLimit]).value(optionsPanel.limitIsActive());
+        }
+
+        private void saveBoidsParametersToJson(JSONWriter w) {
+            // Boids
+            BoidOptions bo = optionsPanel.boidOptions;
+            double[] boidsValues = new double[boidsParametersNames.length];
+            boidsValues[AgentSize] = bo.getAgentSize();
+            boidsValues[AngleOfView] = bo.getAngleOfView();
+            boidsValues[RangeOfView] = bo.getRangeOfView();
+            boidsValues[Temporize] = bo.getTemporize();
+            boidsValues[FollowingWeight] = bo.getFollowingWeight()*100;
+            boidsValues[SeekCenterWeight] = bo.getSeekCenterWeight()*100;
+            boidsValues[AvoidingWeight] = bo.getAvoidingWeight()*100;
+            boidsValues[MinimalDistance] = bo.getMinimalDistance();
+            w.key("boids");
+            w.object();
+            for (int i=0;i<boidsParametersNames.length;i++)
+                w.key(boidsParametersNames[i]).value(boidsValues[i]);
+            w.endObject();
+        }
+
+        private void saveAgentsParametersToJson(JSONWriter w) {
+            // Parameters
+            w.key("parameters");
+            w.array();
+
+            generateParametersForSide(World.AgentsSides.Blues,w);
+            generateParametersForSide(World.AgentsSides.Reds,w);
+
+            w.endArray();
+        }
+
+        private void saveAgentsToJson(JSONWriter w, Pair<Integer, Integer> size) {
+            // Agents
+            double[] testKey = {0,0};
+            double[] upperKey = {size.getValue()*SquareSize.getInstance(),size.getKey()*SquareSize.getInstance()};
+            try {
+                java.util.List<AgentInTree> lst = server.getWorld().getAgentsTree().range(testKey, upperKey);
+                w.key("agents");
+                w.array();
+                for (AgentInTree a : lst) {
+                    w.object();
+                    w.key("x").value(a.p.getX());
+                    w.key("y").value(a.p.getY());
+                    w.key("type").value(a.type);
+                    w.key("side").value(a.side);
+                    if (a.behaviourClass != null) {
+                        String b = a.behaviourClass.getName();
+                        w.key("behaviour").value(b.substring(b.lastIndexOf('.')+1));
+                    }
+                    else
+                        w.key("behaviour").value("");
+                    w.endObject();
+                }
+                w.endArray();
+                //w.endObject();
+            } catch (KeySizeException e1) {
+                e1.printStackTrace();
+            }
+        }
+
+        private void generateParametersForSide(World.AgentsSides side, JSONWriter w) {
+            w.object();
+            w.key("side").value(side);
+            w.key("state");
+            w.array();
+            for (Pair<String, ArrayList<Pair<String,Integer>>> types : getParametersFromSidePanel(side)) {
+                w.object();
+                w.key("type").value(types.getKey());
+                for (Pair<String,Integer> p : types.getValue())
+                    w.key(p.getKey()).value(p.getValue());
+                w.endObject();
+            }
+            w.endArray();
+            w.endObject();
+        }
+
+        /**
+         * @param side side of which parameters we want to have
+         * @return List of Pairs of String(name of type (ex. Warrior)) and list of pairs of String(ParameterName) and Integer(ParameterValue)
+         * ArrayList<Pair<NameOfType,ArrayList<Pair<ParameterName,ParameterValue>>>>
+         *
+         */
+        private ArrayList<Pair<String,ArrayList<Pair<String,Integer>>>> getParametersFromSidePanel(World.AgentsSides side) {
+            SideOptionPanel p = (side == World.AgentsSides.Blues) ? optionsPanel.bluePanel : optionsPanel.redPanel;
+            ArrayList<Pair<String,ArrayList<Pair<String,Integer>>>> lst = new ArrayList<>();
+            for (World.AgentType t : World.AgentType.values()) {
+                if (t != World.AgentType.OBSTACLE) {
+                    ArrayList<Pair<String,Integer>> l = new ArrayList<>();
+                    l.add(new Pair<>(parametersNames[Condition],p.getCondition(t)));
+                    l.add(new Pair<>(parametersNames[Strength],p.getStrength(t)));
+                    l.add(new Pair<>(parametersNames[Speed],p.getSpeed(t)));
+                    l.add(new Pair<>(parametersNames[Accuracy],p.getAccuracy(t)));
+                    l.add(new Pair<>(parametersNames[Range],p.getRange(t)));
+                    if (t == World.AgentType.COMMANDER)
+                        l.add(new Pair<>(parametersNames[AttractionForce],p.getAttractionForce()));
+                    lst.add(new Pair<>(t.toString(),l));
+                }
+            }
+            return lst;
+        }
+
     }
 
 }
