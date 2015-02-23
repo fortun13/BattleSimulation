@@ -29,10 +29,10 @@ public class Archer extends AgentWithPosition {
      */
     @Override
     protected void attack(AID enemy, AgentInTree currentState) {
-        if (Math.random() * 100 <= (accuracy - currentState.p.distance(currentState.p)*2)) {
+        if (Math.random() * 100 <= (stats.accuracy - currentState.p.distance(currentState.p)*2)) {
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setConversationId("attack");
-            String msgContent = currentState.condition + ":" + strength + ":" + speed + ":" + accuracy;
+            String msgContent = currentState.condition + ":" + stats.strength + ":" + stats.speed + ":" + stats.accuracy;
             msg.setContent(msgContent);
             msg.addReplyTo(getAID());
             msg.addReceiver(enemy);
@@ -42,7 +42,7 @@ public class Archer extends AgentWithPosition {
     }
 
     public int getAttackRange() {
-        return attackRange;
+        return stats.attackRange;
     }
 
     /**
@@ -76,14 +76,5 @@ public class Archer extends AgentWithPosition {
             // I'm still alive
             currentState.condition = currentState.condition-str;
         }
-    }
-
-
-    @Override
-    protected void killYourself(ACLMessage msgToSend) {
-        System.out.println("I'm dead :( " + getLocalName());
-        msgToSend.setConversationId("enemy-dead");
-        send(msgToSend);
-        world.killAgent(this);
     }
 }

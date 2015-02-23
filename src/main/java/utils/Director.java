@@ -18,8 +18,4 @@ public class Director {
     public AgentController getAgent() throws ControllerException {
         return agentBuilder.getAgent();
     }
-
-    public void constructAgent() {
-        agentBuilder.constructAgent();
-    }
 }

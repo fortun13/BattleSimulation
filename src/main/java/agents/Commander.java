@@ -3,6 +3,7 @@ package main.java.agents;
 import edu.wlu.cs.levy.CG.KeySizeException;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
+import main.java.utils.AgentBuilder;
 import main.java.utils.AgentInTree;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class Commander extends AgentWithPosition {
 		
 		Object[] p = getArguments();
 		
-		attractionForce = (int)p[8];
+		attractionForce = (int)p[AgentBuilder.ATTRACTION];
 	}
 
 	/**
@@ -42,42 +43,15 @@ public class Commander extends AgentWithPosition {
 		if(list.contains(agent.currentState))
 			list.remove(agent.currentState);
 		ArrayList<AID> ans = new ArrayList<>();
-		for (AgentInTree a :
-				list) {
+		for (AgentInTree a : list) {
 			ans.add(new AID(a.getAgentName(),true));
 		}
 		return ans;
 	}
 
-    @Override
-    protected void attack(AID enemy, AgentInTree currentState) {
-        if (Math.random() * 100 <= accuracy) {
-            ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-            msg.setConversationId("attack");
-            String msgContent = currentState.condition + ":" + strength + ":" + speed + ":" + accuracy;
-            msg.setContent(msgContent);
-            msg.addReplyTo(getAID());
-            msg.addReceiver(enemy);
-            msg.setSender(getAID());
-            send(msg);
-        }
-    }
-
-	@Override
-	protected void killYourself(ACLMessage msgToSend) {
-		System.out.println("I'm dead :( " + getLocalName());
-		sendMessageToEnemy(msgToSend);
-		world.killAgent(this);
-	}
-
 	protected void sendMessageToEnemy(ACLMessage msgToSend) {
 		msgToSend.setConversationId("enemy-dead");
 		send(msgToSend);
-	}
-
-	@Override
-	public boolean enemyInRangeOfAttack(AgentInTree enemy) {
-		return currentState.pos().distance(enemy.pos()) < attackRange;
 	}
 
 	@Override

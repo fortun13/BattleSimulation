@@ -3,10 +3,13 @@ package main.java.agents;
 import edu.wlu.cs.levy.CG.KeySizeException;
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import javafx.geometry.Point2D;
 import main.java.gui.BoidOptions;
+import main.java.utils.AgentBuilder;
 import main.java.utils.AgentInTree;
+import main.java.utils.Prototype;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,29 +29,18 @@ public abstract class AgentWithPosition extends Agent {
 
     protected AgentInTree currentState;
 
-    protected int strength, speed, accuracy, attackRange;
     protected AID commander;
+    
+    protected Statistics stats;
 
     public void setup() {
-        // 0 - behaviour
-        // 1 - condition
-        // 2 - strength
-        // 3 - speed
-        // 4 - accuracy
-        // 5 - world
-        // 6 - position
-        // 7 - attack range
-
         Object[] parameters = getArguments();
 
-        addBehaviour((ReactiveBehaviour) parameters[0]);
-        this.strength = (int) parameters[2];
-        this.speed = (int) parameters[3];
-        this.accuracy = (int) parameters[4];
-        this.world = (World) parameters[5];
-        this.currentState = (AgentInTree) parameters[6];
-        this.currentState.condition = (int) parameters[1];
-        this.attackRange = (int) parameters[7];
+        Behaviour behaviour = (Behaviour) parameters[AgentBuilder.BEHAVIOUR];
+        addBehaviour    (behaviour);
+        stats =         (Statistics) parameters[AgentBuilder.STATS];
+        world =              (World) parameters[AgentBuilder.WORLD];
+        currentState = (AgentInTree) parameters[AgentBuilder.POSITION];
     }
 
     /**
@@ -57,7 +49,9 @@ public abstract class AgentWithPosition extends Agent {
      * @param enemy Object representing enemy
      * @return true if agent can attack enemy
      */
-    protected abstract boolean enemyInRangeOfAttack(AgentInTree enemy);
+    public boolean enemyInRangeOfAttack(AgentInTree enemy) {
+        return currentState.pos().distance(enemy.pos()) < stats.attackRange;
+    }
 
     /**
      * method returning nearest enemy (if it's possible - if any enemies are in field of view of agent)
@@ -124,10 +118,23 @@ public abstract class AgentWithPosition extends Agent {
     }
 
     /**
-     * specifies what agent should do after his death
-     * @param msgToSend
+     * sends message to enemy about his death
+     * @param msgToSend message to enemy
      */
-    protected abstract void killYourself(ACLMessage msgToSend);
+    protected void sendMessageToEnemy(ACLMessage msgToSend) {
+        msgToSend.setConversationId("enemy-dead");
+        send(msgToSend);
+    }
+
+    /**
+     * specifies what agent should do after his death
+     * @param msgToSend kj
+     */
+    protected void killYourself(ACLMessage msgToSend) {
+        System.out.println("I'm dead :( " + getLocalName());
+        sendMessageToEnemy(msgToSend);
+        world.killAgent(this);
+    }
 
     protected Point2D gesDestination() {
         Point2D pos = currentState.pos();
@@ -141,7 +148,18 @@ public abstract class AgentWithPosition extends Agent {
      * @param enemy AID of enemy
      * @param currentState current state of agent (position etc.)
      */
-    protected abstract void attack(AID enemy, AgentInTree currentState);
+    protected void attack(AID enemy, AgentInTree currentState) {
+        if (Math.random() * 100 <= stats.accuracy) {
+            ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+            msg.setConversationId("attack");
+            String msgContent = currentState.condition + ":" + stats.strength + ":" + stats.speed + ":" + stats.accuracy;
+            msg.setContent(msgContent);
+            msg.addReplyTo(getAID());
+            msg.addReceiver(enemy);
+            msg.setSender(getAID());
+            send(msg);
+        }
+    }
 
     /**
      * method responsible for moving agent from his current position to new position (at least to change position as close to new position as possible)
@@ -243,7 +261,7 @@ public abstract class AgentWithPosition extends Agent {
 
     public void setSpeedVector(double angle, double radius) {
         currentState.speed[0] = angle;
-        currentState.speed[1] = Math.min(radius, speed);
+        currentState.speed[1] = Math.min(radius, stats.speed);
     }
 
     public double[] getSpeedHV() {
@@ -266,4 +284,29 @@ public abstract class AgentWithPosition extends Agent {
         this.commander = commander;
     }
 
+    public static class Statistics implements Cloneable, Prototype {
+        public Statistics(int strength, int accuracy, int speed, int attackRange) {
+            this.accuracy = accuracy;
+            this.attackRange = attackRange;
+            this.speed = speed;
+            this.strength = strength;
+        }
+        public Integer strength = 0, speed = 0, accuracy = 0, attackRange = 0;
+
+        public Statistics() { }
+
+        @Override
+        public Statistics clone() throws CloneNotSupportedException {
+            super.clone();
+            return new Statistics(strength, accuracy, speed, attackRange);
+        }
+
+        @Override
+        public void setup(List list) {
+            strength    = (Integer) list.get(0);
+            speed       = (Integer) list.get(1);
+            accuracy    = (Integer) list.get(2);
+            attackRange = (Integer) list.get(3);
+        }
+    }
 }
