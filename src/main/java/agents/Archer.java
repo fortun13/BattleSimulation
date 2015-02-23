@@ -1,8 +1,6 @@
 package main.java.agents;
 
-import jade.core.AID;
 import jade.lang.acl.ACLMessage;
-import main.java.utils.AgentInTree;
 
 /**
  * Created by Jakub Fortunka on 19.11.14.
@@ -27,34 +25,19 @@ public class Archer extends AgentWithPosition {
      * @param enemy AID of enemy
      * @param currentState current state of agent (position etc.)
      */
-    @Override
-    protected void attack(AID enemy, AgentInTree currentState) {
-        if (Math.random() * 100 <= (stats.accuracy - currentState.p.distance(currentState.p)*2)) {
-            ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-            msg.setConversationId("attack");
-            String msgContent = currentState.condition + ":" + stats.strength + ":" + stats.speed + ":" + stats.accuracy;
-            msg.setContent(msgContent);
-            msg.addReplyTo(getAID());
-            msg.addReceiver(enemy);
-            msg.setSender(getAID());
-            send(msg);
-        }
-    }
-
-    public int getAttackRange() {
-        return stats.attackRange;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @param enemy Object representing enemy
-     * @return
-     */
-    @Override
-    public boolean enemyInRangeOfAttack(AgentInTree enemy) {
-        return getCurrentState().pos().distance(enemy.pos()) < (2+getAttackRange());
-    }
-
+//    @Override
+//    protected void attack(AID enemy, AgentInTree currentState) {
+//        if (Math.random() * 100 <= (stats.accuracy - currentState.p.distance(currentState.p)*2)) {
+//            ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+//            msg.setConversationId("attack");
+//            String msgContent = currentState.condition + ":" + stats.strength + ":" + stats.speed + ":" + stats.accuracy;
+//            msg.setContent(msgContent);
+//            msg.addReplyTo(getAID());
+//            msg.addReceiver(enemy);
+//            msg.setSender(getAID());
+//            send(msg);
+//        }
+//    }
     /**
      * {@inheritDoc}
      * @param msg message from enemy with his parameters
@@ -62,6 +45,7 @@ public class Archer extends AgentWithPosition {
     @Override
     public void reactToAttack(ACLMessage msg) {
         String content = msg.getContent();
+        System.out.println("Arch Msg: " + content);
         String[] el = content.split(":");
         int cond = Integer.valueOf(el[0]);
         int str = Integer.valueOf(el[1]);

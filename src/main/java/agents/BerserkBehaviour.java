@@ -34,6 +34,11 @@ public class BerserkBehaviour extends ReactiveBehaviour {
     @Override
     public void decideOnNextStep() {
         AgentWithPosition agent = (AgentWithPosition) myAgent;
+//        System.out.println(agent.currentState.getAgentName());
+//        System.out.println("Acc: " + agent.stats.accuracy);
+//        System.out.println("Spd: " + agent.stats.speed);
+//        System.out.println("AttR: " + agent.stats.attackRange);
+//        System.out.println("Str: " + agent.stats.strength);
         if (agent.currentState.condition <= 0) {
             return ;
         }

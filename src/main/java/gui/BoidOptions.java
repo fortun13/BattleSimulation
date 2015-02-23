@@ -52,13 +52,13 @@ public class BoidOptions extends JPanel {
         return (Integer) options[T].getValue();
     }
     public double getFollowingWeight() {
-        return (Integer) options[FW].getValue() / 100.;
+        return ((Integer)options[FW].getValue()) / 100.;
     }
     public double getSeekCenterWeight() {
-        return (Integer) options[SCW].getValue() / 100.;
+        return ((Integer) options[SCW].getValue()) / 100.;
     }
     public double getAvoidingWeight() {
-        return (Integer) options[AW].getValue() / 100.;
+        return ((Integer) options[AW].getValue()) / 100.;
     }
     public double getMinimalDistance() {
         return (Integer) options[MD].getValue();

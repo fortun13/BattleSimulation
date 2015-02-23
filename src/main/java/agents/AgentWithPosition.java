@@ -22,25 +22,20 @@ public abstract class AgentWithPosition extends Agent {
     protected int fieldOfView = 200;
 
     protected double previousRatio=1;
-
     protected double psychologicalResistance = 0.7;
-
     protected World world;
-
     protected AgentInTree currentState;
-
     protected AID commander;
-    
     protected Statistics stats;
 
     public void setup() {
         Object[] parameters = getArguments();
 
         Behaviour behaviour = (Behaviour) parameters[AgentBuilder.BEHAVIOUR];
-        addBehaviour    (behaviour);
         stats =         (Statistics) parameters[AgentBuilder.STATS];
         world =              (World) parameters[AgentBuilder.WORLD];
         currentState = (AgentInTree) parameters[AgentBuilder.POSITION];
+        addBehaviour    (behaviour);
     }
 
     /**
@@ -303,8 +298,8 @@ public abstract class AgentWithPosition extends Agent {
         @Override
         public void setup(List list) {
             strength    = (Integer) list.get(0);
-            speed       = (Integer) list.get(1);
-            accuracy    = (Integer) list.get(2);
+            accuracy    = (Integer) list.get(1);
+            speed       = (Integer) list.get(2);
             attackRange = (Integer) list.get(3);
         }
     }

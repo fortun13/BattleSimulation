@@ -44,7 +44,6 @@ public class World {
 
     //TODO waiting for splitting JPanel from actual options - for now, i just want it to compile
     private BoidOptions boidOptions;
-    private SideOptionsPanel sideOptionsPanel;
 
     /**
      * Contructor for this class - mainly it populates world with agents
@@ -77,8 +76,11 @@ public class World {
         }
     }
 
-    private void addAgentsToWorld(ServerAgent serverAgent,Pair<AgentType,Integer> pair, Director generator, AgentsSides side, int xPos,String prefix, int counter) {
-        sideOptionsPanel = side == AgentsSides.Blues ? serverAgent.getFrame().getOptionsPanel().bluePanel : serverAgent.getFrame().getOptionsPanel().redPanel;
+    private void addAgentsToWorld(ServerAgent serverAgent,Pair<AgentType,Integer> pair, Director generator,
+                                  AgentsSides side, int xPos,String prefix, int counter) {
+        SideOptionsPanel sideOptionsPanel = side == AgentsSides.Blues ?
+                serverAgent.getFrame().getOptionsPanel().bluePanel :
+                serverAgent.getFrame().getOptionsPanel().redPanel;
         AgentBuilder builder = prepareBuilder(pair.getKey(),
                 sideOptionsPanel,
                 serverAgent);
@@ -86,17 +88,18 @@ public class World {
         generator.setAgentBuilder(builder);
         generator.setPlatform(container);
         for (int i=0;i<pair.getValue();i++) {
-            addAgentToWorld(builder,pair.getKey(),side,generator,i+1+counter,prefix, xPos*pair.getKey().getSize(),(i+1+counter)*pair.getKey().getSize());
+            addAgentToWorld(builder,pair.getKey(),side,generator,i+1+counter,prefix,
+                    xPos*pair.getKey().getSize(),(i+1+counter)*pair.getKey().getSize(),sideOptionsPanel.getCondition(pair.getKey()));
         }
         offset += pair.getValue();
     }
 
     private void addAgentToWorld(AgentBuilder builder, AgentType type, AgentsSides agentSide, Director generator,
-                                 int counter, String agentPrefix, int xPosition, int yPosition) {
+                                 int counter, String agentPrefix, int xPosition, int yPosition, int condition) {
         AgentInTree ait = new AgentInTree("", agentSide, new Point2D(xPosition, yPosition), type, builder.getBehaviour());
 
         builder.buildName(agentPrefix + (counter + offset));
-        builder.buildState(ait, sideOptionsPanel.getCondition(type));
+        builder.buildState(ait, condition);
 
         AgentController agent;
         try {
@@ -120,7 +123,7 @@ public class World {
         }
     }
 
-    private AgentBuilder prepareBuilder(AgentType type, SideOptionsPanel SideOptionsPanel,ServerAgent sa) {
+    private AgentBuilder prepareBuilder(AgentType type, SideOptionsPanel sideOptionsPanel,ServerAgent sa) {
         //TODO can't use ServerAgent - it's temporary (until better design is implemented)
 
         Class<? extends ReactiveBehaviour> behaviour;
@@ -133,7 +136,8 @@ public class World {
         AgentBuilder builder = chooseBuilder(type, behaviour);
         builder.buildServer(sa.getAID());
         builder.buildWorld(this);
-        builder.buildStatistics(sideOptionsPanel.getStrength(type), sideOptionsPanel.getAccuracy(type), sideOptionsPanel.getSpeed(type), sideOptionsPanel.getRange(type));
+        builder.buildStatistics(sideOptionsPanel.getStrength(type), sideOptionsPanel.getAccuracy(type),
+                sideOptionsPanel.getSpeed(type), sideOptionsPanel.getRange(type));
         if (type == AgentType.COMMANDER) {
             ((CommanderBuilder) builder).buildAttractionForce(sideOptionsPanel.getAttractionForce());
         }
@@ -186,7 +190,9 @@ public class World {
 
     private void addAgentsToWorld(ServerAgent serverAgent, AgentType type, ArrayList<JSONObject> list,
                                   Director generator, AgentsSides side, int counter, String prefix) {
-        sideOptionsPanel = side == AgentsSides.Blues ? serverAgent.getFrame().getOptionsPanel().bluePanel : serverAgent.getFrame().getOptionsPanel().redPanel;
+        SideOptionsPanel sideOptionsPanel = side == AgentsSides.Blues ?
+                serverAgent.getFrame().getOptionsPanel().bluePanel :
+                serverAgent.getFrame().getOptionsPanel().redPanel;
         AgentBuilder builder = prepareBuilder(type,
                 sideOptionsPanel,
                 serverAgent);
@@ -195,7 +201,8 @@ public class World {
         generator.setPlatform(container);
 
         for (JSONObject agent : list) {
-            addAgentToWorld(builder,type,side,generator,counter,prefix,agent.getInt("x"),agent.getInt("y"),agent.getString("behaviour"));
+            addAgentToWorld(builder,type,side,generator,counter,prefix,agent.getInt("x"),agent.getInt("y"),
+                    agent.getString("behaviour"), sideOptionsPanel.getCondition(type));
             counter++;
         }
 
@@ -203,13 +210,14 @@ public class World {
     }
 
     private void addAgentToWorld(AgentBuilder builder, AgentType type, AgentsSides agentSide, Director generator,
-                                 int counter, String agentPrefix, int xPosition, int yPosition, String behaviour) {
+                                 int counter, String agentPrefix, int xPosition, int yPosition, String behaviour, int condition) {
         setBehaviourByFile(builder,behaviour);
-        addAgentToWorld(builder,type,agentSide,generator,counter,agentPrefix,xPosition,yPosition);
+        addAgentToWorld(builder,type,agentSide,generator,counter,agentPrefix,xPosition,yPosition,condition);
     }
 
     private void addObstacleToWorld(JSONObject obstacle) {
-        AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle, new Point2D(obstacle.getInt("x"), obstacle.getInt("y")), World.AgentType.OBSTACLE, null);
+        AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle,
+                new Point2D(obstacle.getInt("x"), obstacle.getInt("y")), World.AgentType.OBSTACLE, null);
         try {
             agentsTree.insert(new double[] {obstacle.getInt("x"),obstacle.getInt("y")},obs);
         } catch (KeySizeException | KeyDuplicateException e) {
