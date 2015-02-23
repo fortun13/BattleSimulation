@@ -73,7 +73,6 @@ public abstract class AgentWithPosition extends Agent {
 
     /**
      *
-     *
      * @return current state of agent - his position and some other elements (look to {@link main.java.utils.AgentInTree})
      */
     public AgentInTree getCurrentState() {
@@ -168,7 +167,7 @@ public abstract class AgentWithPosition extends Agent {
     public void goToPoint(Point2D pos) {
         Point2D mp = currentState.pos();
 
-        BoidOptions options = world.server.getFrame().getOptionsPanel().options;
+        BoidOptions options = world.getBoidOptions();
         setSpeedHV(pos.getX() - mp.getX(), pos.getY() - mp.getY(), options.getAgentSize());
 
         final double[] key = {mp.getX(), mp.getY()};

@@ -4,12 +4,14 @@ import javafx.geometry.Point2D;
 import javafx.util.Pair;
 import main.java.agents.World;
 import main.java.utils.AgentInTree;
-import main.java.utils.flyweight.FlyweightFactory;
+import main.java.utils.SquareSize;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +22,6 @@ import java.util.List;
  */
 public class BoardPanel extends JPanel {
 
-    public final int SQUARESIZE = 20;
     public Cursor cursor;
     public AffineTransform at = new AffineTransform();
     private ArrayList<Pair<World.AgentType,BufferedImage>> images = new ArrayList<>();
@@ -53,9 +54,9 @@ public class BoardPanel extends JPanel {
         at = new AffineTransform();
         //at.scale(0.19, 0.19);
         at.scale(1,1);
-    	setPreferredSize(new Dimension(width*(SQUARESIZE)+10, height*(SQUARESIZE)+10));
+    	setPreferredSize(new Dimension(width*(SquareSize.getInstance())+10, height*(SquareSize.getInstance())+10));
 
-        innerBoard.setPreferredSize(new Dimension(width*(SQUARESIZE)+1, height*(SQUARESIZE)+1));
+        innerBoard.setPreferredSize(new Dimension(width*(SquareSize.getInstance())+1, height*(SquareSize.getInstance())+1));
         add(innerBoard);
 
         innerBoard.revalidate();
@@ -186,30 +187,37 @@ public class BoardPanel extends JPanel {
 
             //g2d.fillOval((int)pointOnBoard.getX(),(int)pointOnBoard.getY(),agent.type.getSize(),agent.type.getSize());
 
-            BufferedImage image;
-            if (!images.stream().anyMatch(p -> p.getKey().equals(agent.type))) {
-                image = FlyweightFactory.getFactory().getIcon(agent.type.getImagePath());
-                images.add(new Pair<>(agent.type,image));
-            } else {
-                image = images.stream().filter( p -> p.getKey().equals(agent.type)).findFirst().get().getValue();
+            try {
+                BufferedImage image;
+                if (!images.stream().anyMatch(p -> p.getKey().equals(agent.type))) {
+                    ClassLoader cl = this.getClass().getClassLoader();
+                    //System.out.println("Type: " + agent.type.getImagePath());
+                    image = ImageIO.read(cl.getResource(agent.type.getImagePath()));
+//                    image = ImageIO.read(new File(agent.type.getImagePath()));
+                    images.add(new Pair<>(agent.type,image));
+                } else {
+                    image = images.stream().filter( p -> p.getKey().equals(agent.type)).findFirst().get().getValue();
+                }
+                if (pointBuffer == null) {
+                    //System.out.println("Position: " + agent.p);
+                    g2d.fillOval((int) agent.p.getX(), (int) agent.p.getY(), agent.type.getSize(), agent.type.getSize());
+                    g2d.drawImage(image, (int) agent.p.getX(), (int) agent.p.getY(), null);
+                    if (isClicked)
+                        paintSelection(g2d,agent.p);
+
+                } else {
+                    g2d.fillOval((int) pointBuffer.getX(), (int) pointBuffer.getY(), agent.type.getSize(), agent.type.getSize());
+                    g2d.drawImage(image, (int) pointBuffer.getX(), (int) pointBuffer.getY(), null);
+                    if (isClicked)
+                        paintSelection(g2d,pointBuffer);
+                }
+
+
+                //g2d.drawImage(image,(int)agent.p.getX()*SQUARESIZE,(int)agent.p.getY()*SQUARESIZE,null);
+                //g2d.drawImage(image,(int)pointOnBoard.getX(),(int)pointOnBoard.getY(),null);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            if (pointBuffer == null) {
-                //System.out.println("Position: " + agent.p);
-                g2d.fillOval((int) agent.p.getX(), (int) agent.p.getY(), agent.type.getSize(), agent.type.getSize());
-                g2d.drawImage(image, (int) agent.p.getX(), (int) agent.p.getY(), null);
-                if (isClicked)
-                    paintSelection(g2d,agent.p);
-
-            } else {
-                g2d.fillOval((int) pointBuffer.getX(), (int) pointBuffer.getY(), agent.type.getSize(), agent.type.getSize());
-                g2d.drawImage(image, (int) pointBuffer.getX(), (int) pointBuffer.getY(), null);
-                if (isClicked)
-                    paintSelection(g2d,pointBuffer);
-            }
-
-
-            //g2d.drawImage(image,(int)agent.p.getX()*SQUARESIZE,(int)agent.p.getY()*SQUARESIZE,null);
-            //g2d.drawImage(image,(int)pointOnBoard.getX(),(int)pointOnBoard.getY(),null);
 
             g2d.setTransform(old);
         }

@@ -55,9 +55,6 @@ public class CommanderBehaviour extends ReactiveBehaviour {
                     state = FOLLOWIN;
                 } else {
                     fightingStance.setConversationId("stance-march");
-                    /* Zakomentowanie poniższej linii sprawi że Commander na początku bitwy stoi w miejscu
-                    Przydatene do obserwowania jak rozmieszczają się miniony
-                     */
                     ((Commander) myAgent).goToPoint(((Commander) myAgent).world.returnBoardCenter());
                 }
                 break;
