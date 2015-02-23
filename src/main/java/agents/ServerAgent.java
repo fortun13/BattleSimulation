@@ -119,25 +119,31 @@ public class ServerAgent extends Agent {
                     if (msg != null) {
                         if (msg.getConversationId().equals("ended-computation")) {
                             agentsCounter++;
+                            //System.out.println("Agents number: " + agentsCounter);
                             if (agentsCounter == agentsNumber) {
                                 agentsCounter = 0;
                                 stepsCounter++;
+                                //System.out.println("I'm in if!!");
 
                                 try {
                                     m_frame.redrawBoard(getAllAgents());
                                 } catch (KeySizeException e) {
                                     e.printStackTrace();
                                 }
+                                //System.out.println("I've redraw board!!");
                                 m_frame.updateStatistics();
-                                while (System.currentTimeMillis() - time < interval)
-                                    block(interval - (System.currentTimeMillis() - time));
-
+                                long tmp = System.currentTimeMillis() - time;
+                                //System.out.println("before waiting");
+                                if (tmp < interval)
+                                    block(interval - tmp);
+                                //System.out.println("after waiting");
                                 state = 0;
                                 break;
                             }
                         } else if (msg.getConversationId().equals("agent-dead")) {
-                            while (System.currentTimeMillis() - time < interval)
-                                block(interval - (System.currentTimeMillis() - time));
+                            long tmp = System.currentTimeMillis() - time;
+                            if (tmp < interval)
+                                block(interval - tmp);
                         }
                     } else {
                         block();

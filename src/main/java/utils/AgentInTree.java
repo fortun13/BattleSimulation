@@ -4,8 +4,6 @@ import javafx.geometry.Point2D;
 import main.java.agents.ReactiveBehaviour;
 import main.java.agents.World;
 
-import java.awt.image.BufferedImage;
-
 /**
  * Class which represents state of our agent - it's
  */
@@ -16,8 +14,6 @@ public class AgentInTree implements Placed {
     public World.AgentsSides side;
     private String agentName;
     public boolean isDead = false;
-
-    BufferedImage icon;
 
     public Class<? extends ReactiveBehaviour> behaviourClass;
 
