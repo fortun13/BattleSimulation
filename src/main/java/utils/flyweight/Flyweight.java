@@ -3,7 +3,6 @@ package main.java.utils.flyweight;
 import main.java.utils.Prototype;
 
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Created by Marek on 21.02.2015.
