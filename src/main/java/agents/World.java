@@ -55,7 +55,6 @@ public class World {
     public World(ServerAgent serverAgent, ArrayList<Pair<AgentType, Integer>> blues, ArrayList<Pair<AgentType, Integer>> reds) {
         Point2D p = serverAgent.getFrame().getBoardPanel().getBoardSize();
         boardCenter = new Point2D((p.getX()-1)/2,(p.getY()-1)/2);
-        Director generator = new Director();
 
         boardSize = serverAgent.getFrame().getBoardPanel().getBoardSize();
 
@@ -64,19 +63,19 @@ public class World {
         int counter = 1;
 
         for (Pair<AgentType,Integer> pair : blues) {
-            addAgentsToWorld(serverAgent,pair,generator,AgentsSides.Blues,10,"agentBlues_",counter);
+            addAgentsToWorld(serverAgent,pair,AgentsSides.Blues,10,"agentBlues_",counter);
             counter += pair.getValue();
         }
 
         counter = 1;
 
         for (Pair<AgentType,Integer> pair : reds) {
-            addAgentsToWorld(serverAgent,pair,generator, AgentsSides.Reds,(int) (p.getX()/SquareSize.getInstance())-10,"agentReds_",counter);
+            addAgentsToWorld(serverAgent,pair, AgentsSides.Reds,(int) (p.getX()/SquareSize.getInstance())-10,"agentReds_",counter);
             counter += pair.getValue();
         }
     }
 
-    private void addAgentsToWorld(ServerAgent serverAgent,Pair<AgentType,Integer> pair, Director generator,
+    private void addAgentsToWorld(ServerAgent serverAgent,Pair<AgentType,Integer> pair,
                                   AgentsSides side, int xPos,String prefix, int counter) {
         SideOptionsPanel sideOptionsPanel = side == AgentsSides.Blues ?
                 serverAgent.getFrame().getOptionsPanel().bluePanel :
@@ -85,16 +84,17 @@ public class World {
                 sideOptionsPanel,
                 serverAgent);
         PlatformController container = serverAgent.getContainerController();
-        generator.setAgentBuilder(builder);
-        generator.setPlatform(container);
+        /*generator.setAgentBuilder(builder);
+        generator.setPlatform(container);*/
+        builder.setPlatform(container);
         for (int i=0;i<pair.getValue();i++) {
-            addAgentToWorld(builder,pair.getKey(),side,generator,i+1+counter,prefix,
+            addAgentToWorld(builder,pair.getKey(),side,i+1+counter,prefix,
                     xPos*pair.getKey().getSize(),(i+1+counter)*pair.getKey().getSize(),sideOptionsPanel.getCondition(pair.getKey()));
         }
         offset += pair.getValue();
     }
 
-    private void addAgentToWorld(AgentBuilder builder, AgentType type, AgentsSides agentSide, Director generator,
+    private void addAgentToWorld(AgentBuilder builder, AgentType type, AgentsSides agentSide,
                                  int counter, String agentPrefix, int xPosition, int yPosition, int condition) {
         AgentInTree ait = new AgentInTree("", agentSide, new Point2D(xPosition, yPosition), type, builder.getBehaviour());
 
@@ -103,7 +103,8 @@ public class World {
 
         AgentController agent;
         try {
-            agent = generator.getAgent();
+            //agent = generator.getAgent();
+            agent = builder.getAgent();
             ait.setAgentName(agent.getName());
             agent.start();
             switch (agentSide) {
@@ -166,20 +167,19 @@ public class World {
         int counter = 1;
         Point2D p = serverAgent.getFrame().getBoardPanel().getBoardSize();
         boardCenter = new Point2D((p.getX()-1)/2,(p.getY()-1)/2);
-        Director generator = new Director();
 
         boardSize = serverAgent.getFrame().getBoardPanel().getBoardSize();
         boidOptions = serverAgent.getFrame().getOptionsPanel().boidOptions;
 
         for (AgentType type : blues.keySet()) {
-            addAgentsToWorld(serverAgent, type, blues.get(type), generator, AgentsSides.Blues, counter,"agentBlues_");
+            addAgentsToWorld(serverAgent, type, blues.get(type), AgentsSides.Blues, counter,"agentBlues_");
             counter++;
         }
 
         counter = 1;
 
         for (AgentType type : reds.keySet()) {
-            addAgentsToWorld(serverAgent,type,reds.get(type),generator,AgentsSides.Reds,counter,"agentReds_");
+            addAgentsToWorld(serverAgent,type,reds.get(type),AgentsSides.Reds,counter,"agentReds_");
             counter++;
         }
 
@@ -189,7 +189,7 @@ public class World {
     }
 
     private void addAgentsToWorld(ServerAgent serverAgent, AgentType type, ArrayList<JSONObject> list,
-                                  Director generator, AgentsSides side, int counter, String prefix) {
+                                   AgentsSides side, int counter, String prefix) {
         SideOptionsPanel sideOptionsPanel = side == AgentsSides.Blues ?
                 serverAgent.getFrame().getOptionsPanel().bluePanel :
                 serverAgent.getFrame().getOptionsPanel().redPanel;
@@ -197,11 +197,10 @@ public class World {
                 sideOptionsPanel,
                 serverAgent);
         PlatformController container = serverAgent.getContainerController();
-        generator.setAgentBuilder(builder);
-        generator.setPlatform(container);
+        builder.setPlatform(container);
 
         for (JSONObject agent : list) {
-            addAgentToWorld(builder,type,side,generator,counter,prefix,agent.getInt("x"),agent.getInt("y"),
+            addAgentToWorld(builder,type,side,counter,prefix,agent.getInt("x"),agent.getInt("y"),
                     agent.getString("behaviour"), sideOptionsPanel.getCondition(type));
             counter++;
         }
@@ -209,10 +208,10 @@ public class World {
         offset += list.size();
     }
 
-    private void addAgentToWorld(AgentBuilder builder, AgentType type, AgentsSides agentSide, Director generator,
+    private void addAgentToWorld(AgentBuilder builder, AgentType type, AgentsSides agentSide,
                                  int counter, String agentPrefix, int xPosition, int yPosition, String behaviour, int condition) {
         setBehaviourByFile(builder,behaviour);
-        addAgentToWorld(builder,type,agentSide,generator,counter,agentPrefix,xPosition,yPosition,condition);
+        addAgentToWorld(builder,type,agentSide,counter,agentPrefix,xPosition,yPosition,condition);
     }
 
     private void addObstacleToWorld(JSONObject obstacle) {
