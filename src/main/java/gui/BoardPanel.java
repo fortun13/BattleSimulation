@@ -1,11 +1,11 @@
-package main.java.gui;
+package gui;
 
+import agents.AgentType;
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
-import main.java.agents.World;
-import main.java.utils.AgentInTree;
-import main.java.utils.SquareSize;
-import main.java.utils.flyweight.FlyweightFactory;
+import utils.AgentInTree;
+import utils.SquareSize;
+import utils.flyweight.FlyweightFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +23,7 @@ public class BoardPanel extends JPanel {
 
     public Cursor cursor;
     public AffineTransform at = new AffineTransform();
-    private ArrayList<Pair<World.AgentType,BufferedImage>> images = new ArrayList<>();
+    private ArrayList<Pair<AgentType,BufferedImage>> images = new ArrayList<>();
     public int x1, y1, x2, y2;
     public MyAgent selectedAgent = null;
 
@@ -53,9 +53,9 @@ public class BoardPanel extends JPanel {
         at = new AffineTransform();
         //at.scale(0.19, 0.19);
         at.scale(1,1);
-    	setPreferredSize(new Dimension(width*(SquareSize.getInstance())+10, height*(SquareSize.getInstance())+10));
+    	setPreferredSize(new Dimension(width*(SquareSize.getInstance().getValue())+10, height*(SquareSize.getInstance().getValue())+10));
 
-        innerBoard.setPreferredSize(new Dimension(width*(SquareSize.getInstance())+1, height*(SquareSize.getInstance())+1));
+        innerBoard.setPreferredSize(new Dimension(width*(SquareSize.getInstance().getValue())+1, height*(SquareSize.getInstance().getValue())+1));
         add(innerBoard);
 
         innerBoard.revalidate();
@@ -215,7 +215,7 @@ public class BoardPanel extends JPanel {
         }
 
         private void paintSelection(Graphics2D g, Point2D point) {
-            if (agent.type != World.AgentType.OBSTACLE) {
+            if (agent.type != AgentType.OBSTACLE) {
                 g.setColor(Color.GREEN);
                 g.setStroke(new BasicStroke(2.0f));
                 g.drawOval((int) point.getX(), (int) point.getY(), agent.type.getSize(), agent.type.getSize());

@@ -1,8 +1,8 @@
-package main.java.utils;
+package utils;
 
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
-import main.java.agents.ReactiveBehaviour;
+import agents.ReactiveBehaviour;
 
 public class WarriorBuilder extends AgentBuilder {
 
@@ -13,6 +13,6 @@ public class WarriorBuilder extends AgentBuilder {
     @Override
     public AgentController getAgent() throws ControllerException {
         buildBehaviour();
-        return platform.createNewAgent(name, "main.java.agents.Warrior", parameters.clone());
+        return platform.createNewAgent(name, "agents.Warrior", parameters.clone());
     }
 }

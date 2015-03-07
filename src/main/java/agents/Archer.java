@@ -1,4 +1,4 @@
-package main.java.agents;
+package agents;
 
 import jade.lang.acl.ACLMessage;
 

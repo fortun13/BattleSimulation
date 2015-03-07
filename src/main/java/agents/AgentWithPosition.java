@@ -1,4 +1,4 @@
-package main.java.agents;
+package agents;
 
 import edu.wlu.cs.levy.CG.KeySizeException;
 import jade.core.AID;
@@ -6,10 +6,10 @@ import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import javafx.geometry.Point2D;
-import main.java.gui.BoidOptions;
-import main.java.utils.AgentBuilder;
-import main.java.utils.AgentInTree;
-import main.java.utils.Prototype;
+import gui.BoidOptions;
+import utils.AgentBuilder;
+import utils.AgentInTree;
+import utils.Prototype;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,7 +68,7 @@ public abstract class AgentWithPosition extends Agent {
 
     /**
      *
-     * @return current state of agent - his position and some other elements (look to {@link main.java.utils.AgentInTree})
+     * @return current state of agent - his position and some other elements (look to {@link utils.AgentInTree})
      */
     public AgentInTree getCurrentState() {
         return currentState;

@@ -1,7 +1,7 @@
-package main.java.gui;
+package gui;
 
+import agents.AgentType;
 import javafx.util.Pair;
-import main.java.agents.World;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -133,19 +133,19 @@ public class OptionsPanel extends JPanel {
         return (int)turnsLimitSpinner.getValue();
     }
 
-	private ArrayList<Pair<World.AgentType,Integer>> getListWithNumberOfAgentsByType(SideOptionsPanel panel) {
-		ArrayList<Pair<World.AgentType,Integer>> list = new ArrayList<>();
-		list.add(new Pair<>(World.AgentType.WARRIOR,panel.getWarriorsNumber()));
-		list.add(new Pair<>(World.AgentType.ARCHER,panel.getArchersNumber()));
-		list.add(new Pair<>(World.AgentType.COMMANDER,panel.getCommandersNumber()));
+	private ArrayList<Pair<AgentType,Integer>> getListWithNumberOfAgentsByType(SideOptionsPanel panel) {
+		ArrayList<Pair<AgentType,Integer>> list = new ArrayList<>();
+		list.add(new Pair<>(AgentType.WARRIOR,panel.getWarriorsNumber()));
+		list.add(new Pair<>(AgentType.ARCHER,panel.getArchersNumber()));
+		list.add(new Pair<>(AgentType.COMMANDER,panel.getCommandersNumber()));
 		return list;
 	}
 
-	public ArrayList<Pair<World.AgentType,Integer>> getBluesAgents() {
+	public ArrayList<Pair<AgentType,Integer>> getBluesAgents() {
 		return getListWithNumberOfAgentsByType(bluePanel);
 	}
 
-	public ArrayList<Pair<World.AgentType,Integer>> getRedsAgents() {
+	public ArrayList<Pair<AgentType,Integer>> getRedsAgents() {
 		return getListWithNumberOfAgentsByType(redPanel);
 	}
 

@@ -1,5 +1,7 @@
 apply plugin: 'java'
 
+sourceSets.main.resources.srcDirs = ["src"]
+
 repositories {
     mavenCentral()
     flatDir {
@@ -24,5 +26,8 @@ jar {
 }
 
 task run(dependsOn: jar) << {
-    ant.java(jar:"${libsDir}${File.separator}${archivesBaseName}.jar",fork:true)
+    ant.java(jar:"${libsDir}${File.separator}${archivesBaseName}.jar",fork:true) {
+        arg(value: "-gui")
+        arg(value: "server:agents.ServerAgent")
+    }
 }

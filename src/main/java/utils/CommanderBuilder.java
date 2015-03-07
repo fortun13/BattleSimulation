@@ -1,8 +1,8 @@
-package main.java.utils;
+package utils;
 
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
-import main.java.agents.ReactiveBehaviour;
+import agents.ReactiveBehaviour;
 
 /**
  * Created by KrzysiekH on 2014-12-13.
@@ -17,7 +17,7 @@ public class CommanderBuilder extends AgentBuilder {
     @Override
     public AgentController getAgent() throws ControllerException {
         buildBehaviour();
-        return platform.createNewAgent(name, "main.java.agents.Commander", parameters.clone());
+        return platform.createNewAgent(name, "agents.Commander", parameters.clone());
     }
 
     public void buildAttractionForce(int attractionForce) {

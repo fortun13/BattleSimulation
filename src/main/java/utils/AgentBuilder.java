@@ -1,12 +1,12 @@
-package main.java.utils;
+package utils;
 
 import jade.core.AID;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
-import main.java.agents.ReactiveBehaviour;
-import main.java.agents.World;
-import main.java.utils.flyweight.FlyweightFactory;
+import agents.ReactiveBehaviour;
+import agents.World;
+import utils.flyweight.FlyweightFactory;
 
 /**
  * Created by Jakub Fortunka on 21.11.14.

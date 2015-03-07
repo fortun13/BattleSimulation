@@ -1,9 +1,9 @@
-package main.java.agents;
+package agents;
 
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
-import main.java.utils.AgentInTree;
+import utils.AgentInTree;
 
 /**
  * Created by Jakub Fortunka on 20.11.14.

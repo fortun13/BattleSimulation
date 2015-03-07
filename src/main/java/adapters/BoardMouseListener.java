@@ -1,13 +1,14 @@
-package main.java.adapters;
+package adapters;
 
+import agents.AgentType;
+import agents.World;
 import edu.wlu.cs.levy.CG.KeyDuplicateException;
 import edu.wlu.cs.levy.CG.KeySizeException;
 import javafx.geometry.Point2D;
-import main.java.agents.World;
-import main.java.gui.BoardPanel;
-import main.java.gui.MainFrame;
-import main.java.gui.Messages;
-import main.java.utils.AgentInTree;
+import gui.BoardPanel;
+import gui.MainFrame;
+import gui.Messages;
+import utils.AgentInTree;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -37,20 +38,14 @@ public class BoardMouseListener extends MouseAdapter {
                 //show dialog for creating obstacle
                 popup.setVisible(false);
                 try {
-                    AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle, new Point2D(popupPosition[0], popupPosition[1]), World.AgentType.OBSTACLE, null);
+                    AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle, new Point2D(popupPosition[0], popupPosition[1]),
+                            AgentType.OBSTACLE, null);
                     MainFrame f = ((MainFrame)board.getTopLevelAncestor());
                     f.getServer().insertNewAgentToTree(new double[] {popupPosition[0],popupPosition[1]},obs);
                     f.redrawBoard(f.getServer().getAllAgents());
-                } catch (KeySizeException e1) {
-                    e1.printStackTrace();
-                } catch (KeyDuplicateException e1) {
+                } catch (KeySizeException | KeyDuplicateException e1) {
                     e1.printStackTrace();
                 }
-            }
-
-            private void showErrorMessage() {
-                JOptionPane.showMessageDialog(board,Messages.getString("BoardMouseListener.badSizeMessage"),
-                        Messages.getString("BoardMousePanel.badSizeTitle"),JOptionPane.INFORMATION_MESSAGE);
             }
 
         };

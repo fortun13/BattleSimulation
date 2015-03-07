@@ -1,8 +1,8 @@
-package main.java.utils;
+package utils;
 
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
-import main.java.agents.ReactiveBehaviour;
+import agents.ReactiveBehaviour;
 
 /**
  * Created by Jakub Fortunka on 21.11.14.
@@ -17,6 +17,6 @@ public class ArcherBuilder extends AgentBuilder {
     @Override
     public AgentController getAgent() throws ControllerException {
         buildBehaviour();
-        return platform.createNewAgent(name, "main.java.agents.Archer", parameters.clone());
+        return platform.createNewAgent(name, "agents.Archer", parameters.clone());
     }
 }

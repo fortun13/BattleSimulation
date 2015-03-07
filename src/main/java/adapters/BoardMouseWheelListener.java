@@ -1,6 +1,6 @@
-package main.java.adapters;
+package adapters;
 
-import main.java.gui.BoardPanel;
+import gui.BoardPanel;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
@@ -10,12 +10,12 @@ import java.awt.geom.AffineTransform;
 
 /**
  * Created by Jakub Fortunka on 2014-12-12.
+ *
+ * Used for defining actions at mouseWheelEvents
  */
 public class BoardMouseWheelListener implements MouseWheelListener {
 
     public boolean simulationStarted = true;
-
-    private double factor = 0.05;
 
     private BoardPanel board;
 
@@ -25,7 +25,7 @@ public class BoardMouseWheelListener implements MouseWheelListener {
 
     /**
      * method is responsible for reacting on event: ctrl is pressed and mouse wheel is moved - board is rescaled
-     * @param e
+     * @param e object of MouseWheelEvent class
      */
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
@@ -39,11 +39,14 @@ public class BoardMouseWheelListener implements MouseWheelListener {
 
             Dimension n = board.innerBoard.getPreferredSize();
             AffineTransform at2 = new AffineTransform();
+
+            double factor = 0.05;
+
             if (e.getWheelRotation() < 0) {
                 n.setSize(((n.width) + (n.width) * factor), ((n.height) + (n.height) * factor));
                 at2.scale(board.at.getScaleX() + factor, board.at.getScaleY() + factor);
             } else {
-                n.setSize(((n.width)-(n.width)*factor),((n.height)-(n.height)*factor));
+                n.setSize(((n.width)-(n.width)* factor),((n.height)-(n.height)* factor));
                 at2.scale(board.at.getScaleX() - factor, board.at.getScaleY() - factor);
             }
             board.innerBoard.setPreferredSize(n);

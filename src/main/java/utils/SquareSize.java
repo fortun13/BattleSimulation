@@ -1,4 +1,4 @@
-package main.java.utils;
+package utils;
 
 /**
  * Created by KrzysiekH on 2015-02-22.
@@ -8,5 +8,6 @@ public class SquareSize {
     private static SquareSize instance = new SquareSize();
 
     private SquareSize() {}
-    public static int getInstance() { return value; }
+    public static SquareSize getInstance() { return instance; }
+    public int getValue() { return value; }
 }

@@ -1,6 +1,6 @@
-package main.java.utils.flyweight;
+package utils.flyweight;
 
-import main.java.utils.Prototype;
+import utils.Prototype;
 
 import java.util.HashMap;
 import java.util.List;

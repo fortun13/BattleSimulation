@@ -1,4 +1,4 @@
-package main.java.agents;
+package agents;
 
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
@@ -85,16 +85,6 @@ public class CommanderMinionBehaviour extends ReactiveBehaviour {
                         break;
                 }
         }
-    }
-
-    private void doAction(Runnable action) {
-        if (enemyPosition.isDead) {
-            enemyPosition = null;
-            enemy = null;
-            state--;
-            return ;
-        }
-        action.run();
     }
 
     private void gotoCommander() {

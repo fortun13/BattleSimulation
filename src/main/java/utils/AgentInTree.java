@@ -1,8 +1,9 @@
-package main.java.utils;
+package utils;
 
+import agents.AgentType;
 import javafx.geometry.Point2D;
-import main.java.agents.ReactiveBehaviour;
-import main.java.agents.World;
+import agents.ReactiveBehaviour;
+import agents.World;
 
 /**
  * Class which represents state of our agent - it's
@@ -29,9 +30,9 @@ public class AgentInTree implements Placed {
         return speed[1];
     }
 
-    public World.AgentType type;
+    public AgentType type;
 
-    public AgentInTree(String agentName,World.AgentsSides side, Point2D position, World.AgentType type, Class<? extends ReactiveBehaviour> behaviourClass) {
+    public AgentInTree(String agentName,World.AgentsSides side, Point2D position, AgentType type, Class<? extends ReactiveBehaviour> behaviourClass) {
         this.agentName = agentName;
         this.side = side;
         p = position;

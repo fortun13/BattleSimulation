@@ -1,4 +1,4 @@
-package main.java.agents;
+package agents;
 
 import edu.wlu.cs.levy.CG.KeyDuplicateException;
 import edu.wlu.cs.levy.CG.KeySizeException;
@@ -6,10 +6,10 @@ import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import javafx.util.Pair;
-import main.java.gui.BoardPanel;
-import main.java.gui.MainFrame;
-import main.java.utils.AgentInTree;
-import main.java.utils.SquareSize;
+import gui.BoardPanel;
+import gui.MainFrame;
+import utils.AgentInTree;
+import utils.SquareSize;
 import org.json.JSONObject;
 
 import java.io.BufferedWriter;
@@ -44,7 +44,6 @@ public class ServerAgent extends Agent {
         long time;
 
         World.AgentsSides[] sides = {World.AgentsSides.Blues, World.AgentsSides.Reds};
-        World.AgentType[] types = {World.AgentType.WARRIOR, World.AgentType.ARCHER, World.AgentType.COMMANDER};
 
         BufferedWriter stats;
 
@@ -155,7 +154,7 @@ public class ServerAgent extends Agent {
             String line = "";
             for (World.AgentsSides s : sides) {
                 line += s.toString() + ": ";
-                for (World.AgentType t : types) {
+                for (AgentType t : AgentType.values()) {
                     try {
                         line += t.toString() + ": " + getAllAgents()
                                 .parallelStream()
@@ -238,8 +237,8 @@ public class ServerAgent extends Agent {
      * @param reds list of agents of red side which we want in the world
      * @param timestep time of every turn (in milliseconds)
      */
-    public void prepareSimulation(ArrayList<Pair<World.AgentType,Integer>> blues,
-                                  ArrayList<Pair<World.AgentType,Integer>> reds,
+    public void prepareSimulation(ArrayList<Pair<AgentType,Integer>> blues,
+                                  ArrayList<Pair<AgentType,Integer>> reds,
                                   long timestep) {
 
         prepare(timestep);
@@ -247,12 +246,12 @@ public class ServerAgent extends Agent {
         start();
     }
 
-    public void prepareSimulation(HashMap<World.AgentType,ArrayList<JSONObject>> blues,
-                                  HashMap<World.AgentType,ArrayList<JSONObject>> reds,
+    public void prepareSimulation(HashMap<AgentType,ArrayList<JSONObject>> blues,
+                                  HashMap<AgentType,ArrayList<JSONObject>> reds,
                                   ArrayList<JSONObject> obstacles,
                                   long timestep) {
         prepare(timestep);
-//        world = new World(this,blues,reds,obstacles);
+        world = new World(this,blues,reds,obstacles);
         start();
     }
 
@@ -324,7 +323,7 @@ public class ServerAgent extends Agent {
     public List<AgentInTree> getAllAgents() throws KeySizeException {
         Pair<Integer,Integer> size = m_frame.getOptionsPanel().getBoardSize();
         //TODO 20 is SQUARESIZE; can actually get this info from here (using m_frame), but do we really want to?
-        double[] upperKey = {size.getValue()* SquareSize.getInstance(),size.getKey()*SquareSize.getInstance()};
+        double[] upperKey = {size.getValue()* SquareSize.getInstance().getValue(),size.getKey()*SquareSize.getInstance().getValue()};
         double[] dk = {0,0};
         return world.getAgentsTree().range(dk,upperKey);
     }

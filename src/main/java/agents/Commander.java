@@ -1,10 +1,10 @@
-package main.java.agents;
+package agents;
 
 import edu.wlu.cs.levy.CG.KeySizeException;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
-import main.java.utils.AgentBuilder;
-import main.java.utils.AgentInTree;
+import utils.AgentBuilder;
+import utils.AgentInTree;
 
 import java.util.ArrayList;
 

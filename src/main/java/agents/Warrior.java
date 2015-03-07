@@ -1,4 +1,4 @@
-package main.java.agents;
+package agents;
 
 import jade.lang.acl.ACLMessage;
 
@@ -22,7 +22,6 @@ public class Warrior extends AgentWithPosition {
             return ;
         }
         String content = msg.getContent();
-        System.out.println("Warr Msg: " + content);
         String[] el = content.split(":");
         int cond = Integer.valueOf(el[0]);
         int str = Integer.valueOf(el[1]);

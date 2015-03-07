@@ -1,7 +1,6 @@
-package main.java.gui;
+package gui;
 
-import main.java.agents.World;
-import main.java.agents.World.AgentType;
+import agents.AgentType;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -27,7 +26,7 @@ public class SideOptionsPanel extends JPanel {
 		Messages.getString("SideOptionPanel.parametersAccuracyLabel"),
 		Messages.getString("SideOptionPanel.parametersRangeLabel")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
-	HashMap<World.AgentType,JSpinner[]> optionsPerType = new HashMap<>();
+	HashMap<AgentType,JSpinner[]> optionsPerType = new HashMap<>();
 
 	private JSpinner warriorsNumber;
 	private JSlider warriorsSlider;
@@ -62,7 +61,7 @@ public class SideOptionsPanel extends JPanel {
 		warriorsNumberPanel.add(warriorsSlider);
 		warriorsSlider.setValue(10);
 
-		createParametersPanel(warriorsSliderPanel, World.AgentType.WARRIOR, new int[] {160, 6, 7, 90, 25});
+		createParametersPanel(warriorsSliderPanel, AgentType.WARRIOR, new int[] {160, 6, 7, 90, 25});
 
 		JPanel archersSliderPanel = new JPanel();
 		archersSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.archersBorderTitle"))); //$NON-NLS-1$
@@ -83,7 +82,7 @@ public class SideOptionsPanel extends JPanel {
 		archersNumberPanel.add(archersSlider);
 		archersSlider.setValue(10);
 
-		createParametersPanel(archersSliderPanel, World.AgentType.ARCHER, new int[]{10, 3, 4, 95, 140});
+		createParametersPanel(archersSliderPanel, AgentType.ARCHER, new int[]{10, 3, 4, 95, 140});
 
 		JPanel commandersSliderPanel = new JPanel();
 		commandersSliderPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("SideOptionPanel.commandersBorderTitle"))); //$NON-NLS-1$
@@ -106,7 +105,7 @@ public class SideOptionsPanel extends JPanel {
 
 	}
 
-	private void createParametersPanel(JPanel panelToAdd, World.AgentType type, int[] defaultValues) {
+	private void createParametersPanel(JPanel panelToAdd, AgentType type, int[] defaultValues) {
         JSpinner[] options;
         switch (type) {
             case COMMANDER:
@@ -171,23 +170,23 @@ public class SideOptionsPanel extends JPanel {
 
 	public int getCommandersNumber() { return (int) commandersNumber.getValue(); }
 
-	public Integer getRange(World.AgentType type) {
+	public Integer getRange(AgentType type) {
 		return (Integer) optionsPerType.get(type)[ROA].getValue();
 	}
 
-	public Integer getCondition(World.AgentType type) {
+	public Integer getCondition(AgentType type) {
 		return (Integer) optionsPerType.get(type)[HP].getValue();
 	}
 
-	public Integer getAccuracy(World.AgentType type) {
+	public Integer getAccuracy(AgentType type) {
 		return (Integer) optionsPerType.get(type)[ACC].getValue();
 	}
 
-	public Integer getStrength(World.AgentType type) {
+	public Integer getStrength(AgentType type) {
 		return (Integer) optionsPerType.get(type)[STR].getValue();
 	}
 
-	public Integer getSpeed(World.AgentType type) {
+	public Integer getSpeed(AgentType type) {
 		return (Integer) optionsPerType.get(type)[SPD].getValue();
 	}
 
@@ -195,23 +194,23 @@ public class SideOptionsPanel extends JPanel {
         return (Integer) optionsPerType.get(AgentType.COMMANDER)[ATRACTIONFORCE].getValue();
     }
 
-    public void setCondition(World.AgentType type, int val) {
+    public void setCondition(AgentType type, int val) {
         optionsPerType.get(type)[HP].setValue(val);
     }
 
-    public void setStrength(World.AgentType type, int val) {
+    public void setStrength(AgentType type, int val) {
         optionsPerType.get(type)[STR].setValue(val);
     }
 
-    public void setSpeed(World.AgentType type, int val) {
+    public void setSpeed(AgentType type, int val) {
         optionsPerType.get(type)[SPD].setValue(val);
     }
 
-    public void setAccuracy(World.AgentType type, int val) {
+    public void setAccuracy(AgentType type, int val) {
         optionsPerType.get(type)[ACC].setValue(val);
     }
 
-    public void setRange(World.AgentType type, int val) {
+    public void setRange(AgentType type, int val) {
         optionsPerType.get(type)[ROA].setValue(val);
     }
 

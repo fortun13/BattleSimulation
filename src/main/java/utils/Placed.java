@@ -1,4 +1,4 @@
-package main.java.utils;
+package utils;
 
 import javafx.geometry.Point2D;
 

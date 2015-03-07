@@ -1,7 +1,7 @@
-package main.java.adapters;
+package adapters;
 
 import javafx.geometry.Point2D;
-import main.java.gui.BoardPanel;
+import gui.BoardPanel;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

@@ -1,6 +1,6 @@
-package main.java.utils.flyweight;
+package utils.flyweight;
 
-import main.java.agents.AgentWithPosition;
+import agents.AgentWithPosition;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;

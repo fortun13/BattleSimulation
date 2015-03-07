@@ -1,4 +1,4 @@
-package main.java.agents;
+package agents;
 
 import edu.wlu.cs.levy.CG.KDTree;
 import edu.wlu.cs.levy.CG.KeyDuplicateException;
@@ -11,10 +11,10 @@ import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
-import main.java.gui.BoardPanel;
-import main.java.gui.BoidOptions;
-import main.java.gui.SideOptionsPanel;
-import main.java.utils.*;
+import gui.BoardPanel;
+import gui.BoidOptions;
+import gui.SideOptionsPanel;
+import utils.*;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -70,7 +70,7 @@ public class World {
         counter = 1;
 
         for (Pair<AgentType,Integer> pair : reds) {
-            addAgentsToWorld(serverAgent,pair, AgentsSides.Reds,(int) (p.getX()/SquareSize.getInstance())-10,"agentReds_",counter);
+            addAgentsToWorld(serverAgent,pair, AgentsSides.Reds,(int) (p.getX()/SquareSize.getInstance().getValue())-10,"agentReds_",counter);
             counter += pair.getValue();
         }
     }
@@ -216,7 +216,7 @@ public class World {
 
     private void addObstacleToWorld(JSONObject obstacle) {
         AgentInTree obs = new AgentInTree("obstacle", World.AgentsSides.Obstacle,
-                new Point2D(obstacle.getInt("x"), obstacle.getInt("y")), World.AgentType.OBSTACLE, null);
+                new Point2D(obstacle.getInt("x"), obstacle.getInt("y")), AgentType.OBSTACLE, null);
         try {
             agentsTree.insert(new double[] {obstacle.getInt("x"),obstacle.getInt("y")},obs);
         } catch (KeySizeException | KeyDuplicateException e) {
@@ -251,28 +251,6 @@ public class World {
         redsCorpses.forEach(m::addReceiver);
         bluesCorpses.forEach(m::addReceiver);
         //server.send(m);
-    }
-
-    /**
-     * removes agent from world
-     * @param agent reference to agent which will be removed
-     */
-    public void removeAgent(AgentWithPosition agent) {
-        if (!agent.currentState.isDead) {
-            try {
-                agentsTree.delete(new double[] {agent.currentState.p.getX(), agent.currentState.p.getY()});
-            } catch (KeySizeException | KeyMissingException e) {
-                e.printStackTrace();
-            }
-            switch (agent.currentState.side) {
-                case Blues:
-                    bluesAgents.remove(agent.getAID());
-                    break;
-                case Reds:
-                    redsAgents.remove(agent.getAID());
-                    break;
-            }
-        }
     }
 
     /**
@@ -357,7 +335,7 @@ public class World {
 
     /**
      *
-     * @param agent
+     * @param agent object of AgentWithPosition class which is going to be killed
      */
     public void killAgent(AgentWithPosition agent) {
         if (agent.currentState.isDead)
@@ -431,33 +409,5 @@ public class World {
     /**
      * enum representing types of agents (warior etc.) (also - obstacles)
      */
-    public enum AgentType {
-        WARRIOR("main/resources/images/warrior.png",20, "Warrior"),
-        ARCHER("main/resources/images/archer.png",20, "Archer"),
-        COMMANDER("main/resources/images/commander.png",20, "Commander"),
-        OBSTACLE("main/resources/images/obstacle.png",20, "Obstacle");
 
-        private String imagePath;
-        private int size;
-        private String name;
-
-        private AgentType(String pathToImage, int size, String name) {
-            imagePath = pathToImage;
-            this.size = size;
-            this.name = name;
-        }
-
-        public String getImagePath() {
-            return imagePath;
-        }
-
-        public int getSize() {
-            return size;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-    }
 }

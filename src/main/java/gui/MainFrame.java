@@ -1,14 +1,15 @@
-package main.java.gui;
+package gui;
 
+import agents.AgentType;
 import edu.wlu.cs.levy.CG.KeySizeException;
 import javafx.util.Pair;
-import main.java.adapters.BoardMouseListener;
-import main.java.adapters.BoardMouseMotionListener;
-import main.java.adapters.BoardMouseWheelListener;
-import main.java.agents.ServerAgent;
-import main.java.agents.World;
-import main.java.utils.AgentInTree;
-import main.java.utils.SquareSize;
+import adapters.BoardMouseListener;
+import adapters.BoardMouseMotionListener;
+import adapters.BoardMouseWheelListener;
+import agents.ServerAgent;
+import agents.World;
+import utils.AgentInTree;
+import utils.SquareSize;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -128,10 +129,6 @@ public class MainFrame extends JFrame {
         spawnAgents.addActionListener(listener);
     }
 
-    public void startSimulationButtonAddActionListener(ActionListener listener) {
-        btnStartSimulation.addActionListener(listener);
-    }
-
     /**
      * Method updates statistics of clicked agent to the panel below board
      *
@@ -233,10 +230,6 @@ public class MainFrame extends JFrame {
             });
         }
 
-        public void spawnAgentsAddActionListener(ActionListener listener) {
-            spawnAgents.addActionListener(listener);
-        }
-
         public void startSimulationButtonAddActionListener(ActionListener listener) {
             btnStartSimulation.addActionListener(listener);
         }
@@ -282,9 +275,9 @@ public class MainFrame extends JFrame {
 
                         JSONArray agents = obj.getJSONArray("agents");
 
-                        HashMap<World.AgentType, ArrayList<JSONObject>> blues = new HashMap<>();
+                        HashMap<AgentType, ArrayList<JSONObject>> blues = new HashMap<>();
 
-                        HashMap<World.AgentType, ArrayList<JSONObject>> reds = new HashMap<>();
+                        HashMap<AgentType, ArrayList<JSONObject>> reds = new HashMap<>();
                         ArrayList<JSONObject> obstacles = new ArrayList<>();
 
                         for (int i = 0; i < agents.length(); i++) {
@@ -311,8 +304,8 @@ public class MainFrame extends JFrame {
             });
         }
 
-        private void addAgentToProperList(HashMap<World.AgentType,ArrayList<JSONObject>> side, JSONObject agent) {
-            World.AgentType key = World.AgentType.valueOf(agent.getString("type").toUpperCase());
+        private void addAgentToProperList(HashMap<AgentType,ArrayList<JSONObject>> side, JSONObject agent) {
+            AgentType key = AgentType.valueOf(agent.getString("type").toUpperCase());
             ArrayList<JSONObject> l = side.get(key);
             if (l==null)
                 l = new ArrayList<>();
@@ -351,13 +344,13 @@ public class MainFrame extends JFrame {
                 JSONArray state = side.getJSONArray("state");
                 for (int j=0;j<state.length();j++) {
                     JSONObject type = state.getJSONObject(j);
-                    World.AgentType at = World.AgentType.valueOf(type.getString("type").toUpperCase());
+                    AgentType at = AgentType.valueOf(type.getString("type").toUpperCase());
                     op.setCondition(at,type.getInt(parametersNames[Condition]));
                     op.setStrength(at,type.getInt(parametersNames[Strength]));
                     op.setSpeed(at,type.getInt(parametersNames[Speed]));
                     op.setAccuracy(at,type.getInt(parametersNames[Accuracy]));
                     op.setRange(at,type.getInt(parametersNames[Range]));
-                    if (at == World.AgentType.COMMANDER)
+                    if (at == AgentType.COMMANDER)
                         op.setAttractionForce(type.getInt(parametersNames[AttractionForce]));
                 }
             }
@@ -443,7 +436,7 @@ public class MainFrame extends JFrame {
         private void saveAgentsToJson(JSONWriter w, Pair<Integer, Integer> size) {
             // Agents
             double[] testKey = {0,0};
-            double[] upperKey = {size.getValue()*SquareSize.getInstance(),size.getKey()*SquareSize.getInstance()};
+            double[] upperKey = {size.getValue()*SquareSize.getInstance().getValue(),size.getKey()*SquareSize.getInstance().getValue()};
             try {
                 java.util.List<AgentInTree> lst = server.getWorld().getAgentsTree().range(testKey, upperKey);
                 w.key("agents");
@@ -494,15 +487,15 @@ public class MainFrame extends JFrame {
         private ArrayList<Pair<String,ArrayList<Pair<String,Integer>>>> getParametersFromSidePanel(World.AgentsSides side) {
             SideOptionsPanel p = (side == World.AgentsSides.Blues) ? optionsPanel.bluePanel : optionsPanel.redPanel;
             ArrayList<Pair<String,ArrayList<Pair<String,Integer>>>> lst = new ArrayList<>();
-            for (World.AgentType t : World.AgentType.values()) {
-                if (t != World.AgentType.OBSTACLE) {
+            for (AgentType t : AgentType.values()) {
+                if (t != AgentType.OBSTACLE) {
                     ArrayList<Pair<String,Integer>> l = new ArrayList<>();
                     l.add(new Pair<>(parametersNames[Condition],p.getCondition(t)));
                     l.add(new Pair<>(parametersNames[Strength],p.getStrength(t)));
                     l.add(new Pair<>(parametersNames[Speed],p.getSpeed(t)));
                     l.add(new Pair<>(parametersNames[Accuracy],p.getAccuracy(t)));
                     l.add(new Pair<>(parametersNames[Range],p.getRange(t)));
-                    if (t == World.AgentType.COMMANDER)
+                    if (t == AgentType.COMMANDER)
                         l.add(new Pair<>(parametersNames[AttractionForce],p.getAttractionForce()));
                     lst.add(new Pair<>(t.toString(),l));
                 }
